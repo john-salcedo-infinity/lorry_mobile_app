@@ -1,0 +1,2 @@
+C:/lorry_mobile/app_lorry/android/app/.cxx/Debug/q1a454e2/x86/CMakeFiles/edit_cache.dir
+C:/lorry_mobile/app_lorry/android/app/.cxx/Debug/q1a454e2/x86/CMakeFiles/rebuild_cache.dir

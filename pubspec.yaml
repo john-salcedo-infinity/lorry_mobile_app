@@ -1,0 +1,62 @@
+name: app_lorry
+description: "A new Flutter project."
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+environment:
+  sdk: ^3.6.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Manejo de estado y navegación
+  flutter_riverpod: ^2.5.1
+  riverpod_annotation: ^2.3.5
+  go_router: ^14.8.0
+  provider: ^6.1.0
+  google_fonts: ^6.1.0
+  flutter_dotenv: ^5.1.0
+
+  # Almacenamiento local y seguro
+  shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
+  path_provider: ^2.1.3
+  
+  # Interfaz de usuario
+  cupertino_icons: ^1.0.8
+  flutter_svg: ^2.0.10+1
+  badges: ^3.1.2
+  dotted_border: ^2.1.0
+  loading_indicator: ^3.1.1
+  toastification: ^3.0.1
+  
+  # Multimedia e imágenes
+  image_picker: ^1.1.2
+  
+  # Permisos y Bluetooth
+  permission_handler: ^11.3.0
+  bluetooth_classic: ^0.0.1
+  camera: ^0.10.5+5
+
+  # Internacionalización
+  intl: ^0.20.2
+  flutter_launcher_icons: ^0.14.3
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/Icono_App_Lorry.png"
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/icons/
+    - .env
