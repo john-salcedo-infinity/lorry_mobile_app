@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_lorry/services/AuthService.dart';
+import 'package:app_lorry/widgets/forms/customInput.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -12,6 +13,7 @@ import 'package:app_lorry/providers/app/home/homeProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/widgets/items/ItemHistorial.dart';
+import 'package:flutter_svg/svg.dart';
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
@@ -26,10 +28,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Timer? _debounce;
 
   void _onSearchChanged(String value) {
-  
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
-   
     _debounce = Timer(const Duration(milliseconds: 500), () {
       ref.read(searchQueryProvider.notifier).state = value;
     });
@@ -84,12 +84,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           color: Colors.white,
                           borderRadius: BorderRadius.all(Radius.circular(4)),
                         ),
-                        child: TextFormField(
-                          obscureText: false,
-                          style: const TextStyle(fontSize: 15),
-                          decoration: Apptheme.inputDecorationPrimaryv2(
-                              "Buscar por VHC asociada"),
+                        child: CustomInputField(
+                          showBorder: false,
+                          hint: "Buscar por VHC asociada",
                           onChanged: _onSearchChanged,
+                          showLabel: false,
+                          suffixIcon: Icon(
+                            Icons.search,
+                            color: Apptheme.textColorPrimary,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -233,8 +236,6 @@ class HomeMenu extends ConsumerWidget {
       }
     }
 
-    ;
-
     return PopupMenuButton<String>(
       color: Colors.white,
       elevation: 8,
@@ -248,30 +249,44 @@ class HomeMenu extends ConsumerWidget {
 
         switch (value) {
           case 'change_password':
-            // Handle change password action
+            ref.read(appRouterProvider).push('/ChangePassword');
             break;
           case 'logout':
             logOut();
         }
       },
       itemBuilder: (BuildContext context) => [
-        const PopupMenuItem<String>(
+        PopupMenuItem<String>(
           value: 'change_password',
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text('Cambiar Contraseña'),
-              Icon(Icons.lock_outline, size: 18),
+              Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  child: const Text("Cambiar Contraseña")),
+              SvgPicture.asset(
+                'assets/icons/Icono_changePass.svg',
+                width: 25, // Ajusta el tamaño según sea necesario
+                height: 25,
+              ),
             ],
           ),
         ),
-        const PopupMenuItem<String>(
+        const PopupMenuDivider(height: 1),
+        PopupMenuItem<String>(
           value: 'logout',
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text('Cerrar Sesión'),
-              Icon(Icons.logout, size: 18),
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                child: const Text('Cerrar Sesión'),
+              ),
+              SvgPicture.asset(
+                'assets/icons/Icono_cerrar_sesion.svg',
+                width: 25, // Ajusta el tamaño según sea necesario
+                height: 25,
+              ),
             ],
           ),
         ),

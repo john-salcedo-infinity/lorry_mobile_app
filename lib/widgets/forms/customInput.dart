@@ -3,22 +3,80 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/config/configs.dart';
 
 class CustomInputField extends ConsumerWidget {
-  final bool? obscureText = false;
-  final String? hint;
-  final () onchange;
-  
+  final String? label;
+  final String hint;
+  final TextEditingController? controller;
+  final bool obscureText;
+  final String? Function(String?)? validator;
+  final ValueChanged<String>? onChanged;
+  final Widget? suffixIcon;
+  final bool showLabel;
+  final bool showBorder;
 
-  const CustomInputField(this.hint, this.onchange, {super.key});
+  const CustomInputField({
+    super.key,
+    this.label,
+    required this.hint,
+    this.controller,
+    this.obscureText = false,
+    this.validator,
+    this.onChanged,
+    this.suffixIcon,
+    this.showLabel = true,
+    this.showBorder = true,
+  });
 
   @override
-  Widget build(BuildContext context,WidgetRef ref) {
-    return TextFormField(
-              obscureText: true,
-              style: const TextStyle(fontSize: 15),
-              decoration: Apptheme.inputDecorationPrimary("Contraseña"),
-              textCapitalization: TextCapitalization.words,
-              onChanged: (value) {
-              },
-            );
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (showLabel && label != null) ...[
+          Text(
+        label!,
+        style: const TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+          fontFamily: Apptheme.textFamily,
+        ),
+          ),
+          const SizedBox(height: 8),
+        ],
+        TextFormField(
+          controller: controller,
+          obscureText: obscureText,
+          style: const TextStyle(fontSize: 15),
+          decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(
+          color: Apptheme.grayInput,
+          fontFamily: Apptheme.textFamily,
+        ),
+        fillColor: Colors.white,
+        filled: true,
+        suffixIcon: suffixIcon,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+        border: showBorder
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(4),
+                borderSide: const BorderSide(color: Apptheme.grayInput),
+              )
+            : InputBorder.none,
+        focusedBorder: showBorder
+            ? OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: const BorderSide(color: Apptheme.primary, width: 2),
+        ) : InputBorder.none,
+        enabledBorder: showBorder ? OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: const BorderSide(color: Apptheme.grayInput),
+        ) : InputBorder.none,
+          ),
+          validator: validator,
+          onChanged: onChanged,
+        ),
+      ],
+    );
   }
 }

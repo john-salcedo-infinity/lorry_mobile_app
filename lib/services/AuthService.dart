@@ -23,4 +23,21 @@ class Authservice {
     final finals = AuthResponse.fromJson(data);
     return finals;
   }
+
+  static Future<AuthResponse> changePassword(
+      String new_password, String confirm_password) async {
+    Preferences preference = Preferences();
+    await preference.init();
+    String token = preference.getValue("token");
+
+    final Map<String, String> passwordData = {
+      'new_password': new_password,
+      'confirm_password': confirm_password,
+    };
+    final resp =
+        await MainService.put('/change-password/', passwordData, token: token);
+    final Map<String, dynamic> data = json.decode(resp.body);
+    final finals = AuthResponse.fromJson(data);
+    return finals;
+  }
 }

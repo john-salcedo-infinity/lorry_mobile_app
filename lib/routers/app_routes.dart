@@ -1,3 +1,4 @@
+import 'package:app_lorry/screens/app/changePass/ChangePass.dart';
 import 'package:app_lorry/screens/app/new_inspection/02_manual_plate_registe.dart';
 import 'package:app_lorry/screens/app/new_inspection/03_new_plate_register.dart';
 import 'package:app_lorry/screens/app/vehiclesData/InfoVehicles.dart';
@@ -33,6 +34,10 @@ GoRouter appRouter(AppRouterRef ref) {
     GoRoute(
       path: '/Dashboard',
       builder: (context, state) => const Dashboard(),
+    ),
+    GoRoute(
+      path: '/ChangePassword',
+      builder: (context, state) => const ChangePass(),
     ),
     GoRoute(
       path: '/PlateRegister',
@@ -71,6 +76,4 @@ GoRouter appRouter(AppRouterRef ref) {
     ),
     GoRoute(path: "/test", builder: ((context, state) => const TestScreen()))
   ]);
-
-  
 }

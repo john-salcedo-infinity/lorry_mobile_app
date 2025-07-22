@@ -7,7 +7,7 @@ part of 'homeProvider.dart';
 // **************************************************************************
 
 String _$inspectionAllServiceHash() =>
-    r'e3d6c72b4bc0b33a7e0dac88e4dbb0f9f6db4ef3';
+    r'19896d97f3eeb1228607efc6a27cb2bbf811653f';
 
 /// Copied from Dart SDK
 class _SystemHash {
