@@ -1,11 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_lorry/config/configs.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
-import 'package:http/http.dart' as http;
-import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/services/services.dart';
 
 class ManualPlateRegisterService {

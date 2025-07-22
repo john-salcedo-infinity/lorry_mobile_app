@@ -155,6 +155,8 @@ class LoginServiceProviderProvider extends FutureProvider<AuthResponse> {
   }
 }
 
+@Deprecated('Will be removed in 3.0. Use Ref instead')
+// ignore: unused_element
 mixin LoginServiceProviderRef on FutureProviderRef<AuthResponse> {
   /// The parameter `email` of this provider.
   String get email;
@@ -173,7 +175,7 @@ class _LoginServiceProviderProviderElement
   String get password => (origin as LoginServiceProviderProvider).password;
 }
 
-String _$loginFormProviderHash() => r'e7ff1e99866122e941bdc32baa9ba422eeb9170e';
+String _$loginFormProviderHash() => r'c0991eef9c9991be0a262177e2ce24821de2f5f5';
 
 /// See also [LoginFormProvider].
 @ProviderFor(LoginFormProvider)
@@ -206,4 +208,4 @@ final loadingProviderProvider =
 
 typedef _$LoadingProvider = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

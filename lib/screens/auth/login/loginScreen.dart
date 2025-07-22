@@ -59,7 +59,7 @@ class _MainContent extends ConsumerWidget {
 
 
 class _CardLogin extends ConsumerWidget {
-  const _CardLogin({super.key});
+  const _CardLogin();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -88,7 +88,6 @@ class _CardLogin extends ConsumerWidget {
 
 class _FormLogin extends ConsumerWidget {
   const _FormLogin({
-    super.key,
     required this.screenwidth,
   });
 
@@ -224,9 +223,7 @@ class _FormLogin extends ConsumerWidget {
 }
 
 class _background extends StatelessWidget {
-  const _background({
-    super.key,
-  });
+  const _background();
 
   @override
   Widget build(BuildContext context) {

@@ -260,7 +260,7 @@ class _NewPlateRegisterState extends ConsumerState<NewPlateRegister> {
 }
 
 class _HeaderView extends StatelessWidget {
-  const _HeaderView({super.key});
+  const _HeaderView();
 
   @override
   Widget build(BuildContext context) {

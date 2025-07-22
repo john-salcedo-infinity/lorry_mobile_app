@@ -80,7 +80,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
               padding: const EdgeInsets.only(top: 26, bottom: 22),
               decoration: const BoxDecoration(
                 color: Colors.white, // Fondo blanco
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(8), //  Borde superior izquierdo
                   topRight: Radius.circular(8), //  Borde superior derecho
                 ),
@@ -114,7 +114,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
               padding: const EdgeInsets.only(top: 22, bottom: 26),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   bottomLeft:
                       Radius.circular(8), // Mantener redondeado si lo deseas
                   bottomRight:

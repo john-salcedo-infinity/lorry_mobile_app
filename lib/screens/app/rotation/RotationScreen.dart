@@ -118,9 +118,7 @@ class RotationScreen extends ConsumerWidget {
 }
 
 class _drag_tires extends ConsumerWidget {
-  const _drag_tires({
-    super.key,
-  });
+  const _drag_tires();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -30,7 +30,6 @@ class _TireDragItemState extends State<TireDragItem> {
           Draggable(
             data: widget.tire.id,
             feedback: ItemTire(tire: widget.tire,),
-            child: ItemTire(tire: widget.tire,),
             childWhenDragging:_childWhenDragging(id:widget.tire.id),
             onDragEnd: (details) {
               print("onDragEnd");
@@ -39,6 +38,7 @@ class _TireDragItemState extends State<TireDragItem> {
                 
               });
             },
+            child: ItemTire(tire: widget.tire,),
           ),
         if (widget.tire.newPosition != null)
           _childWhenDragging(id:widget.tire.id),
@@ -53,7 +53,6 @@ class _childWhenDragging extends StatelessWidget {
   int id;
   
   _childWhenDragging({
-    super.key,
     required this.id,
   });
 

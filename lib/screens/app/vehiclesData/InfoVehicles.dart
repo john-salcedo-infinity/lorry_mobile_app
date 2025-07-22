@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:app_lorry/helpers/InfoRow.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';

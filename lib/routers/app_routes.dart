@@ -1,4 +1,3 @@
-import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:app_lorry/screens/app/new_inspection/02_manual_plate_registe.dart';
 import 'package:app_lorry/screens/app/new_inspection/03_new_plate_register.dart';
 import 'package:app_lorry/screens/app/vehiclesData/InfoVehicles.dart';

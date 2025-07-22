@@ -26,7 +26,7 @@ class ItemHistorial extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      "${HelpersGeneral.formatCustomDate(historical.vehicleLastUpdate)}",
+                      HelpersGeneral.formatCustomDate(historical.truncatedDate),
                       style: Apptheme.titleStylev2,
                     ),
                     Spacer(),
@@ -58,7 +58,7 @@ class ItemHistorial extends StatelessWidget {
                         child: Padding(
                           padding: EdgeInsets.all(3),
                           child: Text(
-                            "${historical.vehicleLicensePlate}",
+                            historical.vehicleLicensePlate,
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
@@ -75,7 +75,7 @@ class ItemHistorial extends StatelessWidget {
                   children: [
                     _ItemBadge(
                         title: "CLIENTE",
-                        values: "${historical.vehicleCustomerBusinessName}",
+                        values: historical.vehicleCustomerBusinessName,
                         width: 100),
                     Spacer(),
                     _ItemBadge(
@@ -104,7 +104,6 @@ class _ItemBadge extends StatelessWidget {
   double width = 2.0;
   String values = "Sovatrans S.A";
   _ItemBadge({
-    super.key,
     required this.title,
     required this.values,
     required this.width,

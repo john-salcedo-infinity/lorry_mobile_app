@@ -3,7 +3,6 @@ import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';

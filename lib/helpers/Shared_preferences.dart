@@ -3,8 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Preferences { 
   SharedPreferences? prefs;
 
-  Preferences()  {
-  }
+  Preferences();
 
   Future<void> init() async {
     print("init");
@@ -25,5 +24,12 @@ class Preferences {
       return ;
     }
     prefs!.setString(key, value);
+  }
+
+  void removeKey(String key){
+    if (prefs == null) {
+      return ;
+    }
+    prefs!.remove(key);
   }
 }

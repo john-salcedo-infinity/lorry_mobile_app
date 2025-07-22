@@ -35,4 +35,14 @@ class MainService {
 
     return resp;
   }
+
+  static Future<http.Response> delete(path, {token = ""}) {
+    Map<String, String> headers = {"Content-Type": "application/json"};
+    if (token != "") {
+      headers["Authorization"] = "Bearer $token";
+    }
+    final url = Uri.parse(Constants.baseUrl + path);
+    final resp = http.delete(url, headers: headers);
+    return resp;
+  }
 }

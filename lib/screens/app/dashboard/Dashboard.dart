@@ -38,12 +38,12 @@ class Dashboard extends ConsumerWidget {
                     screenwidth,
                     100,
                     const Text("Rotaciones Test View"),
-                    () => {
-                      ref.read(appRouterProvider).push('/rotationview')
+                    () {
+                      ref.read(appRouterProvider).push('/rotationview');
                       }),
                 SizedBox(width: 10),
                 CustomButton(screenwidth, 100, const Text("Bluethoo test view"),
-                    () => {ref.read(appRouterProvider).push('/test')})
+                    () {ref.read(appRouterProvider).push('/test');})
               ],
             )
           ],

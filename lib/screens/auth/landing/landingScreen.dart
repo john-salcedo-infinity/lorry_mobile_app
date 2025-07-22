@@ -29,6 +29,8 @@ class LandingScreen extends ConsumerWidget {
 }
 
 class MainContent extends ConsumerWidget {
+  const MainContent({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SafeArea(
@@ -57,15 +59,14 @@ class MainContent extends ConsumerWidget {
 }
 
 class _background extends StatefulWidget {
-  const _background({
-    super.key,
-  });
+  const _background();
 
   @override
   State<_background> createState() => _backgroundState();
 }
 
 class _backgroundState extends State<_background> {
+  @override
   void initState() {
     super.initState();
     _printHolaAfterDelay(context);
@@ -76,7 +77,7 @@ class _backgroundState extends State<_background> {
     Preferences pref = Preferences();
     await pref.init();
     String token = pref.getValue("token");
-    if (token == "" || token == null) {
+    if (token == "") {
       context.go("/login");
       
     }else{

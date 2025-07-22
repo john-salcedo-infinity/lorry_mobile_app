@@ -29,10 +29,10 @@ class TestScreen extends ConsumerWidget {
     }
 
     void da() async {
-        final _bluetoothClassicPlugin = BluetoothClassic();
+        final bluetoothClassicPlugin = BluetoothClassic();
       try {
-        await _bluetoothClassicPlugin.initPermissions();
-        _bluetoothClassicPlugin.onDeviceDataReceived().listen((data) {
+        await bluetoothClassicPlugin.initPermissions();
+        bluetoothClassicPlugin.onDeviceDataReceived().listen((data) {
           print("data received: $data");
           print("data received: ${data.hashCode}");
           print("data received: ${data.buffer}");
@@ -40,29 +40,27 @@ class TestScreen extends ConsumerWidget {
           print("data receivedv2: ${data.toString()}");
 
           // Si data es de tipo Uint8List
-          if (data is Uint8List) {
-            String receivedString = String.fromCharCodes(data);
-            print("Received String: $receivedString");
-            ToastHelper.show_success(context, "${receivedString} mm");
+          String receivedString = String.fromCharCodes(data);
+          print("Received String: $receivedString");
+          ToastHelper.show_success(context, "${receivedString} mm");
 
-            // También puedes procesar bytes individuales si es necesario
-            for (int byte in data) {
-              print("Byte: $byte");
-            }
-          
+          // También puedes procesar bytes individuales si es necesario
+          for (int byte in data) {
+            print("Byte: $byte");
           }
-          // print("data received: ${String.fromCharCode(data.hashCode)}");
+        
+                  // print("data received: ${String.fromCharCode(data.hashCode)}");
         });
       } catch (e) {
         print("se exploto la pedida de permiso porque ya habia sido pedida");
       }
 
         bool finded = false;
-            await _bluetoothClassicPlugin.getPairedDevices().then((value) async {
+            await bluetoothClassicPlugin.getPairedDevices().then((value) async {
               for (var device in value) {
                 if (device.name!.contains("Trans-Logik")) {
                 try {
-                       await _bluetoothClassicPlugin.connect(device.address,
+                       await bluetoothClassicPlugin.connect(device.address,
                             "00001101-0000-1000-8000-00805f9b34fb");
                 } catch (e) {
                   print("opps");

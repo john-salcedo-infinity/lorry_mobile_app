@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:app_lorry/config/configs.dart';
 import 'package:toastification/toastification.dart';
 
