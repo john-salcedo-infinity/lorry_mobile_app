@@ -26,8 +26,8 @@ class ItemHistorial extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      HelpersGeneral.formatCustomDate(historical.truncatedDate),
-                      style: Apptheme.titleStylev2,
+                      HelpersGeneral.formatDayDate(historical.truncatedDate),
+                      style: Apptheme.subtitleStyle,
                     ),
                     Spacer(),
                     const Text(
@@ -36,7 +36,7 @@ class ItemHistorial extends StatelessWidget {
                     )
                   ],
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Text(
@@ -53,10 +53,11 @@ class ItemHistorial extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Container(
                         decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(5)),
                             border: Border.all(color: Colors.white)),
                         alignment: Alignment.center,
                         child: Padding(
-                          padding: EdgeInsets.all(3),
+                          padding: EdgeInsets.fromLTRB(15, 4, 15, 4),
                           child: Text(
                             historical.vehicleLicensePlate,
                             style: const TextStyle(
@@ -76,12 +77,12 @@ class ItemHistorial extends StatelessWidget {
                     _ItemBadge(
                         title: "CLIENTE",
                         values: historical.vehicleCustomerBusinessName,
-                        width: 100),
+                        width: 120),
                     Spacer(),
                     _ItemBadge(
                         title: "KILOMETRAJE",
-                        values: "${historical.mileage}",
-                        width: 100),
+                        values: HelpersGeneral.numberFormat(historical.mileage),
+                        width: 120),
                     Spacer(),
                     _ItemBadge(
                         title: "LLANTAS",
@@ -116,7 +117,7 @@ class _ItemBadge extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 10, color: Apptheme.textColorSecondary),
         ),
         SizedBox(
           height: 7,
@@ -124,7 +125,7 @@ class _ItemBadge extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
               color: Apptheme.secondaryv4,
-              borderRadius: BorderRadius.circular(5)),
+              borderRadius: BorderRadius.circular(8)),
           width: width,
           child: Padding(
             padding: const EdgeInsets.all(4),

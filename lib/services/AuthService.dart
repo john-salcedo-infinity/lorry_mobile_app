@@ -35,7 +35,7 @@ class Authservice {
       'confirm_password': confirm_password,
     };
     final resp =
-        await MainService.put('/change-password/', passwordData, token: token);
+        await MainService.put('/update-password/', passwordData, token: token);
     final Map<String, dynamic> data = json.decode(resp.body);
     final finals = AuthResponse.fromJson(data);
     return finals;

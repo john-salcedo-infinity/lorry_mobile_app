@@ -1,6 +1,8 @@
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
+import 'package:app_lorry/providers/auth/changePasswordProvider.dart';
 import 'package:app_lorry/widgets/forms/customInput.dart';
+import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -26,33 +28,69 @@ class _ChangePassState extends ConsumerState<ChangePass> {
     super.dispose();
   }
 
-  void _resetPassword() {
+  void _resetPassword() async {
     if (_formKey.currentState!.validate()) {
       // Validar que las contraseñas coincidan
       if (_newPasswordController.text != _confirmPasswordController.text) {
         ToastHelper.show_alert(context, "Las contraseñas no coinciden");
-
         return;
       }
 
-      // Print de ambos campos
-      print('Nueva contraseña: ${_newPasswordController.text}');
-      print('Confirmar contraseña: ${_confirmPasswordController.text}');
+      try {
+      
+        ref.read(changePasswordLoadingProviderProvider.notifier).changeLoading(true);
 
-      // Mostrar mensaje de éxito
-      ToastHelper.show_success(
-        context,
-        'Contraseña restablecida exitosamente',
-      );
+      
+        final response = await ref.read(changePasswordServiceProvider(
+          _newPasswordController.text,
+          _confirmPasswordController.text,
+        ).future);
 
-      // Limpiar los campos
-      _newPasswordController.clear();
-      _confirmPasswordController.clear();
+        // Ocultar loading
+        ref.read(changePasswordLoadingProviderProvider.notifier).changeLoading(false);
+
+        if (response.success == true) {
+          ToastHelper.show_success(
+            context,
+            response.messages?.first ?? 'Contraseña actualizada correctamente',
+          );
+
+          _newPasswordController.clear();
+          _confirmPasswordController.clear();
+
+          if (response.data?.token != null) {
+            Preferences preference = Preferences();
+            await preference.init();
+            preference.saveKey("token", response.data!.token!);
+          }
+
+          Navigator.pop(context);
+        } else {
+          // Mostrar mensaje de error
+          ToastHelper.show_alert(
+            context,
+            response.messages?.first ?? 'Error al actualizar la contraseña',
+          );
+        }
+      } catch (e) {
+        // Ocultar loading en caso de error
+        ref.read(changePasswordLoadingProviderProvider.notifier).changeLoading(false);
+        
+        // Mostrar mensaje de error
+        ToastHelper.show_alert(
+          context,
+          'Error de conexión. Inténtalo de nuevo.',
+        );
+        
+        print('Error al cambiar contraseña: $e');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(changePasswordLoadingProviderProvider);
+    
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -198,28 +236,29 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                             Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 24.0),
-                              child: SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: _resetPassword,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Apptheme.primary,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    elevation: 2,
-                                  ),
-                                  child: const Text(
-                                    'Restablecer Contraseña',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                      fontFamily: Apptheme.textFamily,
-                                    ),
-                                  ),
-                                ),
+                              child: CustomButton(
+                                double.infinity,
+                                50,
+                                isLoading
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Restablecer Contraseña',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                          fontFamily: Apptheme.textFamily,
+                                        ),
+                                      ),
+                                isLoading ? null : _resetPassword,
+                                type: 1,
                               ),
                             ),
                           ],

@@ -57,38 +57,43 @@ class Apptheme {
       fontWeight: FontWeight.bold,
       fontFamily: "Poppins");
 
+  static const TextStyle textMuted = TextStyle(
+      fontSize: 11,
+      color: Colors.grey,
+      fontWeight: FontWeight.normal,
+      fontFamily: "Poppins");
+
   // #endregions
 
   // #regions Inputs Style
-static InputDecoration inputDecorationPrimary(hint) {
-  return InputDecoration(
-    hintText: hint,
-    contentPadding: const EdgeInsets.all(10),
-    border: const OutlineInputBorder(
-      gapPadding: 0,
-      borderSide: BorderSide(color: Apptheme.grayInput),
-      borderRadius: BorderRadius.all(Radius.circular(4)),
-    ),
-    focusedBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
-      borderRadius: BorderRadius.all(Radius.circular(4)),
-    ),
-    enabledBorder: const OutlineInputBorder(
-      borderSide: BorderSide(color: Apptheme.grayInput),
-      borderRadius: BorderRadius.all(Radius.circular(4)),
-    ),
-  );
-}
-
+  static InputDecoration inputDecorationPrimary(hint) {
+    return InputDecoration(
+      hintText: hint,
+      contentPadding: const EdgeInsets.all(10),
+      border: const OutlineInputBorder(
+        gapPadding: 0,
+        borderSide: BorderSide(color: Apptheme.grayInput),
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Apptheme.grayInput),
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+    );
+  }
 
   static InputDecoration inputDecorationPrimaryv2(hint) {
     return InputDecoration(
-      suffixIcon: Icon(Icons.search),
-      suffixIconColor: Apptheme.secondary,
+        suffixIcon: Icon(Icons.search),
+        suffixIconColor: Apptheme.secondary,
         hintText: hint,
         focusedBorder: const OutlineInputBorder(
             gapPadding: 0,
-            borderSide: BorderSide(color: Apptheme.darkorange,width: 1),
+            borderSide: BorderSide(color: Apptheme.darkorange, width: 1),
             borderRadius: BorderRadius.all(Radius.circular(4))),
         enabledBorder: const OutlineInputBorder(
             gapPadding: 0,

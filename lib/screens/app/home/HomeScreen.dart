@@ -172,7 +172,13 @@ class _ProfileState extends State<_Profile> {
       child: Row(
         children: [
           const CircleAvatar(
-            backgroundImage: AssetImage('assets/icons/Vector.png'),
+            radius: 24,
+            backgroundColor: Apptheme.primary,
+            child: CircleAvatar(
+              radius: 21,
+              backgroundImage: AssetImage('assets/icons/Vector.png'),
+            ),
+            // backgroundImage: AssetImage('assets/icons/Vector.png'),
           ),
           const SizedBox(width: 10),
           Column(
@@ -186,7 +192,7 @@ class _ProfileState extends State<_Profile> {
                 authUser.groups?.isNotEmpty == true
                     ? authUser.groups![0].name ?? ''
                     : '',
-                style: Apptheme.subtitleStylev2,
+                style: Apptheme.textMuted,
               ),
             ],
           ),
