@@ -6,6 +6,7 @@ import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 
 class ChangePass extends ConsumerStatefulWidget {
   const ChangePass({super.key});
@@ -18,8 +19,8 @@ class _ChangePassState extends ConsumerState<ChangePass> {
   final _formKey = GlobalKey<FormState>();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  bool _isNewPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
+  // bool _isNewPasswordVisible = false;
+  // bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -37,17 +38,19 @@ class _ChangePassState extends ConsumerState<ChangePass> {
       }
 
       try {
-      
-        ref.read(changePasswordLoadingProviderProvider.notifier).changeLoading(true);
+        ref
+            .read(changePasswordLoadingProviderProvider.notifier)
+            .changeLoading(true);
 
-      
         final response = await ref.read(changePasswordServiceProvider(
           _newPasswordController.text,
           _confirmPasswordController.text,
         ).future);
 
         // Ocultar loading
-        ref.read(changePasswordLoadingProviderProvider.notifier).changeLoading(false);
+        ref
+            .read(changePasswordLoadingProviderProvider.notifier)
+            .changeLoading(false);
 
         if (response.success == true) {
           ToastHelper.show_success(
@@ -74,14 +77,16 @@ class _ChangePassState extends ConsumerState<ChangePass> {
         }
       } catch (e) {
         // Ocultar loading en caso de error
-        ref.read(changePasswordLoadingProviderProvider.notifier).changeLoading(false);
-        
+        ref
+            .read(changePasswordLoadingProviderProvider.notifier)
+            .changeLoading(false);
+
         // Mostrar mensaje de error
         ToastHelper.show_alert(
           context,
           'Error de conexión. Inténtalo de nuevo.',
         );
-        
+
         print('Error al cambiar contraseña: $e');
       }
     }
@@ -90,7 +95,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(changePasswordLoadingProviderProvider);
-    
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -169,21 +174,21 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                                 label: 'Nueva Contraseña',
                                 hint: 'Escribe la nueva contraseña',
                                 controller: _newPasswordController,
-                                obscureText: !_isNewPasswordVisible,
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _isNewPasswordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: Apptheme.grayInput,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isNewPasswordVisible =
-                                          !_isNewPasswordVisible;
-                                    });
-                                  },
-                                ),
+                                obscureText: true, // Always hidden
+                                // suffixIcon: IconButton(
+                                //   icon: Icon(
+                                //     _isNewPasswordVisible
+                                //         ? Icons.visibility
+                                //         : Icons.visibility_off,
+                                //     color: Apptheme.grayInput,
+                                //   ),
+                                //   onPressed: () {
+                                //     setState(() {
+                                //       _isNewPasswordVisible =
+                                //           !_isNewPasswordVisible;
+                                //     });
+                                //   },
+                                // ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Por favor ingresa una nueva contraseña';
@@ -206,21 +211,21 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                                 label: 'Confirmar Contraseña',
                                 hint: 'Escribe la nueva contraseña',
                                 controller: _confirmPasswordController,
-                                obscureText: !_isConfirmPasswordVisible,
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _isConfirmPasswordVisible
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                    color: Apptheme.grayInput,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _isConfirmPasswordVisible =
-                                          !_isConfirmPasswordVisible;
-                                    });
-                                  },
-                                ),
+                                obscureText: true, // Always hidden
+                                // suffixIcon: IconButton(
+                                //   icon: Icon(
+                                //     _isConfirmPasswordVisible
+                                //         ? Icons.visibility
+                                //         : Icons.visibility_off,
+                                //     color: Apptheme.grayInput,
+                                //   ),
+                                //   onPressed: () {
+                                //     setState(() {
+                                //       _isConfirmPasswordVisible =
+                                //           !_isConfirmPasswordVisible;
+                                //     });
+                                //   },
+                                // ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
                                     return 'Por favor confirma tu contraseña';
@@ -243,9 +248,10 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                                     ? const SizedBox(
                                         width: 20,
                                         height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                        child: LoadingIndicator(
+                                          indicatorType: Indicator.ballBeat,
+                                          strokeWidth: 3.0,
+                                          colors: [Colors.white],
                                         ),
                                       )
                                     : const Text(
