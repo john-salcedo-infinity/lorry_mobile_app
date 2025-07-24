@@ -24,7 +24,6 @@ class Apptheme {
   static ThemeData lightTheme = ThemeData.light().copyWith(
     primaryColor: primary,
   );
-
   // #endregion
 
   // #regions Variant color
@@ -116,4 +115,19 @@ class Apptheme {
       borderRadius: BorderRadius.vertical(top: Radius.circular(30.0)),
       color: Colors.white);
   // #endregion
+
+  // #Loading color
+  static CircularProgressIndicator loadingIndicator() {
+    return const CircularProgressIndicator(
+      color: Apptheme.primary,
+      strokeWidth: 2,
+    );
+  }
+
+  static CircularProgressIndicator loadingIndicatorButton() {
+    return const CircularProgressIndicator(
+      color: Colors.white,
+      strokeWidth: 2,
+    );
+  }
 }

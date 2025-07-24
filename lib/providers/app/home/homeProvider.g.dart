@@ -162,7 +162,7 @@ class _InspectionAllServiceProviderElement
       (origin as InspectionAllServiceProvider).queryParams;
 }
 
-String _$inspectionsHash() => r'0ca979fed9f4978b6dbca3c3326ce4d5474c1b6e';
+String _$inspectionsHash() => r'c7c16c19bfce890b48dc6dd7852d49b6d8aa78b2';
 
 /// See also [inspections].
 @ProviderFor(inspections)
@@ -178,7 +178,7 @@ final inspectionsProvider =
 
 typedef _$inspections = AutoDisposeNotifier<List<HistoricalResult>>;
 String _$loadinginspectionsHash() =>
-    r'1556fbaab4382b689aebe21aeb97963f0e03b137';
+    r'765f2c3c64659ce2187f204e115180497be5d474';
 
 /// See also [Loadinginspections].
 @ProviderFor(Loadinginspections)

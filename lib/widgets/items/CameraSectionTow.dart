@@ -62,10 +62,10 @@ class CameraSectionTow extends StatelessWidget {
             )
           // Mientras se inicializa la cámara, muestra un indicador de carga
           else
-            const SizedBox(
+            SizedBox(
               width: 292,
               height: 364,
-              child: Center(child: CircularProgressIndicator()),
+              child: Center(child: Apptheme.loadingIndicator()),
             ),
 
           const SizedBox(height: 10),

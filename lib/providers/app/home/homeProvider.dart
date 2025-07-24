@@ -10,6 +10,18 @@ class inspections extends _$inspections {
   @override
   List<HistoricalResult> build() => [];
 
+  void addResults(List<HistoricalResult> newResults) {
+    state = [...state, ...newResults];
+  }
+
+  void replaceResults(List<HistoricalResult> results) {
+    state = results;
+  }
+
+  void clearResults() {
+    state = [];
+  }
+
   void changeValue(List<HistoricalResult> value) {
     state = value;
   }
@@ -18,12 +30,16 @@ class inspections extends _$inspections {
 @Riverpod()
 class Loadinginspections extends _$Loadinginspections {
   @override
-  bool build() => true;
+  bool build() => false;
 
   void changeloading(bool value) {
     state = value;
   }
 }
+
+//! Providers simples para paginación
+final inspectionPaginationProvider = StateProvider<String?>((ref) => null);
+final loadingMoreProvider = StateProvider<bool>((ref) => false);
 
 //! Anteriormente llamados Family
 @Riverpod(keepAlive: true)

@@ -280,11 +280,8 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
         return Container(
           color: Colors.white
               .withOpacity(0.9), // Fondo de color primario con opacidad
-          child: const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(
-                  Apptheme.primary), // Blanco sobre fondo primary
-            ),
+          child: Center(
+            child: Apptheme.loadingIndicator(),
           ),
         );
       },

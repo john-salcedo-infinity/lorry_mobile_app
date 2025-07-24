@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:app_lorry/services/AuthService.dart';
+import 'package:app_lorry/services/services.dart';
 import 'package:app_lorry/widgets/forms/customInput.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
@@ -26,12 +24,105 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   Timer? _debounce;
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+
+    // Cargar datos iniciales
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadInitialData();
+    });
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      _loadMoreData();
+    }
+  }
+
+  Future<void> _loadInitialData() async {
+    final queryParams = ref.read(queryParamsProvider);
+    ref.read(loadinginspectionsProvider.notifier).changeloading(true);
+
+    try {
+      final response =
+          await ref.read(inspectionAllServiceProvider(queryParams).future);
+
+      ref
+          .read(inspectionsProvider.notifier)
+          .replaceResults(response.data.results);
+      ref.read(inspectionPaginationProvider.notifier).state =
+          response.data.next?.toString();
+    } catch (e) {
+      if (context.mounted) {
+        ToastHelper.show_alert(context, "Error al cargar las inspecciones");
+      }
+      ref.read(inspectionsProvider.notifier).clearResults();
+      ref.read(inspectionPaginationProvider.notifier).state = null;
+      print('Error loading initial data: $e');
+    } finally {
+      ref.read(loadinginspectionsProvider.notifier).changeloading(false);
+    }
+  }
+
+  /// Carga más datos de inspecciones de forma paginada.
+  /// 
+  /// Este método verifica si hay una URL siguiente disponible y si no se está
+  /// cargando actualmente más datos. Si las condiciones son válidas, procede a:
+  /// 
+  /// 1. Activar el estado de carga
+  /// 2. Extraer el número de página de la URL de paginación
+  /// 3. Combinar los parámetros de consulta existentes con el nuevo número de página
+  /// 4. Realizar la petición al servicio para obtener más inspecciones
+  /// 5. Agregar los nuevos resultados al estado actual de inspecciones
+  /// 6. Actualizar la URL de paginación para la siguiente carga
+  /// 
+  /// En caso de error, imprime el mensaje en consola.
+  /// Siempre desactiva el estado de carga al finalizar.
+  /// 
+  /// Returns: [Future<void>] - Operación asíncrona sin valor de retorno
+  Future<void> _loadMoreData() async {
+    final nextUrl = ref.read(inspectionPaginationProvider);
+    final isLoadingMore = ref.read(loadingMoreProvider);
+
+    if (nextUrl == null || isLoadingMore) return;
+
+    ref.read(loadingMoreProvider.notifier).state = true;
+
+    try {
+      // Extraer el número de página de la URL
+      final uri = Uri.parse(nextUrl);
+      final pageNumber = uri.queryParameters['page'];
+
+      final queryParams = ref.read(queryParamsProvider);
+      final newQueryParams = {
+        ...queryParams,
+        if (pageNumber != null) 'page': pageNumber,
+      };
+
+      final response =
+          await Homeservice.GetInspectionHistory(ref, newQueryParams);
+
+      ref.read(inspectionsProvider.notifier).addResults(response.data.results);
+      ref.read(inspectionPaginationProvider.notifier).state =
+          response.data.next?.toString();
+    } catch (e) {
+      print('Error loading more data: $e');
+    } finally {
+      ref.read(loadingMoreProvider.notifier).state = false;
+    }
+  }
 
   void _onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
       ref.read(searchQueryProvider.notifier).state = value;
+      _loadInitialData(); // Recargar con nuevo filtro
     });
   }
 
@@ -44,15 +135,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   ///
   /// Retorna un [Future<void>] que se completa cuando la operación de
   /// actualización ha terminado.
+  ///
+  ///
   Future<void> _onRefresh() async {
-    final queryParams = ref.read(queryParamsProvider);
-    ref.invalidate(inspectionAllServiceProvider(queryParams));
-    await ref.read(inspectionAllServiceProvider(queryParams).future);
+    ref.read(inspectionsProvider.notifier).clearResults();
+    ref.read(inspectionPaginationProvider.notifier).state = null;
+    await _loadInitialData();
   }
 
   @override
   void dispose() {
     _debounce?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -65,10 +159,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final queryParams = ref.watch(queryParamsProvider);
-
-    final inspectionService =
-        ref.watch(inspectionAllServiceProvider(queryParams));
+    final inspectionsList = ref.watch(inspectionsProvider);
+    final isLoading = ref.watch(loadinginspectionsProvider);
+    final isLoadingMore = ref.watch(loadingMoreProvider);
 
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
@@ -84,6 +177,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               backgroundColor: Apptheme.backgroundColor,
               onRefresh: _onRefresh,
               child: SingleChildScrollView(
+                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 child: Padding(
                   padding: const EdgeInsets.all(4),
@@ -116,21 +210,37 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        inspectionService.when(
-                          data: (data) => ListView.builder(
+                        if (isLoading && inspectionsList.isEmpty)
+                          Center(child: Apptheme.loadingIndicator())
+                        else ...[
+                          ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: data.data.results.length,
+                            itemCount: inspectionsList.length +
+                                (isLoadingMore ? 1 : 0),
                             itemBuilder: (context, index) {
-                              return ItemHistorial(
-                                historical: data.data.results[index],
-                              );
+                              if (index < inspectionsList.length) {
+                                return ItemHistorial(
+                                  historical: inspectionsList[index],
+                                );
+                              } else {
+                                // Mostrar indicador de carga al final
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Center(
+                                      child: Apptheme.loadingIndicator()),
+                                );
+                              }
                             },
                           ),
-                          error: (error, stackTrace) => Text('Error: $error'),
-                          loading: () =>
-                              const Center(child: CircularProgressIndicator()),
-                        ),
+                          if (inspectionsList.isEmpty && !isLoading)
+                            const Center(
+                              child: Padding(
+                                padding: EdgeInsets.all(20.0),
+                                child: Text('No se encontraron inspecciones'),
+                              ),
+                            ),
+                        ],
                       ],
                     ),
                   ),
