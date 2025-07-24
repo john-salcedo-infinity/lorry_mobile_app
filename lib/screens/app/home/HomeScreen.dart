@@ -35,6 +35,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  /// Maneja la acción de actualización pull-to-refresh de la pantalla.
+
+  /// Lee los parámetros de consulta actuales del provider, invalida el caché
+  /// del servicio de inspecciones y espera a que se complete la nueva petición
+  /// de datos. Este método se ejecuta cuando el usuario desliza hacia abajo
+  /// para refrescar el contenido.
+  ///
+  /// Retorna un [Future<void>] que se completa cuando la operación de
+  /// actualización ha terminado.
+  Future<void> _onRefresh() async {
+    final queryParams = ref.read(queryParamsProvider);
+    ref.invalidate(inspectionAllServiceProvider(queryParams));
+    await ref.read(inspectionAllServiceProvider(queryParams).future);
+  }
+
   @override
   void dispose() {
     _debounce?.cancel();
@@ -64,54 +79,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(4),
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const _Profile(),
-                      const SizedBox(height: 10),
-                      const Text(
-                        "HISTORIAL INSPECCIONES",
-                        style: Apptheme.subtitleStyle,
-                      ),
-                      const SizedBox(height: 10),
-                      Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
+            child: RefreshIndicator(
+              color: Apptheme.primary,
+              backgroundColor: Apptheme.backgroundColor,
+              onRefresh: _onRefresh,
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const _Profile(),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "HISTORIAL INSPECCIONES",
+                          style: Apptheme.subtitleStyle,
                         ),
-                        child: CustomInputField(
-                          showBorder: false,
-                          hint: "Buscar por VHC asociada",
-                          onChanged: _onSearchChanged,
-                          showLabel: false,
-                          suffixIcon: Icon(
-                            Icons.search,
-                            color: Apptheme.textColorPrimary,
+                        const SizedBox(height: 10),
+                        Container(
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                          ),
+                          child: CustomInputField(
+                            showBorder: false,
+                            hint: "Buscar por VHC asociada",
+                            onChanged: _onSearchChanged,
+                            showLabel: false,
+                            suffixIcon: Icon(
+                              Icons.search,
+                              color: Apptheme.textColorPrimary,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      inspectionService.when(
-                        data: (data) => ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: data.data.results.length,
-                          itemBuilder: (context, index) {
-                            return ItemHistorial(
-                              historical: data.data.results[index],
-                            );
-                          },
+                        const SizedBox(height: 20),
+                        inspectionService.when(
+                          data: (data) => ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: data.data.results.length,
+                            itemBuilder: (context, index) {
+                              return ItemHistorial(
+                                historical: data.data.results[index],
+                              );
+                            },
+                          ),
+                          error: (error, stackTrace) => Text('Error: $error'),
+                          loading: () =>
+                              const Center(child: CircularProgressIndicator()),
                         ),
-                        error: (error, stackTrace) => Text('Error: $error'),
-                        loading: () =>
-                            const Center(child: CircularProgressIndicator()),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
