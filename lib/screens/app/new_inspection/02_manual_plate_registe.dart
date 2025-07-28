@@ -1,12 +1,16 @@
-import 'dart:io';
-import 'package:app_lorry/helpers/helpers.dart';
-import 'package:app_lorry/services/services.dart';
+import 'dart:ui';
+
+import 'package:app_lorry/widgets/buttons/CustomButtonBorderOrange.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_lorry/widgets/buttons/CustomButton.dart';
-import 'package:app_lorry/config/app_theme.dart';
-import 'package:app_lorry/routers/app_routes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+import 'package:app_lorry/config/app_theme.dart';
+import 'package:app_lorry/helpers/helpers.dart';
+import 'package:app_lorry/routers/app_routes.dart';
+import 'package:app_lorry/services/services.dart';
+import 'package:app_lorry/widgets/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 class ManualPlateRegister extends ConsumerStatefulWidget {
   const ManualPlateRegister({super.key});
@@ -17,200 +21,222 @@ class ManualPlateRegister extends ConsumerStatefulWidget {
 }
 
 class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
+  // static const double _containerWidth = 342.0;
+  // static const double _fieldWidth = 292.0;
+  // static const double _fieldHeight = 46.0;
+  static const int _maxPlateLength = 6;
+  static const String _plateHint = "WMB 268";
+  static const String _alertMessage = "Digite manualmente la placa";
+  static const String _screenTitle = "Registro de placa";
+
   final TextEditingController _plateController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true, // Esto ayuda
+      resizeToAvoidBottomInset: true,
       backgroundColor: Apptheme.backgroundColor,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: GestureDetector(
-          onTap: () => ref.read(appRouterProvider).push('/home'),
-          child: const Row(
-            children: [
-              Icon(Icons.arrow_back_ios_new_rounded,
-                  color: Apptheme.textColorPrimary),
-              SizedBox(width: 4),
-              Text(
-                'Atrás',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Apptheme.textColorPrimary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          IconButton(
-            padding: const EdgeInsets.all(10),
-            icon: SvgPicture.asset(
-              'assets/icons/Icono_Casa_Lorry.svg',
-              width: 40, // Ajusta el tamaño según sea necesario
-              height: 40,
-            ),
-            onPressed: () {
-              ref.read(appRouterProvider).push('/home');
-            },
-          ),
-        ],
-      ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
         child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Centrar horizontalmente
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "Registro De Placa",
-              style: TextStyle(
-                fontSize: 23,
-                color: Apptheme.textColorSecondary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            _buildHeader(),
+            _buildTitle(),
             const SizedBox(height: 30),
-            //Mensaje de alerta dentro de un contenedor blanco
-            Container(
-              width: 342,
-              height: 68,
-              padding: const EdgeInsets.only(top: 26, bottom: 22),
-              decoration: const BoxDecoration(
-                color: Colors.white, // Fondo blanco
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8), //  Borde superior izquierdo
-                  topRight: Radius.circular(8), //  Borde superior derecho
-                ),
-              ),
-              child: Row(
-                children: [
-                  const SizedBox(width: 20), // Mueve el contenido a la derecha
-                  const Image(image: AssetImage('assets/icons/Alert_Icon.png')),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "Digite manualmente la placa",
-                      softWrap: true,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Apptheme.textColorSecondary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
+            _buildAlertSection(),
             const SizedBox(height: 2),
-
-            // Sección de ingreso de placa dentro de un contenedor blanco con borde inferior redondeado
-            Container(
-              width: 342,
-              height: 170,
-              padding: const EdgeInsets.only(top: 22, bottom: 26),
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  bottomLeft:
-                      Radius.circular(8), // Mantener redondeado si lo deseas
-                  bottomRight:
-                      Radius.circular(8), // Mantener redondeado si lo deseas
-                ),
-              ),
-              child: Column(
-                children: [
-                  // Campo de texto con icono
-                  Container(
-                    width: 292,
-                    height: 46,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey, width: 2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/Car_Icon.svg',
-                          width: 24,
-                          height: 24,
-                          color: Apptheme.textColorPrimary,
-                        ),
-                        const SizedBox(width: 5), // Reducimos el espacio
-                        IntrinsicWidth(
-                          child: TextField(
-                            controller: _plateController,
-                            maxLength: 6,
-                            textCapitalization: TextCapitalization.characters,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Apptheme.textColorPrimary,
-                            ),
-                            decoration: const InputDecoration(
-                              border: InputBorder.none,
-                              counterText: "",
-                              hintText: "WMB 268",
-                              hintStyle: TextStyle(
-                                color: Apptheme.textColorPrimary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 10),
-
-                  // Botón "Guardar"
-                  Center(
-                    child: CustomButton(
-                      292, // Ancho
-                      46, // Alto
-                      const Text(
-                        "Guardar",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      () => _validateAndShowDialog(context),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _buildPlateInputSection(),
           ],
         ),
       ),
     );
   }
 
-// Validar si el campo de placa está vacío antes de mostrar el diálogo
-  void _validateAndShowDialog(BuildContext context) {
-    if (_plateController.text.isEmpty) {
-      ToastHelper.show_alert(context, "La placa es requerida.");
-      return; // Salir si el campo está vacío
-    }
-    _showSaveConfirmationDialog(context);
+  Widget _buildHeader() {
+    return Container(
+      margin: const EdgeInsets.only(top: 30, bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Back(),
+          Row(
+            children: [
+              IconButton(
+                onPressed: () => context.go('/home'),
+                icon: SvgPicture.asset(
+                  'assets/icons/Icono_Casa_Lorry.svg',
+                  width: 40,
+                  height: 40,
+                ),
+              ),
+            ],
+          )
+        ],
+      ),
+    );
   }
 
-  void _showSaveConfirmationDialog(BuildContext context) {
-    final plate = _plateController.text;
+  Widget _buildTitle() {
+    return Text(
+      _screenTitle,
+      style: const TextStyle(
+        fontSize: 23,
+        color: Apptheme.textColorSecondary,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
 
+  Widget _buildAlertSection() {
+    return Container(
+      width: double.infinity,
+      height: 68,
+      padding: const EdgeInsets.only(top: 26, bottom: 22),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
+        ),
+      ),
+      child: Row(
+        children: [
+          const SizedBox(width: 20),
+          const Image(image: AssetImage('assets/icons/Alert_Icon.png')),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              _alertMessage,
+              softWrap: true,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Apptheme.textColorSecondary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPlateInputSection() {
+    return Container(
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+      ),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 35),
+        child: Column(
+          children: [
+            _buildPlateInputField(),
+            const SizedBox(height: 10),
+            _buildSaveButton(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPlateInputField() {
+    return Container(
+      width: double.infinity,
+      height: 46,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey, width: 2),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            'assets/icons/Car_Icon.svg',
+            width: 24,
+            height: 24,
+            // colorFilter: Apptheme.,
+          ),
+          const SizedBox(width: 5),
+          Expanded(
+            child: TextField(
+              controller: _plateController,
+              maxLength: _maxPlateLength,
+              textCapitalization: TextCapitalization.characters,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Apptheme.textColorPrimary,
+              ),
+              onChanged: (value) {
+                final upperValue = value.toUpperCase();
+                if (value != upperValue) {
+                  _plateController.value = TextEditingValue(
+                    text: upperValue,
+                    selection:
+                        TextSelection.collapsed(offset: upperValue.length),
+                  );
+                }
+              },
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                counterText: "",
+                hintText: _plateHint,
+                hintStyle: const TextStyle(
+                  color: Apptheme.textColorPrimary,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSaveButton() {
+    return Center(
+      child: CustomButton(
+        double.infinity,
+        46,
+        const Text(
+          "Guardar",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Apptheme.backgroundColor,
+          ),
+        ),
+        () => _validateAndShowDialog(context),
+      ),
+    );
+  }
+
+  /// Validates the plate input and shows the confirmation dialog
+  void _validateAndShowDialog(BuildContext context) {
+    final plateText = _plateController.text.trim();
+
+    if (plateText.isEmpty) {
+      ToastHelper.show_alert(context, "La placa es requerida.");
+      return;
+    }
+
+    _showSaveConfirmationDialog(context, plateText);
+  }
+
+  /// Shows the confirmation dialog for plate inspection
+  void _showSaveConfirmationDialog(BuildContext context, String plate) {
     showDialog(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
+      barrierColor: Apptheme.secondary.withValues(alpha: 0.5),
+      builder: (dialogContext) => BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
+        child: AlertDialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          backgroundColor: Colors.white,
           title: Center(
             child: Text(
               "PLACA $plate",
@@ -228,123 +254,165 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
             style: TextStyle(
               fontSize: 12,
               color: Apptheme.textColorSecondary,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.normal,
             ),
           ),
           actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text(
-                "Cancelar",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Apptheme.primary,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Apptheme.primary,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
-                  side: const BorderSide(width: 2, color: Apptheme.darkorange),
-                ),
-              ),
-              onPressed: () async {
-                Navigator.of(dialogContext).pop();
-                await proceedWithPlateInspection(context, ref, plate);
-              },
-              child: const Text(
-                "Aceptar",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildCancelButton(dialogContext),
+                const SizedBox(width: 16),
+                _buildAcceptButton(dialogContext, plate),
+              ],
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
 
-  Future<void> proceedWithPlateInspection(
-      BuildContext context, WidgetRef ref, String plate) async {
-    // Mostrar pantalla de carga
+  Widget _buildCancelButton(BuildContext dialogContext) {
+    return TextButton(
+      onPressed: () => Navigator.of(dialogContext).pop(),
+      style: TextButton.styleFrom(
+        minimumSize: const Size(130, 40),
+      ),
+      child: const Text(
+        "Cancelar",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Apptheme.primary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAcceptButton(BuildContext dialogContext, String plate) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Apptheme.primary,
+        minimumSize: const Size(130, 40),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(4),
+          side: const BorderSide(width: 2, color: Apptheme.darkorange),
+        ),
+      ),
+      onPressed: () async {
+        Navigator.of(dialogContext).pop();
+        await _proceedWithPlateInspection(plate);
+      },
+      child: const Text(
+        "Aceptar",
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+      ),
+    );
+  }
+
+  /// Shows loading dialog
+  void _showLoadingDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false, // Evita que se cierre tocando fuera
-      builder: (BuildContext context) {
-        return Container(
-          color: Colors.white
-              .withOpacity(0.9), // Fondo de color primario con opacidad
-          child: Center(
-            child: Apptheme.loadingIndicator(),
-          ),
-        );
-      },
+      barrierDismissible: false,
+      builder: (context) => Container(
+        color: Colors.white.withAlpha(230),
+        child: Center(
+          child: Apptheme.loadingIndicator(),
+        ),
+      ),
     );
+  }
+
+  /// Dismisses the loading dialog
+  void _dismissLoadingDialog() {
+    Navigator.of(context, rootNavigator: true).pop();
+  }
+
+  /// Handles the plate inspection process
+  Future<void> _proceedWithPlateInspection(String plate) async {
+    _showLoadingDialog();
 
     try {
       final response =
           await ManualPlateRegisterService.getMountingByPlate(plate, ref);
+      _dismissLoadingDialog();
 
-      // Cerrar el loading
-      Navigator.of(context, rootNavigator: true).pop();
-
-      print("Success: ${response.success}");
-      print("Data: ${response.data}");
-
-      if (response.success == false) {
-        final mensaje = response.messages?.isNotEmpty == true
-            ? response.messages!.first
-            : "Vehículo no encontrado.";
-
-        ToastHelper.show_alert(context, mensaje);
+      if (response.success != true) {
+        _handleErrorResponse(response);
         return;
       }
 
-      final firstResult = response.data?.results?.first;
-
-      final isValidResult = firstResult != null &&
-          (firstResult.licensePlate?.isNotEmpty ?? false);
-
-      if (isValidResult) {
-        final hasTires =
-            firstResult.tires != null && firstResult.tires!.isNotEmpty;
-
-        if (!hasTires) {
-          ToastHelper.show_alert(context, "Vehículo sin llantas registradas.");
-          return;
-        } else {
-          ToastHelper.show_success(context, "Vehículo encontrado con éxito.");
-        }
-
-        final extraData = {
-          'licensePlate': firstResult.licensePlate,
-          'typeVehicleName': firstResult.typeVehicleName,
-          'workLineName': firstResult.workLineName,
-          'businessName': firstResult.businessName,
-          'mileage': firstResult.mileage,
-        };
-
-        if (hasTires) {
-          extraData['tires'] =
-              firstResult.tires!.map((tire) => tire.toJson()).toList();
-        }
-
-        ref.read(appRouterProvider).push('/InfoVehicles', extra: extraData);
-      } else {
-        ToastHelper.show_alert(context, "Vehículo no encontrado.");
-      }
+      await _handleSuccessResponse(response);
     } catch (e) {
-      // Cerrar el loading en caso de error también
-      Navigator.of(context, rootNavigator: true).pop();
-      print("extra: $e");
-      ToastHelper.show_alert(context, "Error al consultar la placa: $e");
+      _dismissLoadingDialog();
+      _handleException(e);
     }
+  }
+
+  /// Handles error response from the service
+  void _handleErrorResponse(dynamic response) {
+    final message = response.messages?.isNotEmpty == true
+        ? response.messages!.first
+        : "Vehículo no encontrado.";
+    ToastHelper.show_alert(context, message);
+  }
+
+  /// Handles successful response from the service
+  Future<void> _handleSuccessResponse(dynamic response) async {
+    final firstResult = response.data?.results?.first;
+
+    if (!_isValidResult(firstResult)) {
+      ToastHelper.show_alert(context, "Vehículo no encontrado.");
+      return;
+    }
+
+    final hasTires = _hasTires(firstResult);
+
+    if (!hasTires) {
+      ToastHelper.show_alert(context, "Vehículo sin llantas registradas.");
+      return;
+    }
+
+    ToastHelper.show_success(context, "Vehículo encontrado con éxito.");
+    _navigateToVehicleInfo(firstResult);
+  }
+
+  /// Validates if the result is valid
+  bool _isValidResult(dynamic result) {
+    return result != null && (result.licensePlate?.isNotEmpty ?? false);
+  }
+
+  /// Checks if the vehicle has tires
+  bool _hasTires(dynamic result) {
+    return result.tires != null && result.tires!.isNotEmpty;
+  }
+
+  /// Navigates to vehicle info screen with the vehicle data
+  void _navigateToVehicleInfo(dynamic vehicleResult) {
+    final extraData = {
+      'licensePlate': vehicleResult.licensePlate,
+      'typeVehicleName': vehicleResult.typeVehicleName,
+      'workLineName': vehicleResult.workLineName,
+      'businessName': vehicleResult.businessName,
+      'mileage': vehicleResult.mileage,
+    };
+
+    if (_hasTires(vehicleResult)) {
+      extraData['tires'] =
+          vehicleResult.tires!.map((tire) => tire.toJson()).toList();
+    }
+
+    ref.read(appRouterProvider).push('/InfoVehicles', extra: extraData);
+  }
+
+  /// Handles exceptions during the inspection process
+  void _handleException(dynamic error) {
+    ToastHelper.show_alert(context, "Error al consultar la placa: $error");
   }
 
   @override

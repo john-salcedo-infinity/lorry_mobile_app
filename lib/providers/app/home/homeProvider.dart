@@ -42,7 +42,7 @@ final inspectionPaginationProvider = StateProvider<String?>((ref) => null);
 final loadingMoreProvider = StateProvider<bool>((ref) => false);
 
 //! Anteriormente llamados Family
-@Riverpod(keepAlive: true)
+@Riverpod()  // Removemos keepAlive para permitir invalidación automática
 Future<InspectionHistory> inspectionAllService(
     Ref ref, Map<String, String>? queryParams) async {
   final inspection = await Homeservice.GetInspectionHistory(ref, queryParams);

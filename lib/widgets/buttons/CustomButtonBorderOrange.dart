@@ -31,8 +31,8 @@ class CustomButtonBorderOrange extends ConsumerWidget {
             borderRadius: BorderRadius.circular(4),
             side: const BorderSide(color: Apptheme.primary, width: 2),
           ),
-          elevation: 0, // 🔥 Elimina la sombra
-          shadowColor: Colors.transparent, // 🔥 Asegura que no haya sombra
+          elevation: 0,
+          shadowColor: Colors.transparent, 
         ),
         child: Center(child: child),
       ),

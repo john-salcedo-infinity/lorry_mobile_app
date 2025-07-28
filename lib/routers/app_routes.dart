@@ -1,3 +1,4 @@
+import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/screens/app/changePass/ChangePass.dart';
 import 'package:app_lorry/screens/app/new_inspection/02_manual_plate_registe.dart';
 import 'package:app_lorry/screens/app/new_inspection/03_new_plate_register.dart';
@@ -5,6 +6,7 @@ import 'package:app_lorry/screens/app/vehiclesData/InfoVehicles.dart';
 import 'package:app_lorry/screens/app/InpectionTire/DetailTire.dart';
 import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app_lorry/screens/app/dashboard/Dashboard.dart';
 import 'package:app_lorry/screens/screens.dart';
@@ -13,7 +15,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'app_routes.g.dart';
 
 @riverpod
-GoRouter appRouter(AppRouterRef ref) {
+GoRouter appRouter(Ref ref) {
   return GoRouter(initialLocation: "/", routes: [
     GoRoute(
       path: '/',
@@ -26,6 +28,13 @@ GoRouter appRouter(AppRouterRef ref) {
     GoRoute(
       path: '/home',
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/inspectionDetails',
+      builder: (context, state){
+        final data = state.extra as Map<String, HistoricalResult>;
+        return InspectionDetails(historical: data['historical']);
+      },
     ),
     GoRoute(
       path: '/rotationview',

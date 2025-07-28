@@ -25,6 +25,12 @@ class HomeScreen extends ConsumerStatefulWidget {
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   Timer? _debounce;
   final ScrollController _scrollController = ScrollController();
+  bool _shouldCancelRefresh =
+      false; // Bandera para cancelar refresh si cambió dirección
+  double _lastScrollPosition = 0.0; // Última posición del scroll
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
+  int? selectedIndex; // Índice de la tarjeta seleccionada
 
   @override
   void initState() {
@@ -49,42 +55,51 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref.read(loadinginspectionsProvider.notifier).changeloading(true);
 
     try {
+      // Invalidar el provider para forzar una nueva llamada al API
+      ref.invalidate(inspectionAllServiceProvider(queryParams));
+
       final response =
           await ref.read(inspectionAllServiceProvider(queryParams).future);
 
-      ref
-          .read(inspectionsProvider.notifier)
-          .replaceResults(response.data.results);
-      ref.read(inspectionPaginationProvider.notifier).state =
-          response.data.next?.toString();
+      if (mounted) {
+        ref
+            .read(inspectionsProvider.notifier)
+            .replaceResults(response.data.results);
+        ref.read(inspectionPaginationProvider.notifier).state =
+            response.data.next?.toString();
+      }
     } catch (e) {
       if (context.mounted) {
         ToastHelper.show_alert(context, "Error al cargar las inspecciones");
       }
-      ref.read(inspectionsProvider.notifier).clearResults();
-      ref.read(inspectionPaginationProvider.notifier).state = null;
-      print('Error loading initial data: $e');
+      if (mounted) {
+        ref.read(inspectionsProvider.notifier).clearResults();
+        ref.read(inspectionPaginationProvider.notifier).state = null;
+      }
     } finally {
-      ref.read(loadinginspectionsProvider.notifier).changeloading(false);
+      if (mounted) {
+        ref.read(loadinginspectionsProvider.notifier).changeloading(false);
+      }
     }
   }
 
   /// Carga más datos de inspecciones de forma paginada.
-  /// 
+  ///
   /// Este método verifica si hay una URL siguiente disponible y si no se está
   /// cargando actualmente más datos. Si las condiciones son válidas, procede a:
-  /// 
+  ///
   /// 1. Activar el estado de carga
   /// 2. Extraer el número de página de la URL de paginación
   /// 3. Combinar los parámetros de consulta existentes con el nuevo número de página
   /// 4. Realizar la petición al servicio para obtener más inspecciones
   /// 5. Agregar los nuevos resultados al estado actual de inspecciones
   /// 6. Actualizar la URL de paginación para la siguiente carga
-  /// 
+  ///
   /// En caso de error, imprime el mensaje en consola.
   /// Siempre desactiva el estado de carga al finalizar.
-  /// 
+  ///
   /// Returns: [Future<void>] - Operación asíncrona sin valor de retorno
+
   Future<void> _loadMoreData() async {
     final nextUrl = ref.read(inspectionPaginationProvider);
     final isLoadingMore = ref.read(loadingMoreProvider);
@@ -126,6 +141,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+  /// Invalida todos los providers relacionados con las inspecciones
+  /// para forzar una carga completamente fresca de datos
+  void _invalidateAllProviders() {
+    final queryParams = ref.read(queryParamsProvider);
+
+    // Invalidar el provider principal de servicio
+    ref.invalidate(inspectionAllServiceProvider(queryParams));
+
+    // También invalidar con diferentes parámetros de consulta para limpiar caché
+    ref.invalidate(inspectionAllServiceProvider);
+  }
+
   /// Maneja la acción de actualización pull-to-refresh de la pantalla.
 
   /// Lee los parámetros de consulta actuales del provider, invalida el caché
@@ -135,12 +162,59 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   ///
   /// Retorna un [Future<void>] que se completa cuando la operación de
   /// actualización ha terminado.
-  ///
-  ///
+
   Future<void> _onRefresh() async {
-    ref.read(inspectionsProvider.notifier).clearResults();
-    ref.read(inspectionPaginationProvider.notifier).state = null;
-    await _loadInitialData();
+    // Si se marcó para cancelar refresh, no hacer nada
+    if (!mounted || _shouldCancelRefresh) {
+      // Reset la bandera
+      setState(() {
+        _shouldCancelRefresh = false;
+      });
+      return;
+    }
+
+    try {
+      // Invalidar todos los providers para forzar refresh completo
+      _invalidateAllProviders();
+
+      // Limpiar estado actual
+      ref.read(inspectionsProvider.notifier).clearResults();
+      ref.read(inspectionPaginationProvider.notifier).state = null;
+
+      // Cargar datos frescos y esconder inmediatamente al recibir respuesta
+      final queryParams = ref.read(queryParamsProvider);
+      ref.read(loadinginspectionsProvider.notifier).changeloading(true);
+
+      // Invalidar para nueva llamada
+      ref.invalidate(inspectionAllServiceProvider(queryParams));
+
+      // Obtener datos frescos
+      final response =
+          await ref.read(inspectionAllServiceProvider(queryParams).future);
+
+      // Actualizar estado con nuevos datos INMEDIATAMENTE
+      if (mounted) {
+        ref
+            .read(inspectionsProvider.notifier)
+            .replaceResults(response.data.results);
+        ref.read(inspectionPaginationProvider.notifier).state =
+            response.data.next?.toString();
+      }
+    } catch (e) {
+      print('Error during refresh: $e');
+      if (context.mounted) {
+        ToastHelper.show_alert(context, "Error al actualizar las inspecciones");
+      }
+      if (mounted) {
+        ref.read(inspectionsProvider.notifier).clearResults();
+        ref.read(inspectionPaginationProvider.notifier).state = null;
+      }
+    } finally {
+      // Asegurar que se deshabilite loading
+      if (mounted) {
+        ref.read(loadinginspectionsProvider.notifier).changeloading(false);
+      }
+    }
   }
 
   @override
@@ -172,81 +246,150 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: Column(
         children: [
           Expanded(
-            child: RefreshIndicator(
-              color: Apptheme.primary,
-              backgroundColor: Apptheme.backgroundColor,
-              onRefresh: _onRefresh,
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                physics: const AlwaysScrollableScrollPhysics(),
-                child: Padding(
-                  padding: const EdgeInsets.all(4),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const _Profile(),
-                        const SizedBox(height: 10),
-                        const Text(
-                          "HISTORIAL INSPECCIONES",
-                          style: Apptheme.subtitleStyle,
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
-                          ),
-                          child: CustomInputField(
-                            showBorder: false,
-                            hint: "Buscar por VHC asociada",
-                            onChanged: _onSearchChanged,
-                            showLabel: false,
-                            suffixIcon: Icon(
-                              Icons.search,
-                              color: Apptheme.textColorPrimary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        if (isLoading && inspectionsList.isEmpty)
-                          Center(child: Apptheme.loadingIndicator())
-                        else ...[
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: inspectionsList.length +
-                                (isLoadingMore ? 1 : 0),
-                            itemBuilder: (context, index) {
-                              if (index < inspectionsList.length) {
-                                return ItemHistorial(
-                                  historical: inspectionsList[index],
-                                );
-                              } else {
-                                // Mostrar indicador de carga al final
-                                return Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Center(
-                                      child: Apptheme.loadingIndicator()),
-                                );
-                              }
-                            },
-                          ),
-                          if (inspectionsList.isEmpty && !isLoading)
-                            const Center(
-                              child: Padding(
-                                padding: EdgeInsets.all(20.0),
-                                child: Text('No se encontraron inspecciones'),
+            child: NotificationListener<ScrollNotification>(
+              onNotification: (ScrollNotification notification) {
+                // Detectar cambios en la dirección del scroll
+                if (notification is ScrollUpdateNotification) {
+                  final position = _scrollController.position;
+                  final currentPosition = position.pixels;
+
+                  // Si está en zona de pull-to-refresh (posición negativa)
+                  if (currentPosition < 0) {
+                    // Detectar si cambió de dirección hacia abajo después de haber ido hacia arriba
+                    if (_lastScrollPosition < currentPosition &&
+                        currentPosition > -30) {
+                      // Usuario cambió de dirección hacia abajo, marcar para cancelar refresh
+                      setState(() {
+                        _shouldCancelRefresh = true;
+                      });
+                    }
+                    // Si está yendo más hacia arriba, permitir refresh
+                    else if (_lastScrollPosition > currentPosition) {
+                      setState(() {
+                        _shouldCancelRefresh = false;
+                      });
+                    }
+                  }
+                  // Reset cuando vuelve a posición normal
+                  else if (currentPosition >= 0) {
+                    setState(() {
+                      _shouldCancelRefresh = false;
+                    });
+                  }
+
+                  _lastScrollPosition = currentPosition;
+                }
+                return false;
+              },
+              child: RefreshIndicator(
+                key: _refreshIndicatorKey,
+                color: Apptheme.primary,
+                backgroundColor: Colors.white,
+                strokeWidth: 2.0,
+                displacement: 50.0,
+                onRefresh: _onRefresh,
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const _Profile(),
+                              const SizedBox(height: 10),
+                              const Text(
+                                "ÚLTIMAS INSPECCIONES",
+                                style: Apptheme.subtitleStyle,
                               ),
-                            ),
-                        ],
-                      ],
+                              const SizedBox(height: 10),
+                              Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(4)),
+                                ),
+                                child: CustomInputField(
+                                  showBorder: false,
+                                  hint: "Buscar por VHC asociada",
+                                  onChanged: _onSearchChanged,
+                                  showLabel: false,
+                                  suffixIcon: Icon(
+                                    Icons.search,
+                                    color: Apptheme.textColorPrimary,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+
+                    // Lista de inspecciones
+                    if (isLoading && inspectionsList.isEmpty)
+                      SliverToBoxAdapter(
+                        child: Container(
+                          padding: const EdgeInsets.all(20),
+                          child: Center(child: Apptheme.loadingIndicator()),
+                        ),
+                      )
+                    else if (inspectionsList.isEmpty && !isLoading)
+                      const SliverToBoxAdapter(
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Text('No se encontraron inspecciones'),
+                          ),
+                        ),
+                      )
+                    else
+                      SliverList(
+                        delegate: SliverChildBuilderDelegate(
+                          (context, index) {
+                            if (index < inspectionsList.length) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: ItemHistorial(
+                                  historical: inspectionsList[index],
+                                  isSelected: selectedIndex == index,
+                                  onTap: () {
+                                    setState(() {
+                                      // Si ya está seleccionado, deseleccionar; si no, seleccionar
+                                      selectedIndex = selectedIndex == index ? null : index;
+                                    });
+                                  },
+                                ),
+                              );
+                            } else if (isLoadingMore) {
+                              // Mostrar indicador de carga al final
+                              return Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child:
+                                    Center(child: Apptheme.loadingIndicator()),
+                              );
+                            }
+                            return null;
+                          },
+                          childCount:
+                              inspectionsList.length + (isLoadingMore ? 1 : 0),
+                        ),
+                      ),
+
+                    // Espacio adicional al final para mejor UX
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 20),
+                    ),
+                  ],
                 ),
               ),
-            ),
+            ), // Cierre del NotificationListener
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -254,7 +397,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               342,
               46,
               const Text(
-                "Iniciar Nueva Inspección",
+                "Iniciar nueva inspección",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -400,7 +543,7 @@ class HomeMenu extends ConsumerWidget {
             children: [
               Container(
                   margin: const EdgeInsets.only(right: 8),
-                  child: const Text("Cambiar Contraseña")),
+                  child: const Text("Cambiar contraseña")),
               SvgPicture.asset(
                 'assets/icons/Icono_changePass.svg',
                 width: 25, // Ajusta el tamaño según sea necesario
@@ -417,7 +560,7 @@ class HomeMenu extends ConsumerWidget {
             children: [
               Container(
                 margin: const EdgeInsets.only(right: 8),
-                child: const Text('Cerrar Sesión'),
+                child: const Text('Cerrar sesión'),
               ),
               SvgPicture.asset(
                 'assets/icons/Icono_cerrar_sesion.svg',

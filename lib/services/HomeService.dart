@@ -10,16 +10,12 @@ class Homeservice {
       ref, Map<String, String>? queryParams) async {
     Preferences preference = Preferences();
     await preference.init();
-    String user = preference.getValue("user");
-    User datafinalstring = User.fromJson(jsonDecode(user));
     final Map<String, String> query = {
-      'id': "${datafinalstring.id!}",
-      // 'id': "3",
       ...?queryParams
     };
     String token = preference.getValue("token");
     final resp = await MainService.get(
-        '/inspection/vehicle-quantity-list-with-tire-inspections/', query,
+        '/inspection/vehicle-last-with-tire-inspections/', query,
         token: token);
 
     if (resp.statusCode != 200) {

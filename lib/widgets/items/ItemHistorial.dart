@@ -1,96 +1,102 @@
+import 'package:app_lorry/routers/app_routes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets.dart';
 
-class ItemHistorial extends StatelessWidget {
+class ItemHistorial extends ConsumerWidget {
   final HistoricalResult historical;
+  final bool isSelected;
+  final VoidCallback onTap;
+
   const ItemHistorial({
     super.key,
     required this.historical,
+    required this.isSelected,
+    required this.onTap,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    void printHistoricalData() {
+      // print(historical);
+      ref.read(appRouterProvider).push('/inspectionDetails', extra: {
+        'historical': historical,
+      });
+    }
+
     return Column(
       children: [
-        Container(
-          decoration: const BoxDecoration(
+        GestureDetector(
+          onTap: () {
+            printHistoricalData();
+            onTap();
+          },
+          child: Container(
+            decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      HelpersGeneral.formatDayDate(historical.truncatedDate),
-                      style: Apptheme.subtitleStyle,
-                    ),
-                    Spacer(),
-                    const Text(
-                      "VCH ASOCIADO",
-                      style: Apptheme.titleStylev2,
-                    )
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Text(
-                      "${historical.vehicleLastUpdate.hour}:${historical.vehicleLastUpdate.minute}:${historical.vehicleLastUpdate.second}",
-                      style: Apptheme.titleStylev2,
-                    ),
-                    const Spacer(),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5),
-                        color: Apptheme.secondaryv3,
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              border: isSelected
+                  ? Border.all(color: Apptheme.secondary, width: 1)
+                  : null,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Text(
+                        HelpersGeneral.formatDayDate(
+                            historical.inspection.lastInspectionDate),
+                        style: Apptheme.subtitleStyle,
                       ),
-                      padding: EdgeInsets.all(5),
-                      alignment: Alignment.center,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5)),
-                            border: Border.all(color: Colors.white)),
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(15, 4, 15, 4),
-                          child: Text(
-                            historical.vehicleLicensePlate,
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
+                      const Spacer(),
+                      const Text(
+                        "VCH ASOCIADO",
+                        style: Apptheme.titleStylev2,
+                      )
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Text(
+                        "${historical.inspection.lastInspectionDate.hour}:${historical.inspection.lastInspectionDate.minute}:${historical.inspection.lastInspectionDate.second}",
+                        style: Apptheme.titleStylev2,
                       ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _ItemBadge(
-                        title: "CLIENTE",
-                        values: historical.vehicleCustomerBusinessName,
-                        width: 120),
-                    Spacer(),
-                    _ItemBadge(
-                        title: "KILOMETRAJE",
-                        values: HelpersGeneral.numberFormat(historical.mileage),
-                        width: 120),
-                    Spacer(),
-                    _ItemBadge(
-                        title: "LLANTAS",
-                        values: "${historical.totalTires}",
-                        width: 50),
-                  ],
-                ),
-              ],
+                      const Spacer(),
+                      LicensePlate(
+                          licensePlate: historical.vehicle.licensePlate)
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _ItemBadge(
+                          title: "CLIENTE",
+                          values: historical.vehicle.customer.businessName,
+                          width: 120),
+                      const Spacer(),
+                      _ItemBadge(
+                          title: "KILOMETRAJE",
+                          values: HelpersGeneral.numberFormat(
+                              historical.inspection.mileage),
+                          width: 120),
+                      const Spacer(),
+                      _ItemBadge(
+                          title: "LLANTAS",
+                          values: "${historical.inspection.totalTires}",
+                          width: 50),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -101,10 +107,11 @@ class ItemHistorial extends StatelessWidget {
 }
 
 class _ItemBadge extends StatelessWidget {
-  String title = "Cliente";
-  double width = 2.0;
-  String values = "Sovatrans S.A";
-  _ItemBadge({
+  final String title;
+  final double width;
+  final String values;
+
+  const _ItemBadge({
     required this.title,
     required this.values,
     required this.width,
@@ -117,9 +124,12 @@ class _ItemBadge extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 10, color: Apptheme.textColorSecondary),
+          style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 10,
+              color: Apptheme.textColorSecondary),
         ),
-        SizedBox(
+        const SizedBox(
           height: 7,
         ),
         Container(
@@ -128,10 +138,11 @@ class _ItemBadge extends StatelessWidget {
               borderRadius: BorderRadius.circular(8)),
           width: width,
           child: Padding(
-            padding: const EdgeInsets.all(4),
+            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
             child: Center(
               child: Text(
                 values,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
                     color: Apptheme.secondary,
                     fontWeight: FontWeight.bold,

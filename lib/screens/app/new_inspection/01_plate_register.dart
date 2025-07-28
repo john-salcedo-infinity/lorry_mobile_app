@@ -309,7 +309,7 @@ class _HeaderView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Registro De Placa",
+          "Registro de placa",
           style: TextStyle(
             fontSize: 23,
             color: Color(0xFF494D4C), // Color personalizado

@@ -61,57 +61,157 @@ class DataInspectionHistory {
 }
 
 class HistoricalResult {
-    int vehicleId;
-    String vehicleTypeVehicleName;
-    String vehicleCustomerBusinessName;
-    bool vehicleCustomerStatusNumberLorry;
-    String vehicleWorkLineName;
-    dynamic vehicleNumberLorry;
-    String vehicleLicensePlate;
-    DateTime vehicleLastUpdate;
-    DateTime truncatedDate;
+    Vehicle vehicle;
+    Inspection inspection;
+    CreatedBy createdBy;
+
+    HistoricalResult({
+        required this.vehicle,
+        required this.inspection,
+        required this.createdBy,
+    });
+
+    factory HistoricalResult.fromJson(Map<String, dynamic> json) => HistoricalResult(
+        vehicle: Vehicle.fromJson(json["vehicle"]),
+        inspection: Inspection.fromJson(json["inspection"]),
+        createdBy: CreatedBy.fromJson(json["created_by"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "vehicle": vehicle.toJson(),
+        "inspection": inspection.toJson(),
+        "created_by": createdBy.toJson(),
+    };
+}
+
+class Vehicle {
+    int id;
+    String typeVehicleName;
+    String? numberLorry;
+    String licensePlate;
+    DateTime lastUpdate;
+    int mileageId;
+    Customer customer;
+    WorkLine workLine;
+
+    Vehicle({
+        required this.id,
+        required this.typeVehicleName,
+        this.numberLorry,
+        required this.licensePlate,
+        required this.lastUpdate,
+        required this.mileageId,
+        required this.customer,
+        required this.workLine,
+    });
+
+    factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
+        id: json["id"],
+        typeVehicleName: json["type_vehicle_name"],
+        numberLorry: json["number_lorry"],
+        licensePlate: json["license_plate"],
+        lastUpdate: DateTime.parse(json["last_update"]),
+        mileageId: json["mileage_id"],
+        customer: Customer.fromJson(json["customer"]),
+        workLine: WorkLine.fromJson(json["work_line"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "type_vehicle_name": typeVehicleName,
+        "number_lorry": numberLorry,
+        "license_plate": licensePlate,
+        "last_update": lastUpdate.toIso8601String(),
+        "mileage_id": mileageId,
+        "customer": customer.toJson(),
+        "work_line": workLine.toJson(),
+    };
+}
+
+class Customer {
+    String businessName;
+    bool statusNumberLorry;
+
+    Customer({
+        required this.businessName,
+        required this.statusNumberLorry,
+    });
+
+    factory Customer.fromJson(Map<String, dynamic> json) => Customer(
+        businessName: json["business_name"],
+        statusNumberLorry: json["status_number_lorry"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "business_name": businessName,
+        "status_number_lorry": statusNumberLorry,
+    };
+}
+
+class WorkLine {
+    String name;
+
+    WorkLine({
+        required this.name,
+    });
+
+    factory WorkLine.fromJson(Map<String, dynamic> json) => WorkLine(
+        name: json["name"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "name": name,
+    };
+}
+
+class Inspection {
+    String date;
+    DateTime lastInspectionDate;
     double mileage;
     int totalTires;
 
-    HistoricalResult({
-        required this.vehicleId,
-        required this.vehicleTypeVehicleName,
-        required this.vehicleCustomerBusinessName,
-        required this.vehicleCustomerStatusNumberLorry,
-        required this.vehicleWorkLineName,
-        required this.vehicleNumberLorry,
-        required this.vehicleLicensePlate,
-        required this.vehicleLastUpdate,
-        required this.truncatedDate,
+    Inspection({
+        required this.date,
+        required this.lastInspectionDate,
         required this.mileage,
         required this.totalTires,
     });
 
-    factory HistoricalResult.fromJson(Map<String, dynamic> json) => HistoricalResult(
-        vehicleId: json["vehicle__id"],
-        vehicleTypeVehicleName: json["vehicle__type_vehicle__name"],
-        vehicleCustomerBusinessName: json["vehicle__customer__business_name"],
-        vehicleCustomerStatusNumberLorry: json["vehicle__customer__status_number_lorry"],
-        vehicleWorkLineName: json["vehicle__work_line__name"],
-        vehicleNumberLorry: json["vehicle__number_lorry"],
-        vehicleLicensePlate: json["vehicle__license_plate"],
-        vehicleLastUpdate: DateTime.parse(json["vehicle__last_update"]),
-        truncatedDate: DateTime.parse(json["truncated_date"]),
+    factory Inspection.fromJson(Map<String, dynamic> json) => Inspection(
+        date: json["date"],
+        lastInspectionDate: DateTime.parse(json["last_inspection_date"]),
         mileage: json["mileage"],
         totalTires: json["total_tires"],
     );
 
     Map<String, dynamic> toJson() => {
-        "vehicle__id": vehicleId,
-        "vehicle__type_vehicle__name": vehicleTypeVehicleName,
-        "vehicle__customer__business_name": vehicleCustomerBusinessName,
-        "vehicle__customer__status_number_lorry": vehicleCustomerStatusNumberLorry,
-        "vehicle__work_line__name": vehicleWorkLineName,
-        "vehicle__number_lorry": vehicleNumberLorry,
-        "vehicle__license_plate": vehicleLicensePlate,
-        "vehicle__last_update": vehicleLastUpdate.toIso8601String(),
-        "truncated_date": "${truncatedDate.year.toString().padLeft(4, '0')}-${truncatedDate.month.toString().padLeft(2, '0')}-${truncatedDate.day.toString().padLeft(2, '0')}",
+        "date": date,
+        "last_inspection_date": lastInspectionDate.toIso8601String(),
         "mileage": mileage,
         "total_tires": totalTires,
+    };
+}
+
+class CreatedBy {
+    int id;
+    String fullName;
+    String role;
+
+    CreatedBy({
+        required this.id,
+        required this.fullName,
+        required this.role,
+    });
+
+    factory CreatedBy.fromJson(Map<String, dynamic> json) => CreatedBy(
+        id: json["id"],
+        fullName: json["full_name"],
+        role: json["role"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "full_name": fullName,
+        "role": role,
     };
 }

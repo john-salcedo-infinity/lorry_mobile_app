@@ -29,7 +29,7 @@ class CustomButton extends ConsumerWidget {
             borderRadius: BorderRadius.circular(4), //  border-radius: 4px
             boxShadow: [
               BoxShadow(
-                color: Colors.white.withOpacity(0.0), //  Simula el borde inferior
+                color: Colors.white.withValues(alpha: 0.0), //  Simula el borde inferior
                 offset: const Offset(0, 2), // Grosor del borde inferior
                 blurRadius: 0,
               ),

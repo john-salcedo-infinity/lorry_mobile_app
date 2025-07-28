@@ -171,7 +171,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 24.0),
                               child: CustomInputField(
-                                label: 'Nueva Contraseña',
+                                label: 'Nueva contraseña',
                                 hint: 'Escribe la nueva contraseña',
                                 controller: _newPasswordController,
                                 obscureText: true, // Always hidden
@@ -208,7 +208,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 24.0),
                               child: CustomInputField(
-                                label: 'Confirmar Contraseña',
+                                label: 'Confirmar contraseña',
                                 hint: 'Escribe la nueva contraseña',
                                 controller: _confirmPasswordController,
                                 obscureText: true, // Always hidden
@@ -255,7 +255,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                                         ),
                                       )
                                     : const Text(
-                                        'Restablecer Contraseña',
+                                        'Restablecer contraseña',
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,

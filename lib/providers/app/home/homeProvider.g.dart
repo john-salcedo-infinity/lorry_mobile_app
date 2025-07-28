@@ -7,7 +7,7 @@ part of 'homeProvider.dart';
 // **************************************************************************
 
 String _$inspectionAllServiceHash() =>
-    r'19896d97f3eeb1228607efc6a27cb2bbf811653f';
+    r'71fdb8fdd9464d953ad3043811b598c0398fe167';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -73,7 +73,8 @@ class InspectionAllServiceFamily extends Family<AsyncValue<InspectionHistory>> {
 }
 
 /// See also [inspectionAllService].
-class InspectionAllServiceProvider extends FutureProvider<InspectionHistory> {
+class InspectionAllServiceProvider
+    extends AutoDisposeFutureProvider<InspectionHistory> {
   /// See also [inspectionAllService].
   InspectionAllServiceProvider(
     Map<String, String>? queryParams,
@@ -126,7 +127,7 @@ class InspectionAllServiceProvider extends FutureProvider<InspectionHistory> {
   }
 
   @override
-  FutureProviderElement<InspectionHistory> createElement() {
+  AutoDisposeFutureProviderElement<InspectionHistory> createElement() {
     return _InspectionAllServiceProviderElement(this);
   }
 
@@ -147,13 +148,14 @@ class InspectionAllServiceProvider extends FutureProvider<InspectionHistory> {
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin InspectionAllServiceRef on FutureProviderRef<InspectionHistory> {
+mixin InspectionAllServiceRef
+    on AutoDisposeFutureProviderRef<InspectionHistory> {
   /// The parameter `queryParams` of this provider.
   Map<String, String>? get queryParams;
 }
 
 class _InspectionAllServiceProviderElement
-    extends FutureProviderElement<InspectionHistory>
+    extends AutoDisposeFutureProviderElement<InspectionHistory>
     with InspectionAllServiceRef {
   _InspectionAllServiceProviderElement(super.provider);
 
