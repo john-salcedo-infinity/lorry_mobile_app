@@ -65,8 +65,11 @@ GoRouter appRouter(Ref ref) {
     GoRoute(
       path: '/InfoVehicles',
       builder: (context, state) {
-        final data = state.extra as ManualPlateRegisterResponse;
-        return InfoVehicles(data: data);
+        final data = state.extra as MountingData;
+        return InfoVehicles(
+          vehicleData: data.results!.first.vehicle!,
+          responseData: data.results!
+        );
       },
     ),
     // GoRoute(

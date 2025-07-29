@@ -1,32 +1,32 @@
 import './models.dart';
 
 class TypeVehicle {
-  int id;
-  String name;
-  int directional;
-  int traction;
-  int free;
-  int replacementTire;
-  Axle axle;
-  bool status;
-  String? creationUser;
-  String? userUpdate;
-  DateTime creationDate;
-  DateTime lastUpdate;
+  int? id;
+  String? name;
+  int? directional;
+  int? traction;
+  int? free;
+  int? replacementTire;
+  Axle? axle;
+  bool? status;
+  dynamic creationUser;
+  dynamic userUpdate;
+  String? creationDate;
+  String? lastUpdate;
 
   TypeVehicle({
-    required this.id,
-    required this.name,
-    required this.directional,
-    required this.traction,
-    required this.free,
-    required this.replacementTire,
-    required this.axle,
-    required this.status,
+    this.id,
+    this.name,
+    this.directional,
+    this.traction,
+    this.free,
+    this.replacementTire,
+    this.axle,
+    this.status,
     this.creationUser,
     this.userUpdate,
-    required this.creationDate,
-    required this.lastUpdate,
+    this.creationDate,
+    this.lastUpdate,
   });
 
   factory TypeVehicle.fromJson(Map<String, dynamic> json) => TypeVehicle(
@@ -36,12 +36,12 @@ class TypeVehicle {
         traction: json["traction"],
         free: json["free"],
         replacementTire: json["replacement_tire"],
-        axle: Axle.fromJson(json["axle"]),
+        axle: json["axle"] == null ? null : Axle.fromJson(json["axle"]),
         status: json["status"],
         creationUser: json["creation_user"],
         userUpdate: json["user_update"],
-        creationDate: DateTime.parse(json["creation_date"]),
-        lastUpdate: DateTime.parse(json["last_update"]),
+        creationDate: json["creation_date"],
+        lastUpdate: json["last_update"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -51,11 +51,11 @@ class TypeVehicle {
         "traction": traction,
         "free": free,
         "replacement_tire": replacementTire,
-        "axle": axle.toJson(),
+        "axle": axle?.toJson(),
         "status": status,
         "creation_user": creationUser,
         "user_update": userUpdate,
-        "creation_date": creationDate.toIso8601String(),
-        "last_update": lastUpdate.toIso8601String(),
+        "creation_date": creationDate,
+        "last_update": lastUpdate,
       };
 }

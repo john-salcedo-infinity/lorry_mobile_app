@@ -1,61 +1,57 @@
 import './models.dart';
 
 class Vehicle {
-  int id;
-  String typeVehicleName;
-  String? numberLorry;
-  String licensePlate;
-  int mileageId;
-  Customer customer;
+  int? id;
+  String? licensePlate;
+  dynamic numberLorry;
+  bool? status;
+  Customer? customer;
   TypeVehicle? typeVehicle;
-  WorkLine workLine;
-  Mileage? mileage;
-  DateTime? creationDate;
-  DateTime lastUpdate;
+  WorkLine? workLine;
+  List<Mileage>? mileage;
+  String? creationDate;
+  String? lastUpdate;
 
   Vehicle({
-    required this.id,
-    required this.typeVehicleName,
+    this.id,
+    this.licensePlate,
     this.numberLorry,
-    required this.licensePlate,
-    required this.lastUpdate,
-    required this.mileageId,
-    required this.customer,
-    required this.workLine,
-    this.mileage,
+    this.status,
+    this.customer,
     this.typeVehicle,
+    this.workLine,
+    this.mileage,
     this.creationDate,
+    this.lastUpdate,
   });
 
   factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
         id: json["id"],
-        typeVehicleName: json["type_vehicle_name"],
-        numberLorry: json["number_lorry"],
         licensePlate: json["license_plate"],
-        lastUpdate: DateTime.parse(json["last_update"]),
-        mileageId: json["mileage_id"],
-        customer: Customer.fromJson(json["customer"]),
-        workLine: WorkLine.fromJson(json["work_line"]),
-        mileage: json["mileage"] == null ? null : Mileage.fromJson(json["mileage"]),
-        typeVehicle: json["type_vehicle"] == null
-            ? null
-            : TypeVehicle.fromJson(json["type_vehicle"]),
-        creationDate: json["creation_date"] == null
-            ? null
-            : DateTime.parse(json["creation_date"]),
+        numberLorry: json["number_lorry"],
+        status: json["status"],
+        customer: json["customer"] == null ? null : Customer.fromJson(json["customer"]),
+        typeVehicle: json["type_vehicle"] == null ? null : TypeVehicle.fromJson(json["type_vehicle"]),
+        workLine: json["work_line"] == null ? null : WorkLine.fromJson(json["work_line"]),
+        mileage: json["mileage"] == null 
+            ? [] 
+            : List<Mileage>.from(json["mileage"].map((x) => Mileage.fromJson(x))),
+        creationDate: json["creation_date"],
+        lastUpdate: json["last_update"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "type_vehicle_name": typeVehicleName,
-        "number_lorry": numberLorry,
         "license_plate": licensePlate,
-        "mileage_id": mileageId,
-        "customer": customer.toJson(),
-        "work_line": workLine.toJson(),
+        "number_lorry": numberLorry,
+        "status": status,
+        "customer": customer?.toJson(),
         "type_vehicle": typeVehicle?.toJson(),
-        "mileage": mileage?.toJson(),
-        "creation_date": creationDate?.toIso8601String(),
-        "last_update": lastUpdate.toIso8601String(),
+        "work_line": workLine?.toJson(),
+        "mileage": mileage == null 
+            ? [] 
+            : List<dynamic>.from(mileage!.map((x) => x.toJson())),
+        "creation_date": creationDate,
+        "last_update": lastUpdate,
       };
 }

@@ -31,7 +31,7 @@ class InspectionDetails extends StatelessWidget {
                         ),
                       ),
                       LicensePlate(
-                        licensePlate: historical!.vehicle.licensePlate,
+                        licensePlate: historical!.vehicle?.licensePlate ?? 'N/A',
                         fontSize: 22,
                       )
                     ],
@@ -59,15 +59,15 @@ class InspectionDetails extends StatelessWidget {
                         ),
                         _DetailsBadge(
                           label: "Tipo de vehículo",
-                          value: historical!.vehicle.typeVehicleName,
+                          value: historical!.vehicle.typeVehicle?.name ?? 'N/A',
                         ),
                         _DetailsBadge(
                           label: "Línea de trabajo",
-                          value: historical!.vehicle.workLine.name,
+                          value: historical!.vehicle.workLine?.name ?? 'N/A',
                         ),
                         _DetailsBadge(
                           label: "Cliente asociado al vehículo",
-                          value: historical!.vehicle.customer.businessName,
+                          value: historical!.vehicle.customer?.businessName ?? 'N/A',
                         ),
                         _DetailsBadge(
                             label: "Número de llantas",

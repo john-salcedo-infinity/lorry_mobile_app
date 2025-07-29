@@ -1,34 +1,34 @@
 class Axle {
-  int id;
-  int point;
-  int amountAxle;
-  bool isSingle;
-  bool isDirectional;
-  int amountPosition;
-  String axleName;
-  int numberDirectionalTires;
-  int traction;
-  bool status;
-  String? creationUser;
-  String? userUpdate;
-  DateTime creationDate;
-  DateTime lastUpdate;
+  int? id;
+  int? point;
+  int? amountAxle;
+  bool? isSingle;
+  bool? isDirectional;
+  int? amountPosition;
+  String? axleName;
+  int? numberDirectionalTires;
+  int? traction;
+  bool? status;
+  dynamic creationUser;
+  dynamic userUpdate;
+  String? creationDate;
+  String? lastUpdate;
 
   Axle({
-    required this.id,
-    required this.point,
-    required this.amountAxle,
-    required this.isSingle,
-    required this.isDirectional,
-    required this.amountPosition,
-    required this.axleName,
-    required this.numberDirectionalTires,
-    required this.traction,
-    required this.status,
+    this.id,
+    this.point,
+    this.amountAxle,
+    this.isSingle,
+    this.isDirectional,
+    this.amountPosition,
+    this.axleName,
+    this.numberDirectionalTires,
+    this.traction,
+    this.status,
     this.creationUser,
     this.userUpdate,
-    required this.creationDate,
-    required this.lastUpdate,
+    this.creationDate,
+    this.lastUpdate,
   });
 
   factory Axle.fromJson(Map<String, dynamic> json) => Axle(
@@ -44,8 +44,8 @@ class Axle {
         status: json["status"],
         creationUser: json["creation_user"],
         userUpdate: json["user_update"],
-        creationDate: DateTime.parse(json["creation_date"]),
-        lastUpdate: DateTime.parse(json["last_update"]),
+        creationDate: json["creation_date"],
+        lastUpdate: json["last_update"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -61,7 +61,7 @@ class Axle {
         "status": status,
         "creation_user": creationUser,
         "user_update": userUpdate,
-        "creation_date": creationDate.toIso8601String(),
-        "last_update": lastUpdate.toIso8601String(),
+        "creation_date": creationDate,
+        "last_update": lastUpdate,
       };
 }

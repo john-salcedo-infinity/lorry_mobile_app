@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -199,28 +200,28 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   Widget _buildSaveButton() {
     // Escuchar el estado de carga del provider
     final isLoading = ref.watch(manualPlateRegisterLoadingProvider);
-    
+
     return Center(
       child: CustomButton(
         double.infinity,
         46,
-        isLoading 
-          ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                color: Apptheme.backgroundColor,
-                strokeWidth: 2,
+        isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Apptheme.backgroundColor,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Text(
+                "Guardar",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Apptheme.backgroundColor,
+                ),
               ),
-            )
-          : const Text(
-              "Guardar",
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Apptheme.backgroundColor,
-              ),
-            ),
         isLoading ? null : () => _validateAndShowDialog(context),
       ),
     );
@@ -357,10 +358,10 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     try {
       // Usar el provider en lugar del servicio directo
       final response = await ref.read(getMountingByPlateProvider(plate).future);
-      
+
       // Guardar respuesta en el estado
       ref.read(manualPlateRegisterStateProvider.notifier).setResponse(response);
-      
+
       ref.read(manualPlateRegisterLoadingProvider.notifier).setLoading(false);
       _dismissLoadingDialog();
 
@@ -386,15 +387,14 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   }
 
   /// Handles successful response from the service
-  Future<void> _handleSuccessResponse(dynamic response) async {
-    final firstResult = response.data?.results?.first;
-
-    if (!_isValidResult(firstResult)) {
+  Future<void> _handleSuccessResponse(
+      ManualPlateRegisterResponse response) async {
+    if (!_isValidResult(response)) {
       ToastHelper.show_alert(context, "Vehículo no encontrado.");
       return;
     }
 
-    final hasTires = _hasTires(firstResult);
+    final hasTires = _hasTires(response);
 
     if (!hasTires) {
       ToastHelper.show_alert(context, "Vehículo sin llantas registradas.");
@@ -402,48 +402,62 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     }
 
     ToastHelper.show_success(context, "Vehículo encontrado con éxito.");
-    _navigateToVehicleInfo(firstResult);
+    
+    _navigateToVehicleInfo(response);
   }
 
   /// Validates if the result is valid
-  bool _isValidResult(dynamic result) {
-    return result != null && (result.licensePlate?.isNotEmpty ?? false);
+  bool _isValidResult(ManualPlateRegisterResponse result) {
+    return result.data != null &&
+        result.data!.results != null &&
+        result.data!.results!.isNotEmpty &&
+        result.data!.results!.first.vehicle != null &&
+        result.data!.results!.first.vehicle!.licensePlate != null &&
+        result.data!.results!.first.vehicle!.licensePlate!.isNotEmpty;
   }
 
-  /// Checks if the vehicle has tires
-  bool _hasTires(dynamic result) {
-    return result.tires != null && result.tires!.isNotEmpty;
+  /// Checks if the vehicle has at least one tire in any mounting result
+  bool _hasTires(ManualPlateRegisterResponse response) {
+    if (response.data?.results == null || response.data!.results!.isEmpty) {
+      return false;
+    }
+    
+    // Verificar si al menos uno de los resultados tiene una llanta (tire no es null)
+    return response.data!.results!.any((result) => result.tire != null);
   }
 
   /// Navigates to vehicle info screen with the vehicle data
-  void _navigateToVehicleInfo(dynamic vehicleResult) {
-    final extraData = {
-      'licensePlate': vehicleResult.licensePlate,
-      'typeVehicleName': vehicleResult.typeVehicleName,
-      'workLineName': vehicleResult.workLineName,
-      'businessName': vehicleResult.businessName,
-      'mileage': vehicleResult.mileage,
-    };
+  void _navigateToVehicleInfo(ManualPlateRegisterResponse response) {
 
-    if (_hasTires(vehicleResult)) {
-      extraData['tires'] =
-          vehicleResult.tires!.map((tire) => tire.toJson()).toList();
-    }
-
-    ref.read(appRouterProvider).push('/InfoVehicles', extra: extraData);
+    ref.read(appRouterProvider).push('/InfoVehicles', extra: response.data!);
   }
 
   /// Handles exceptions during the inspection process
   void _handleException(dynamic error) {
-    ToastHelper.show_alert(context, "Error al consultar la placa: $error");
+    // Log del error completo para debugging
+    print('Error completo: $error');
+    
+    String errorMessage = "Error al consultar la placa";
+    
+    // Manejo específico de diferentes tipos de errores
+    if (error is Exception) {
+      errorMessage = "Error de conexión al servidor";
+    } else if (error.toString().contains('FormatException')) {
+      errorMessage = "Error en el formato de respuesta del servidor";
+    } else if (error.toString().contains('SocketException')) {
+      errorMessage = "Error de red. Verifique su conexión a internet";
+    } else if (error.toString().contains('TimeoutException')) {
+      errorMessage = "Tiempo de espera agotado. Intente nuevamente";
+    } else if (error.toString().contains('type') && error.toString().contains('subtype')) {
+      errorMessage = "Error en el procesamiento de datos. Contacte al administrador";
+    }
+    
+    ToastHelper.show_alert(context, errorMessage);
   }
 
   @override
   void dispose() {
     _plateController.dispose();
-    // Limpiar el estado del provider al salir de la pantalla
-    ref.read(manualPlateRegisterStateProvider.notifier).clearResponse();
-    ref.read(manualPlateRegisterLoadingProvider.notifier).setLoading(false);
     super.dispose();
   }
 }

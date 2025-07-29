@@ -23,7 +23,9 @@ class ManualPlateRegisterResponse {
         messages: json["messages"] == null
             ? []
             : List<String>.from(json["messages"].map((x) => x)),
-        data: json["data"] == null ? null : MountingData.fromJson(json["data"]),
+        data: json["data"] == null
+            ? null
+            : MountingData.fromJson(json["data"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -72,49 +74,84 @@ class MountingResult {
   int? position;
   TypeAxle? typeAxle;
   Vehicle? vehicle;
-  String? licensePlate;
-  dynamic numberLorry;
-  String? typeVehicleName;
-  String? businessName;
-  String? axleName;
-  String? workLineName;
-  double? mileage;
   Tire? tire;
+  String? creationDate;
+  String? lastUpdate;
+  String? date;
 
   MountingResult({
     this.id,
     this.position,
     this.typeAxle,
     this.vehicle,
-    this.licensePlate,
-    this.numberLorry,
-    this.typeVehicleName,
-    this.businessName,
-    this.axleName,
-    this.workLineName,
-    this.mileage,
     this.tire,
+    this.creationDate,
+    this.lastUpdate,
+    this.date,
   });
 
   factory MountingResult.fromJson(Map<String, dynamic> json) => MountingResult(
-        licensePlate: json["vehicle__license_plate"],
-        numberLorry: json["vehicle__number_lorry"],
-        typeVehicleName: json["vehicle__type_vehicle__name"],
-        businessName: json["vehicle__customer__business_name"],
-        axleName: json["vehicle__type_vehicle__axle__axle_name"],
-        workLineName: json["vehicle__work_line__name"],
-        mileage: json["vehicle__mileage__km"]?.toDouble(),
-        tire: json["vehicle__tire"] == null ? null : Tire.fromJson(json["vehicle__tire"]),
+        id: json["id"],
+        position: json["position"],
+        typeAxle: json["type_axle"] == null ? null : TypeAxle.fromJson(json["type_axle"]),
+        vehicle: json["vehicle"] == null ? null : Vehicle.fromJson(json["vehicle"]),
+        tire: json["tire"] == null ? null : Tire.fromJson(json["tire"]),
+        creationDate: json["creation_date"],
+        lastUpdate: json["last_update"],
+        date: json["date"],
       );
 
   Map<String, dynamic> toJson() => {
-        "vehicle__license_plate": licensePlate,
-        "vehicle__number_lorry": numberLorry,
-        "vehicle__type_vehicle__name": typeVehicleName,
-        "vehicle__customer__business_name": businessName,
-        "vehicle__type_vehicle__axle__axle_name": axleName,
-        "vehicle__work_line__name": workLineName,
-        "vehicle__mileage__km": mileage,
-        "vehicle__tire": tire?.toJson(),
+        "id": id,
+        "position": position,
+        "type_axle": typeAxle?.toJson(),
+        "vehicle": vehicle?.toJson(),
+        "tire": tire?.toJson(),
+        "creation_date": creationDate,
+        "last_update": lastUpdate,
+        "date": date,
       };
 }
+
+// Ejemplo de uso:
+// void testModel() {
+//   const jsonString = '''
+//   {
+//     "success": true,
+//     "messages": ["Listado de montajes de llantas con éxito"],
+//     "data": {
+//       "count": 12,
+//       "next": null,
+//       "previous": null,
+//       "results": [
+//         {
+//           "id": 2699,
+//           "position": 101,
+//           "type_axle": {
+//             "id": 60,
+//             "name": "Repuesto",
+//             "parameter": 15,
+//             "parameter_name": "Tipo de eje"
+//           },
+//           "vehicle": {
+//             "id": 215,
+//             "license_plate": "AVO111",
+//             "number_lorry": null,
+//             "status": true
+//           },
+//           "tire": null,
+//           "creation_date": "2025-07-29T08:17:59.451439",
+//           "last_update": "2025-07-29T08:17:59.586712",
+//           "date": null
+//         }
+//       ]
+//     }
+//   }
+//   ''';
+//   
+//   final response = ManualPlateRegisterResponse.fromRawJson(jsonString);
+//   print('Success: ${response.success}');
+//   print('Messages: ${response.messages}');
+//   print('Count: ${response.data?.count}');
+//   print('First result ID: ${response.data?.results?.first.id}');
+// }

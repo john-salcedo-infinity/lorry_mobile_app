@@ -1,4 +1,4 @@
-import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
+import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/widgets/items/LicensePlate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +17,8 @@ import 'package:app_lorry/widgets/shared/back.dart';
 // Constants for UI dimensions and styling
 class _Constants {
   static const double containerWidth = 342.0;
-  static const double infoContainerHeight = 400.0; // Increased for additional vehicle info
+  static const double infoContainerHeight =
+      400.0; // Increased for additional vehicle info
   static const double alertContainerHeight = 84.0;
   static const double mileageContainerHeight = 170.0;
   static const double inputFieldWidth = 292.0;
@@ -33,9 +34,14 @@ class _Constants {
 /// Allows users to view vehicle details and update the current mileage
 /// before proceeding to tire inspection.
 class InfoVehicles extends ConsumerStatefulWidget {
-  final ManualPlateRegisterResponse data;
+  final Vehicle vehicleData;
+  final List<MountingResult> responseData;
 
-  const InfoVehicles({super.key, required this.data});
+  const InfoVehicles({
+    super.key,
+    required this.vehicleData,
+    required this.responseData,
+  });
 
   @override
   ConsumerState<InfoVehicles> createState() => _InfoVehiclesState();
@@ -59,12 +65,12 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
 
   /// Initialize vehicle data from widget parameters
   void _initializeData() {
-    // Extract vehicle information from ManualPlateRegisterResponse
-    _mountingResult = widget.data.data?.results?.isNotEmpty == true 
-        ? widget.data.data!.results!.first 
+    _mountingResult = widget.responseData.isNotEmpty
+        ? widget.responseData.first
         : MountingResult(); // Default empty mounting result
-    
-    _currentMileage = _mountingResult.mileage ?? 0.0;
+
+    _currentMileage =
+        (_mountingResult.vehicle?.mileage?.first.km) ?? 0.0;
   }
 
   /// Setup text controllers and listeners
@@ -156,7 +162,10 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
   }
 
   Widget _buildLicensePlateContainer() {
-    return LicensePlate(licensePlate: _mountingResult.licensePlate ?? 'N/A', fontSize: 22,);
+    return LicensePlate(
+      licensePlate: _mountingResult.vehicle?.licensePlate ?? 'N/A',
+      fontSize: 22,
+    );
   }
 
   Widget _buildVehicleInfoContainer() {
@@ -172,18 +181,18 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           InfoRow(
-              title: 'Tipo de vehículo', value: _mountingResult.typeVehicleName ?? 'N/A'),
+              title: 'Tipo de vehículo',
+              value: _mountingResult.vehicle?.typeVehicle?.name ?? 'N/A'),
           const SizedBox(height: 12),
-          InfoRow(title: 'Línea de trabajo', value: _mountingResult.workLineName ?? 'N/A'),
+          InfoRow(
+              title: 'Línea de trabajo',
+              value: _mountingResult.vehicle?.workLine?.name ?? 'N/A'),
           const SizedBox(height: 12),
           InfoRow(
             title: 'Cliente asociado al vehículo',
-            value: _mountingResult.businessName ?? 'N/A',
+            value: _mountingResult.vehicle?.customer?.businessName ?? 'N/A',
           ),
           const SizedBox(height: 12),
-          InfoRow(title: 'Eje del vehículo', value: _mountingResult.axleName ?? 'N/A'),
-          const SizedBox(height: 12),
-          InfoRow(title: 'Número Lorry', value: _mountingResult.numberLorry?.toString() ?? 'N/A'),
           const SizedBox(height: 20),
           _buildMileageDisplay(),
         ],
@@ -210,7 +219,8 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
               'assets/icons/Icono_Velocimetro_Lorry.svg',
               width: _Constants.iconSize,
               height: _Constants.iconSize,
-              colorFilter: ColorFilter.mode(Apptheme.textColorPrimary, BlendMode.srcIn),
+              colorFilter:
+                  ColorFilter.mode(Apptheme.textColorPrimary, BlendMode.srcIn),
             ),
             const SizedBox(width: 8),
             RichText(
@@ -218,7 +228,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
                 children: [
                   TextSpan(
                     text:
-                        '${NumberFormat('#,###').format((_mountingResult.mileage ?? 0.0).toInt())} ',
+                        '${NumberFormat('#,###').format((_mountingResult.vehicle!.mileage?.first.km) ?? 0.0)} ',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -315,7 +325,8 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             'assets/icons/Icono_Velocimetro_Lorry.svg',
             width: _Constants.iconSize,
             height: _Constants.iconSize,
-            colorFilter: ColorFilter.mode(Apptheme.textColorPrimary, BlendMode.srcIn),
+            colorFilter:
+                ColorFilter.mode(Apptheme.textColorPrimary, BlendMode.srcIn),
           ),
           const SizedBox(width: 3),
           IntrinsicWidth(
@@ -388,14 +399,14 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
 
   Map<String, dynamic> _toNavigationData(double updatedMileage) {
     return {
-      'licensePlate': _mountingResult.licensePlate ?? '',
-      'typeVehicleName': _mountingResult.typeVehicleName ?? '',
-      'workLineName': _mountingResult.workLineName ?? '',
-      'businessName': _mountingResult.businessName ?? '',
+      'licensePlate': _mountingResult.vehicle?.licensePlate ?? '',
+      'typeVehicleName': _mountingResult.vehicle?.typeVehicle?.name ?? '',
+      'workLineName': _mountingResult.vehicle?.workLine?.name ?? '',
+      'businessName': _mountingResult.vehicle?.customer?.businessName ?? '',
       '_mileage': updatedMileage,
-      'mileage': _mountingResult.mileage ?? 0.0,
-      'axleName': _mountingResult.axleName ?? '',
-      'numberLorry': _mountingResult.numberLorry?.toString() ?? '',
+      'mileage': _mountingResult.vehicle?.mileage?.first.km ?? 0.0,
+      'axleName': _mountingResult.vehicle?.typeVehicle?.axle?.axleName ?? '',
+      'numberLorry': _mountingResult.vehicle?.numberLorry?.toString() ?? '',
     };
   }
 
@@ -405,7 +416,8 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     final inputMileage = int.tryParse(cleanedInput) ?? 0;
 
     setState(() {
-      _isButtonEnabled.value = inputMileage >= (_mountingResult.mileage ?? 0.0).toInt();
+      _isButtonEnabled.value = inputMileage >=
+          ((_mountingResult.vehicle!.mileage?.first.km as num?) ?? 0.0);
       _currentMileage = inputMileage.toDouble();
     });
   }

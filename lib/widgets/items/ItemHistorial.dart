@@ -70,7 +70,7 @@ class ItemHistorial extends ConsumerWidget {
                       ),
                       const Spacer(),
                       LicensePlate(
-                          licensePlate: historical.vehicle.licensePlate)
+                          licensePlate: historical.vehicle.licensePlate ?? '')
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -80,7 +80,8 @@ class ItemHistorial extends ConsumerWidget {
                     children: [
                       _ItemBadge(
                           title: "CLIENTE",
-                          values: historical.vehicle.customer.businessName,
+                          values:
+                              historical.vehicle.customer?.businessName ?? '',
                           width: 120),
                       const Spacer(),
                       _ItemBadge(
