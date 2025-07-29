@@ -1,4 +1,5 @@
 import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/screens/screens.dart';
 import 'package:app_lorry/widgets/items/LicensePlate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,8 +18,6 @@ import 'package:app_lorry/widgets/shared/back.dart';
 // Constants for UI dimensions and styling
 class _Constants {
   static const double containerWidth = 342.0;
-  static const double infoContainerHeight =
-      400.0; // Increased for additional vehicle info
   static const double alertContainerHeight = 84.0;
   static const double mileageContainerHeight = 170.0;
   static const double inputFieldWidth = 292.0;
@@ -27,7 +26,7 @@ class _Constants {
   static const double iconSize = 24.0;
   static const double homeIconSize = 40.0;
   static const EdgeInsets containerPadding =
-      EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0);
+      EdgeInsets.symmetric(vertical: 30.0, horizontal: 16.0);
 }
 
 /// Screen to display and update vehicle information and mileage
@@ -69,8 +68,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
         ? widget.responseData.first
         : MountingResult(); // Default empty mounting result
 
-    _currentMileage =
-        (_mountingResult.vehicle?.mileage?.first.km) ?? 0.0;
+    _currentMileage = (_mountingResult.vehicle?.mileage?.first.km) ?? 0.0;
   }
 
   /// Setup text controllers and listeners
@@ -98,18 +96,16 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Apptheme.backgroundColor,
       body: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          left: 30,
-          right: 30,
-          top: 10,
-          bottom: MediaQuery.of(context).viewInsets.bottom * 0.2,
-        ),
+      
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _buildHeader(),
             const SizedBox(height: 20),
-            _buildPageTitle(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildPageTitle(),
+            ),
             const SizedBox(height: 20),
             _buildVehicleInfoContainer(),
             const SizedBox(height: 20),
@@ -171,7 +167,6 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
   Widget _buildVehicleInfoContainer() {
     return Container(
       width: _Constants.containerWidth,
-      height: _Constants.infoContainerHeight,
       padding: _Constants.containerPadding,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -192,7 +187,6 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             title: 'Cliente asociado al vehículo',
             value: _mountingResult.vehicle?.customer?.businessName ?? 'N/A',
           ),
-          const SizedBox(height: 12),
           const SizedBox(height: 20),
           _buildMileageDisplay(),
         ],
@@ -397,17 +391,12 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     ref.read(appRouterProvider).push('/DetailTire', extra: navigationData);
   }
 
-  Map<String, dynamic> _toNavigationData(double updatedMileage) {
-    return {
-      'licensePlate': _mountingResult.vehicle?.licensePlate ?? '',
-      'typeVehicleName': _mountingResult.vehicle?.typeVehicle?.name ?? '',
-      'workLineName': _mountingResult.vehicle?.workLine?.name ?? '',
-      'businessName': _mountingResult.vehicle?.customer?.businessName ?? '',
-      '_mileage': updatedMileage,
-      'mileage': _mountingResult.vehicle?.mileage?.first.km ?? 0.0,
-      'axleName': _mountingResult.vehicle?.typeVehicle?.axle?.axleName ?? '',
-      'numberLorry': _mountingResult.vehicle?.numberLorry?.toString() ?? '',
-    };
+  DetailTireParams _toNavigationData(double updatedMileage) {
+    return DetailTireParams(
+      results: widget.responseData,
+      vehicle: widget.vehicleData,
+      mileage: updatedMileage,
+    );
   }
 
   void _onMileageChanged() {

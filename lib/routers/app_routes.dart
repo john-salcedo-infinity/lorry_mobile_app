@@ -3,8 +3,7 @@ import 'package:app_lorry/screens/app/changePass/ChangePass.dart';
 import 'package:app_lorry/screens/app/new_inspection/02_manual_plate_registe.dart';
 import 'package:app_lorry/screens/app/new_inspection/03_new_plate_register.dart';
 import 'package:app_lorry/screens/app/vehiclesData/InfoVehicles.dart';
-import 'package:app_lorry/screens/app/InpectionTire/DetailTire.dart';
-import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
+// import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -31,7 +30,7 @@ GoRouter appRouter(Ref ref) {
     ),
     GoRoute(
       path: '/inspectionDetails',
-      builder: (context, state){
+      builder: (context, state) {
         final data = state.extra as Map<String, HistoricalResult>;
         return InspectionDetails(historical: data['historical']);
       },
@@ -67,18 +66,17 @@ GoRouter appRouter(Ref ref) {
       builder: (context, state) {
         final data = state.extra as MountingData;
         return InfoVehicles(
-          vehicleData: data.results!.first.vehicle!,
-          responseData: data.results!
-        );
+            vehicleData: data.results!.first.vehicle!,
+            responseData: data.results!);
       },
     ),
-    // GoRoute(
-    //   path: '/DetailTire',
-    //   builder: (BuildContext context, state) {
-    //     final data = state.extra as ManualPlateRegisterResponse;
-    //     return DetailTire(data: data);
-    //   },
-    // ),
+    GoRoute(
+      path: '/DetailTire',
+      builder: (BuildContext context, state) {
+        final data = state.extra as DetailTireParams;
+        return DetailTire(data: data);
+      },
+    ),
     // GoRoute(
     //   path: '/TireProfundity',
     //   builder: (context, state) {

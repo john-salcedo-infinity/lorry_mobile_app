@@ -37,16 +37,24 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       resizeToAvoidBottomInset: true,
       backgroundColor: Apptheme.backgroundColor,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(),
-            _buildTitle(),
-            const SizedBox(height: 30),
-            _buildAlertSection(),
-            const SizedBox(height: 2),
-            _buildPlateInputSection(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTitle(),
+                  const SizedBox(height: 30),
+                  _buildAlertSection(),
+                  const SizedBox(height: 2),
+                  _buildPlateInputSection(),
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -202,27 +210,27 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     final isLoading = ref.watch(manualPlateRegisterLoadingProvider);
 
     return Center(
-      child: CustomButton(
-        double.infinity,
-        46,
-        isLoading
-            ? SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                  color: Apptheme.backgroundColor,
-                  strokeWidth: 2,
-                ),
-              )
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isLoading 
+              ? Apptheme.primary.withAlpha(20) 
+              : Apptheme.primary,
+          minimumSize: const Size(double.infinity, 46),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        onPressed: isLoading ? null : () => _validateAndShowDialog(context),
+        child: isLoading
+            ? Apptheme.loadingIndicator()
             : const Text(
                 "Guardar",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: Apptheme.backgroundColor,
+                  color: Colors.white,
                 ),
               ),
-        isLoading ? null : () => _validateAndShowDialog(context),
       ),
     );
   }
@@ -402,7 +410,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     }
 
     ToastHelper.show_success(context, "Vehículo encontrado con éxito.");
-    
+
     _navigateToVehicleInfo(response);
   }
 
@@ -421,14 +429,13 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     if (response.data?.results == null || response.data!.results!.isEmpty) {
       return false;
     }
-    
+
     // Verificar si al menos uno de los resultados tiene una llanta (tire no es null)
     return response.data!.results!.any((result) => result.tire != null);
   }
 
   /// Navigates to vehicle info screen with the vehicle data
   void _navigateToVehicleInfo(ManualPlateRegisterResponse response) {
-
     ref.read(appRouterProvider).push('/InfoVehicles', extra: response.data!);
   }
 
@@ -436,9 +443,9 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   void _handleException(dynamic error) {
     // Log del error completo para debugging
     print('Error completo: $error');
-    
+
     String errorMessage = "Error al consultar la placa";
-    
+
     // Manejo específico de diferentes tipos de errores
     if (error is Exception) {
       errorMessage = "Error de conexión al servidor";
@@ -448,16 +455,20 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       errorMessage = "Error de red. Verifique su conexión a internet";
     } else if (error.toString().contains('TimeoutException')) {
       errorMessage = "Tiempo de espera agotado. Intente nuevamente";
-    } else if (error.toString().contains('type') && error.toString().contains('subtype')) {
-      errorMessage = "Error en el procesamiento de datos. Contacte al administrador";
+    } else if (error.toString().contains('type') &&
+        error.toString().contains('subtype')) {
+      errorMessage =
+          "Error en el procesamiento de datos. Contacte al administrador";
     }
-    
+
     ToastHelper.show_alert(context, errorMessage);
   }
 
   @override
   void dispose() {
     _plateController.dispose();
+
+    // Limpiar el estado del provider al salir de la pantalla
     super.dispose();
   }
 }

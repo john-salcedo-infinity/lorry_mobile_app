@@ -1,3 +1,5 @@
+import 'package:app_lorry/models/models.dart';
+
 import 'stay.dart';
 import 'status_tire.dart';
 import 'design.dart';
