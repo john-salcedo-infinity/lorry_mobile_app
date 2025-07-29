@@ -1,14 +1,13 @@
 import 'dart:ui';
 
-import 'package:app_lorry/widgets/buttons/CustomButtonBorderOrange.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
+import 'package:app_lorry/providers/providers.dart';
 import 'package:app_lorry/routers/app_routes.dart';
-import 'package:app_lorry/services/services.dart';
 import 'package:app_lorry/widgets/widgets.dart';
 import 'package:go_router/go_router.dart';
 
@@ -198,19 +197,31 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   }
 
   Widget _buildSaveButton() {
+    // Escuchar el estado de carga del provider
+    final isLoading = ref.watch(manualPlateRegisterLoadingProvider);
+    
     return Center(
       child: CustomButton(
         double.infinity,
         46,
-        const Text(
-          "Guardar",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Apptheme.backgroundColor,
-          ),
-        ),
-        () => _validateAndShowDialog(context),
+        isLoading 
+          ? SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Apptheme.backgroundColor,
+                strokeWidth: 2,
+              ),
+            )
+          : const Text(
+              "Guardar",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Apptheme.backgroundColor,
+              ),
+            ),
+        isLoading ? null : () => _validateAndShowDialog(context),
       ),
     );
   }
@@ -314,32 +325,43 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     );
   }
 
-  /// Shows loading dialog
+  /// Shows loading dialog only if not already shown
   void _showLoadingDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => Container(
-        color: Colors.white.withAlpha(230),
-        child: Center(
-          child: Apptheme.loadingIndicator(),
+    if (!ref.read(manualPlateRegisterLoadingProvider)) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Container(
+          color: Colors.white.withAlpha(230),
+          child: Center(
+            child: Apptheme.loadingIndicator(),
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
-  /// Dismisses the loading dialog
+  /// Dismisses the loading dialog only if loading is active
   void _dismissLoadingDialog() {
-    Navigator.of(context, rootNavigator: true).pop();
+    if (ref.read(manualPlateRegisterLoadingProvider)) {
+      Navigator.of(context, rootNavigator: true).pop();
+    }
   }
 
   /// Handles the plate inspection process
   Future<void> _proceedWithPlateInspection(String plate) async {
+    // Establecer estado de carga
+    ref.read(manualPlateRegisterLoadingProvider.notifier).setLoading(true);
     _showLoadingDialog();
 
     try {
-      final response =
-          await ManualPlateRegisterService.getMountingByPlate(plate, ref);
+      // Usar el provider en lugar del servicio directo
+      final response = await ref.read(getMountingByPlateProvider(plate).future);
+      
+      // Guardar respuesta en el estado
+      ref.read(manualPlateRegisterStateProvider.notifier).setResponse(response);
+      
+      ref.read(manualPlateRegisterLoadingProvider.notifier).setLoading(false);
       _dismissLoadingDialog();
 
       if (response.success != true) {
@@ -349,6 +371,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
 
       await _handleSuccessResponse(response);
     } catch (e) {
+      ref.read(manualPlateRegisterLoadingProvider.notifier).setLoading(false);
       _dismissLoadingDialog();
       _handleException(e);
     }
@@ -418,6 +441,9 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   @override
   void dispose() {
     _plateController.dispose();
+    // Limpiar el estado del provider al salir de la pantalla
+    ref.read(manualPlateRegisterStateProvider.notifier).clearResponse();
+    ref.read(manualPlateRegisterLoadingProvider.notifier).setLoading(false);
     super.dispose();
   }
 }
