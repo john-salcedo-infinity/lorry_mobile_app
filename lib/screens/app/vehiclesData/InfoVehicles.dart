@@ -1,3 +1,4 @@
+import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:app_lorry/widgets/items/LicensePlate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,6 @@ import 'package:intl/intl.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/InfoRow.dart';
 import 'package:app_lorry/helpers/helpers.dart';
-import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
@@ -17,7 +17,7 @@ import 'package:app_lorry/widgets/shared/back.dart';
 // Constants for UI dimensions and styling
 class _Constants {
   static const double containerWidth = 342.0;
-  static const double infoContainerHeight = 350.0;
+  static const double infoContainerHeight = 400.0; // Increased for additional vehicle info
   static const double alertContainerHeight = 84.0;
   static const double mileageContainerHeight = 170.0;
   static const double inputFieldWidth = 292.0;
@@ -29,56 +29,11 @@ class _Constants {
       EdgeInsets.symmetric(vertical: 20.0, horizontal: 16.0);
 }
 
-// Data model for vehicle information
-class VehicleData {
-  final String licensePlate;
-  final String typeVehicleName;
-  final String workLineName;
-  final String businessName;
-  final double mileage;
-  final List<Tire> tires;
-
-  const VehicleData({
-    required this.licensePlate,
-    required this.typeVehicleName,
-    required this.workLineName,
-    required this.businessName,
-    required this.mileage,
-    required this.tires,
-  });
-
-  factory VehicleData.fromMap(Map<String, dynamic> data) {
-    return VehicleData(
-      licensePlate: data['licensePlate'] ?? '',
-      typeVehicleName: data['typeVehicleName'] ?? '',
-      workLineName: data['workLineName'] ?? '',
-      businessName: data['businessName'] ?? '',
-      mileage: data['mileage'] ?? 0.0,
-      tires: (data['tires'] as List<dynamic>?)
-              ?.map((e) => Tire.fromJson(e as Map<String, dynamic>))
-              .toList() ??
-          [],
-    );
-  }
-
-  Map<String, dynamic> toNavigationData(double updatedMileage) {
-    return {
-      'licensePlate': licensePlate,
-      'typeVehicleName': typeVehicleName,
-      'workLineName': workLineName,
-      'businessName': businessName,
-      '_mileage': updatedMileage,
-      'mileage': mileage,
-      'tires': tires.map((t) => t.toJson()).toList(),
-    };
-  }
-}
-
 /// Screen to display and update vehicle information and mileage
 /// Allows users to view vehicle details and update the current mileage
 /// before proceeding to tire inspection.
 class InfoVehicles extends ConsumerStatefulWidget {
-  final Map<String, dynamic> data;
+  final ManualPlateRegisterResponse data;
 
   const InfoVehicles({super.key, required this.data});
 
@@ -92,7 +47,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
   late final ValueNotifier<bool> _isButtonEnabled;
 
   // Vehicle Data
-  late final VehicleData _vehicleData;
+  late final MountingResult _mountingResult;
   late double _currentMileage;
 
   @override
@@ -104,8 +59,12 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
 
   /// Initialize vehicle data from widget parameters
   void _initializeData() {
-    _vehicleData = VehicleData.fromMap(widget.data);
-    _currentMileage = widget.data['_mileage'] ?? _vehicleData.mileage;
+    // Extract vehicle information from ManualPlateRegisterResponse
+    _mountingResult = widget.data.data?.results?.isNotEmpty == true 
+        ? widget.data.data!.results!.first 
+        : MountingResult(); // Default empty mounting result
+    
+    _currentMileage = _mountingResult.mileage ?? 0.0;
   }
 
   /// Setup text controllers and listeners
@@ -197,7 +156,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
   }
 
   Widget _buildLicensePlateContainer() {
-    return LicensePlate(licensePlate: _vehicleData.licensePlate, fontSize: 22,);
+    return LicensePlate(licensePlate: _mountingResult.licensePlate ?? 'N/A', fontSize: 22,);
   }
 
   Widget _buildVehicleInfoContainer() {
@@ -213,14 +172,18 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           InfoRow(
-              title: 'Tipo de vehículo', value: _vehicleData.typeVehicleName),
+              title: 'Tipo de vehículo', value: _mountingResult.typeVehicleName ?? 'N/A'),
           const SizedBox(height: 12),
-          InfoRow(title: 'Línea de trabajo', value: _vehicleData.workLineName),
+          InfoRow(title: 'Línea de trabajo', value: _mountingResult.workLineName ?? 'N/A'),
           const SizedBox(height: 12),
           InfoRow(
             title: 'Cliente asociado al vehículo',
-            value: _vehicleData.businessName,
+            value: _mountingResult.businessName ?? 'N/A',
           ),
+          const SizedBox(height: 12),
+          InfoRow(title: 'Eje del vehículo', value: _mountingResult.axleName ?? 'N/A'),
+          const SizedBox(height: 12),
+          InfoRow(title: 'Número Lorry', value: _mountingResult.numberLorry?.toString() ?? 'N/A'),
           const SizedBox(height: 20),
           _buildMileageDisplay(),
         ],
@@ -247,7 +210,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
               'assets/icons/Icono_Velocimetro_Lorry.svg',
               width: _Constants.iconSize,
               height: _Constants.iconSize,
-              color: Apptheme.textColorPrimary,
+              colorFilter: ColorFilter.mode(Apptheme.textColorPrimary, BlendMode.srcIn),
             ),
             const SizedBox(width: 8),
             RichText(
@@ -255,7 +218,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
                 children: [
                   TextSpan(
                     text:
-                        '${NumberFormat('#,###').format(_vehicleData.mileage.toInt())} ',
+                        '${NumberFormat('#,###').format((_mountingResult.mileage ?? 0.0).toInt())} ',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -352,7 +315,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             'assets/icons/Icono_Velocimetro_Lorry.svg',
             width: _Constants.iconSize,
             height: _Constants.iconSize,
-            color: Apptheme.textColorPrimary,
+            colorFilter: ColorFilter.mode(Apptheme.textColorPrimary, BlendMode.srcIn),
           ),
           const SizedBox(width: 3),
           IntrinsicWidth(
@@ -419,8 +382,21 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
       return;
     }
 
-    final navigationData = _vehicleData.toNavigationData(_currentMileage);
+    final navigationData = _toNavigationData(_currentMileage);
     ref.read(appRouterProvider).push('/DetailTire', extra: navigationData);
+  }
+
+  Map<String, dynamic> _toNavigationData(double updatedMileage) {
+    return {
+      'licensePlate': _mountingResult.licensePlate ?? '',
+      'typeVehicleName': _mountingResult.typeVehicleName ?? '',
+      'workLineName': _mountingResult.workLineName ?? '',
+      'businessName': _mountingResult.businessName ?? '',
+      '_mileage': updatedMileage,
+      'mileage': _mountingResult.mileage ?? 0.0,
+      'axleName': _mountingResult.axleName ?? '',
+      'numberLorry': _mountingResult.numberLorry?.toString() ?? '',
+    };
   }
 
   void _onMileageChanged() {
@@ -429,7 +405,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     final inputMileage = int.tryParse(cleanedInput) ?? 0;
 
     setState(() {
-      _isButtonEnabled.value = inputMileage >= _vehicleData.mileage.toInt();
+      _isButtonEnabled.value = inputMileage >= (_mountingResult.mileage ?? 0.0).toInt();
       _currentMileage = inputMileage.toDouble();
     });
   }

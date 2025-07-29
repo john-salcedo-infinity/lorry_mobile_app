@@ -5,7 +5,7 @@ import 'package:app_lorry/widgets/forms/customInput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/helpers/helpers.dart';
-import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/models/models.dart' hide Provider;
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/providers/app/home/homeProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
@@ -120,7 +120,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       };
 
       final response =
-          await Homeservice.GetInspectionHistory(ref, newQueryParams);
+          await Homeservice.GetInspectionHistory(ref, newQueryParams.cast<String, String>());
 
       ref.read(inspectionsProvider.notifier).addResults(response.data.results);
       ref.read(inspectionPaginationProvider.notifier).state =

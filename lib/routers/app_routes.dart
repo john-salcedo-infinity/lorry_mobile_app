@@ -65,24 +65,24 @@ GoRouter appRouter(Ref ref) {
     GoRoute(
       path: '/InfoVehicles',
       builder: (context, state) {
-        final data = state.extra as Map<String, dynamic>;
+        final data = state.extra as ManualPlateRegisterResponse;
         return InfoVehicles(data: data);
       },
     ),
-    GoRoute(
-      path: '/DetailTire',
-      builder: (BuildContext context, state) {
-        final data = state.extra as Map<String, dynamic>;
-        return DetailTire(data: data);
-      },
-    ),
-    GoRoute(
-      path: '/TireProfundity',
-      builder: (context, state) {
-        final data = state.extra as Map<String, dynamic>;
-        return TireProfundity(data: data);
-      },
-    ),
+    // GoRoute(
+    //   path: '/DetailTire',
+    //   builder: (BuildContext context, state) {
+    //     final data = state.extra as ManualPlateRegisterResponse;
+    //     return DetailTire(data: data);
+    //   },
+    // ),
+    // GoRoute(
+    //   path: '/TireProfundity',
+    //   builder: (context, state) {
+    //     final data = state.extra as Map<String, dynamic>;
+    //     return TireProfundity(data: data);
+    //   },
+    // ),
     GoRoute(path: "/test", builder: ((context, state) => const TestScreen()))
   ]);
 }

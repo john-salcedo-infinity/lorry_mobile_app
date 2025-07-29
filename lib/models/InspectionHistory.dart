@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:app_lorry/models/models.dart';
+
 InspectionHistory inspectionHistoryFromJson(String str) => InspectionHistory.fromJson(json.decode(str));
 
 String inspectionHistoryToJson(InspectionHistory data) => json.encode(data.toJson());
@@ -83,87 +85,6 @@ class HistoricalResult {
         "created_by": createdBy.toJson(),
     };
 }
-
-class Vehicle {
-    int id;
-    String typeVehicleName;
-    String? numberLorry;
-    String licensePlate;
-    DateTime lastUpdate;
-    int mileageId;
-    Customer customer;
-    WorkLine workLine;
-
-    Vehicle({
-        required this.id,
-        required this.typeVehicleName,
-        this.numberLorry,
-        required this.licensePlate,
-        required this.lastUpdate,
-        required this.mileageId,
-        required this.customer,
-        required this.workLine,
-    });
-
-    factory Vehicle.fromJson(Map<String, dynamic> json) => Vehicle(
-        id: json["id"],
-        typeVehicleName: json["type_vehicle_name"],
-        numberLorry: json["number_lorry"],
-        licensePlate: json["license_plate"],
-        lastUpdate: DateTime.parse(json["last_update"]),
-        mileageId: json["mileage_id"],
-        customer: Customer.fromJson(json["customer"]),
-        workLine: WorkLine.fromJson(json["work_line"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "id": id,
-        "type_vehicle_name": typeVehicleName,
-        "number_lorry": numberLorry,
-        "license_plate": licensePlate,
-        "last_update": lastUpdate.toIso8601String(),
-        "mileage_id": mileageId,
-        "customer": customer.toJson(),
-        "work_line": workLine.toJson(),
-    };
-}
-
-class Customer {
-    String businessName;
-    bool statusNumberLorry;
-
-    Customer({
-        required this.businessName,
-        required this.statusNumberLorry,
-    });
-
-    factory Customer.fromJson(Map<String, dynamic> json) => Customer(
-        businessName: json["business_name"],
-        statusNumberLorry: json["status_number_lorry"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "business_name": businessName,
-        "status_number_lorry": statusNumberLorry,
-    };
-}
-
-class WorkLine {
-    String name;
-
-    WorkLine({
-        required this.name,
-    });
-
-    factory WorkLine.fromJson(Map<String, dynamic> json) => WorkLine(
-        name: json["name"],
-    );
-
-    Map<String, dynamic> toJson() => {
-        "name": name,
-    };
-}
-
 class Inspection {
     String date;
     DateTime lastInspectionDate;
