@@ -257,7 +257,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                   'P${tire.position?.toString() ?? '?'}',
                   style: const TextStyle(
                     fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w900,
                     color: Apptheme.textColorPrimary,
                   ),
                 ),
