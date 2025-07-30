@@ -42,7 +42,7 @@ class TestScreen extends ConsumerWidget {
           // Si data es de tipo Uint8List
           String receivedString = String.fromCharCodes(data);
           print("Received String: $receivedString");
-          ToastHelper.show_success(context, "${receivedString} mm");
+          ToastHelper.show_success(context, "$receivedString mm");
 
           // También puedes procesar bytes individuales si es necesario
           for (int byte in data) {

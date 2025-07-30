@@ -1,10 +1,8 @@
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/config/configs.dart';
 import 'package:app_lorry/models/models.dart';
-import 'package:app_lorry/providers/app/rotation/rotationProvider.dart';
 import 'package:app_lorry/widgets/widgets.dart';
 
 class TireDragItem extends StatefulWidget {

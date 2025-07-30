@@ -1,11 +1,5 @@
 import 'package:app_lorry/models/models.dart';
 
-import 'stay.dart';
-import 'status_tire.dart';
-import 'design.dart';
-import 'band.dart';
-import 'warehouse.dart';
-import 'consecutive_type.dart';
 
 class Tire {
   int? id;

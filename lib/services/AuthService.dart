@@ -25,14 +25,14 @@ class Authservice {
   }
 
   static Future<AuthResponse> changePassword(
-      String new_password, String confirm_password) async {
+    String newPassword, String confirmPassword) async {
     Preferences preference = Preferences();
     await preference.init();
     String token = preference.getValue("token");
 
     final Map<String, String> passwordData = {
-      'new_password': new_password,
-      'confirm_password': confirm_password,
+      'new_password': newPassword,
+      'confirm_password': confirmPassword,
     };
     final resp =
         await MainService.put('/update-password/', passwordData, token: token);

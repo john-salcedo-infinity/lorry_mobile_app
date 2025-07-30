@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/config/app_theme.dart';
-import 'package:app_lorry/models/test/TireModeltest.dart';
 import 'package:app_lorry/providers/providers.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/widgets/items/TireDragTarget.dart';
