@@ -1,383 +1,302 @@
-// import 'package:app_lorry/helpers/ToastHelper.dart';
-// import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
-// import 'package:app_lorry/routers/app_routes.dart';
-// import 'package:app_lorry/widgets/buttons/CustomButton.dart';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:app_lorry/config/app_theme.dart';
-// import 'package:flutter_svg/flutter_svg.dart';
+import 'package:app_lorry/helpers/ToastHelper.dart';
+import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/widgets/buttons/CustomButton.dart';
+import 'package:app_lorry/widgets/shared/back.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:app_lorry/config/app_theme.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'widgets/tire_inspection_form.dart';
 
-// class TireProfundity extends ConsumerStatefulWidget {
-//   final Map<String, dynamic> data;
+class TireProfundityParams {
+  final List<MountingResult> data;
+  final int vehicle;
+  final double mileage;
+  final int? startIndex; // Índice desde donde empezar la inspección
 
-//   const TireProfundity({super.key, required this.data});
+  TireProfundityParams({
+    required this.data,
+    required this.vehicle,
+    required this.mileage,
+    this.startIndex,
+  });
+}
 
-//   @override
-//   ConsumerState<TireProfundity> createState() => _TireProfundityState();
-// }
+class TireProfundity extends ConsumerStatefulWidget {
+  final TireProfundityParams data;
 
-// class _TireProfundityState extends ConsumerState<TireProfundity> {
-//   final TextEditingController _plateController = TextEditingController();
+  const TireProfundity({super.key, required this.data});
 
-//   late final String licensePlate;
-//   late final String typeVehicleName;
-//   late final String workLineName;
-//   late final String businessName;
-//   late final double mileage;
-//   late final List<Tire> tires;
+  @override
+  ConsumerState<TireProfundity> createState() => _TireProfundityState();
+}
 
-//   final TextEditingController pressureController = TextEditingController();
-//   final TextEditingController externalProfController = TextEditingController();
-//   final TextEditingController internalProfController = TextEditingController();
-//   final TextEditingController centerProfController = TextEditingController();
+class _TireProfundityState extends ConsumerState<TireProfundity> {
+  final TextEditingController _plateController = TextEditingController();
 
-//   int _currentTireIndex = 0;
+  late final int licensePlate; // id del vehículo
+  late final List<MountingResult> mountings; // Lista de montajes
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _currentTireIndex = 0;
+  // Mapa para almacenar los datos de inspección de cada mounting
+  Map<int, Map<String, dynamic>> inspectionData = {};
 
-//     final data = widget.data;
+  // Lista para trackear qué llantas han sido inspeccionadas
+  Set<int> inspectedTires = {};
 
-//     licensePlate = data['licensePlate'] ?? '';
-//     typeVehicleName = data['typeVehicleName'] ?? '';
-//     workLineName = data['workLineName'] ?? '';
-//     businessName = data['businessName'] ?? '';
-//     mileage = (data['mileage'] as num?)?.toDouble() ?? 0.0;
+  int _currentTireIndex = 0;
 
-//     tires = (data['tires'] as List<dynamic>?)
-//             ?.map((e) => Tire.fromJson(e as Map<String, dynamic>))
-//             .toList() ??
-//         [];
+  @override
+  void initState() {
+    super.initState();
 
-//     tires.sort((a, b) {
-//       final aPos =
-//           int.tryParse(a.positions?.replaceAll(RegExp(r'[^0-9]'), '') ?? '') ??
-//               0;
-//       final bPos =
-//           int.tryParse(b.positions?.replaceAll(RegExp(r'[^0-9]'), '') ?? '') ??
-//               0;
-//       return aPos.compareTo(bPos);
-//     });
+    final data = widget.data;
+    licensePlate = data.vehicle;
+    mountings = data.data;
 
-//     _loadTireData();
-//   }
+    // Establecer el índice inicial (puede venir desde un botón específico)
+    _currentTireIndex = data.startIndex ?? 0;
 
-//   void _loadTireData() {
-//     if (_currentTireIndex < tires.length) {
-//       final tire = tires[_currentTireIndex];
-//       // Carga datos reales si los tienes, aquí ejemplos por defecto:
-//       pressureController.text = "12.0";
-//       externalProfController.text = "3.0";
-//       internalProfController.text = "19.0";
-//       centerProfController.text = "19.0";
-//     }
-//   }
+    // Inicializar los datos de inspección con los valores originales
+    _initializeInspectionData();
+  }
 
-//   void _nextTire() {
-//     if (_currentTireIndex < tires.length - 1) {
-//       setState(() {
-//         _currentTireIndex++;
-//         _loadTireData();
-//       });
-//     } else {
-//       // Reset index (opcional si se destruye la vista al navegar)
-//       _currentTireIndex = 0;
-//       // Navega al home, lo que destruye esta vista y reinicia todo
-//       ref.read(appRouterProvider).go('/home');
-//     }
-//   }
+  void _initializeInspectionData() {
+    for (int i = 0; i < mountings.length; i++) {
+      final mounting = mountings[i];
+      inspectionData[i] = {
+        'mounting': mounting.id,
+        'pressure': mounting.tire?.pressure ??
+            mounting.tire?.design?.dimension?.pressure ??
+            0.0,
+        'prof_external': mounting.tire?.profExternalCurrent ?? 0.0,
+        'prof_center': mounting.tire?.profCenterCurrent ?? 0.0,
+        'prof_internal': mounting.tire?.profInternalCurrent ?? 0.0,
+      };
+    }
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     final currentTire = tires[_currentTireIndex];
-//     return Scaffold(
-//       resizeToAvoidBottomInset: false,
-//       backgroundColor: Apptheme.backgroundColor,
-//       appBar: AppBar(
-//         automaticallyImplyLeading: false,
-//         title: GestureDetector(
-//           onTap: () {
-//             if (ref.watch(appRouterProvider) case var router) {
-//               router.go(
-//                 '/DetailTire',
-//                 extra: {
-//                   'licensePlate': licensePlate,
-//                   'typeVehicleName': typeVehicleName,
-//                   'workLineName': workLineName,
-//                   'businessName': businessName,
-//                   'mileage': mileage,
-//                   // 'tires': tires.map((tire) => tire.toJson()).toList(),
-//                 },
-//               );
-//             }
-//           },
-//           child: const Row(
-//             children: [
-//               Icon(Icons.arrow_back_ios_new_rounded,
-//                   color: Apptheme.textColorPrimary, size: 20),
-//               SizedBox(width: 4),
-//               Text(
-//                 'Atrás',
-//                 style: TextStyle(
-//                   fontSize: 20,
-//                   color: Apptheme.textColorPrimary,
-//                   fontWeight: FontWeight.bold,
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//         // ... botón de casa
-//         actions: [
-//           IconButton(
-//             icon: SvgPicture.asset('assets/icons/Icono_Casa_Lorry.svg',
-//                 width: 40, height: 40),
-//             onPressed: () {
-//               _currentTireIndex = 0; // Reset
-//               ref.read(appRouterProvider).push('/home');
-//             },
-//           ),
-//         ],
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             // Título con posición dinámica
-//             Row(
-//               mainAxisSize: MainAxisSize.min,
-//               children: [
-//                 RichText(
-//                   text: TextSpan(
-//                     style: const TextStyle(
-//                       fontFamily: 'Poppins',
-//                       fontSize: 22,
-//                       fontWeight: FontWeight.w700,
-//                       color: Colors.black,
-//                     ),
-//                     children: [
-//                       const TextSpan(text: "Inspección Llanta "),
-//                       TextSpan(
-//                         text: currentTire.positions ??
-//                             'P${_currentTireIndex + 1}',
-//                         style: const TextStyle(
-//                           color: Apptheme.textColorPrimary,
-//                           fontWeight: FontWeight.bold,
-//                         ),
-//                       ),
-//                     ],
-//                   ),
-//                 ),
-//                 const SizedBox(width: 6),
-//                 const Image(
-//                   image: AssetImage('assets/icons/Alert_Icon.png'),
-//                   width: 20,
-//                   height: 20,
-//                 ),
-//               ],
-//             ),
+  void _nextTire() {
+    // Marcar la llanta actual como inspeccionada
+    inspectedTires.add(_currentTireIndex);
 
-//             const SizedBox(height: 25),
+    // Si ya inspeccionamos todas las llantas, finalizar
+    if (inspectedTires.length >= mountings.length) {
+      _currentTireIndex = 0;
+      return;
+    }
 
-//             // Caja del formulario
-//             Container(
-//               width: double.infinity,
-//               height: 565,
-//               padding: const EdgeInsets.all(22),
-//               decoration: BoxDecoration(
-//                 color: const Color(0xFFDDEAE4),
-//                 borderRadius: BorderRadius.circular(10),
-//               ),
-//               child: Column(
-//                 crossAxisAlignment: CrossAxisAlignment.center,
-//                 children: [
-//                   Center(
-//                     child: Text(
-//                       "Serie LL-${currentTire.integrationCode ?? 'Sin Serie'}",
-//                       style: const TextStyle(
-//                         fontFamily: 'Poppins',
-//                         fontSize: 22,
-//                         fontWeight: FontWeight.bold,
-//                         color: Apptheme.textColorPrimary,
-//                       ),
-//                     ),
-//                   ),
-//                   const SizedBox(height: 16),
-//                   _buildTextField("Presión Llanta", currentTire.pressure),
-//                   const SizedBox(height: 35),
-//                   _buildTextField(
-//                       "Profun. Externa", currentTire.profExternalCurrent),
-//                   const SizedBox(height: 10),
-//                   _buildTextField(
-//                       "Profun. Interna", currentTire.profInternalCurrent),
-//                   const SizedBox(height: 10),
-//                   _buildTextField(
-//                       "Profun. Central", currentTire.profCenterCurrent),
-//                   const SizedBox(height: 10),
-//                 ],
-//               ),
-//             ),
-//             const Spacer(flex: 10),
-//             _buildBottomButtons(isLast: _currentTireIndex == tires.length - 1),
-//             const SizedBox(height: 0),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
+    // Buscar la siguiente llanta no inspeccionada
+    int nextIndex = _findNextUninspectedTire();
 
-//   Widget _buildTextField(String label, dynamic rawValue,
-//       {bool isEditable = true}) {
-//     ValueNotifier<Color> textColor = ValueNotifier<Color>(Colors.black);
-//     ValueNotifier<Color> backgroundColor = ValueNotifier<Color>(Colors.white);
-//     ValueNotifier<Color> borderColor = ValueNotifier<Color>(Colors.grey);
+    setState(() {
+      _currentTireIndex = nextIndex;
+    });
+  }
 
-//     final double value = double.tryParse(rawValue?.toString() ?? '') ?? 0;
+  int _findNextUninspectedTire() {
+    for (int i = 0; i < mountings.length; i++) {
+      if (i != _currentTireIndex && !inspectedTires.contains(i)) {
+        return i;
+      }
+    }
+    // Si no encontramos ninguna, retornar la actual (esto no debería pasar)
+    return _currentTireIndex;
+  }
 
-//     void updateColors(double val) {
-//       if (val <= 5) {
-//         textColor.value = const Color(0xFFD32F2F); // Rojo
-//         backgroundColor.value = const Color(0xFFFFCDD2); // Fondo rojo suave
-//         borderColor.value = const Color(0xFFD32F2F); // Borde rojo
-//       } else if (val > 5 && val <= 10) {
-//         textColor.value = const Color(0xFFFBC02D); // Amarillo
-//         backgroundColor.value = const Color(0xFFFFF9C4); // Fondo amarillo suave
-//         borderColor.value = const Color(0xFFFBC02D); // Borde amarillo
-//       } else {
-//         textColor.value = const Color(0xFF388E3C); // Verde
-//         backgroundColor.value = const Color(0xFFC8E6C9); // Fondo verde suave
-//         borderColor.value = const Color(0xFF388E3C); // Borde verde
-//       }
-//     }
+  void _onTireDataChanged(Map<String, dynamic> data) {
+    // Actualizar solo los campos que han cambiado, manteniendo los valores originales para el resto
+    final currentData = inspectionData[_currentTireIndex] ?? {};
 
-//     updateColors(value);
+    inspectionData[_currentTireIndex] = {
+      'mounting': data['mounting'] ?? currentData['mounting'],
+      'pressure': data['pressure'] ?? currentData['pressure'],
+      'prof_external': data['prof_external'] ?? currentData['prof_external'],
+      'prof_center': data['prof_center'] ?? currentData['prof_center'],
+      'prof_internal': data['prof_internal'] ?? currentData['prof_internal'],
+    };
+  }
 
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.center,
-//       children: [
-//         Text(
-//           label,
-//           style: const TextStyle(
-//             fontSize: 16,
-//             color: Color(0xFF494D4C),
-//             fontFamily: 'Poppins',
-//             fontWeight: FontWeight.w500,
-//           ),
-//         ),
-//         const SizedBox(height: 6),
-//         ValueListenableBuilder<Color>(
-//           valueListenable: textColor,
-//           builder: (context, textColor, child) {
-//             return ValueListenableBuilder<Color>(
-//               valueListenable: backgroundColor,
-//               builder: (context, backgroundColor, child) {
-//                 return ValueListenableBuilder<Color>(
-//                   valueListenable: borderColor,
-//                   builder: (context, borderColor, child) {
-//                     return TextField(
-//                       enabled: isEditable,
-//                       controller: TextEditingController(
-//                         text: value.toStringAsFixed(1),
-//                       ),
-//                       keyboardType: TextInputType.numberWithOptions(
-//                           decimal: true), // Teclado numérico
-//                       textInputAction: TextInputAction
-//                           .next, // Permite avanzar al siguiente campo
-//                       decoration: InputDecoration(
-//                         filled: true,
-//                         fillColor: backgroundColor,
-//                         border: OutlineInputBorder(
-//                           borderRadius: BorderRadius.circular(12),
-//                           borderSide: BorderSide(color: borderColor, width: 2),
-//                         ),
-//                         enabledBorder: OutlineInputBorder(
-//                           borderRadius: BorderRadius.circular(12),
-//                           borderSide: BorderSide(color: borderColor, width: 2),
-//                         ),
-//                         focusedBorder: OutlineInputBorder(
-//                           borderRadius: BorderRadius.circular(12),
-//                           borderSide: BorderSide(color: borderColor, width: 3),
-//                         ),
-//                         contentPadding: const EdgeInsets.symmetric(
-//                           horizontal: 14,
-//                           vertical: 16,
-//                         ),
-//                       ),
-//                       style: TextStyle(
-//                         fontSize: 16,
-//                         fontFamily: 'Red Hat Mono',
-//                         fontWeight: FontWeight.w600,
-//                         height: 1.2,
-//                         letterSpacing: 0.5,
-//                         color: textColor,
-//                       ),
-//                       textAlign: TextAlign.center,
-//                     );
-//                   },
-//                 );
-//               },
-//             );
-//           },
-//         ),
-//       ],
-//     );
-//   }
+  void _printInspectionData() {
+    List<Map<String, dynamic>> inspections = [];
 
-//   Widget _buildBottomButtons({required bool isLast}) {
-//     return Container(
-//       width: double.infinity,
-//       color: Colors.white,
-//       child: Padding(
-//         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-//         child: CustomButton(
-//           340,
-//           46,
-//           Text(
-//             isLast ? "Finalizar Inspección" : "Siguiente Inspección",
-//             style: const TextStyle(
-//               fontWeight: FontWeight.bold,
-//               fontSize: 14,
-//             ),
-//           ),
-//           // Envolvemos la función proceedWithPlateInspection en una función anónima
-//           // para que no reciba parámetros
-//           isLast
-//               ? () => proceedWithPlateInspection(context, ref,
-//                   licensePlate) // Cambia el valor de '1234ABC' por la placa que necesites
-//               : _nextTire, // No necesitas cambios en _nextTire
-//         ),
-//       ),
-//     );
-//   }
+    for (int i = 0; i < mountings.length; i++) {
+      final data = inspectionData[i];
 
-//   // _buildTextField() se mantiene igual (tu versión anterior funciona perfecto)
-//   void proceedWithPlateInspection(
-//       BuildContext context, WidgetRef ref, String plate) async {
-//     // Mostrar pantalla de carga
+      inspections.add({
+        "unmount": false,
+        "tire_mounting": 0,
+        "mounting": data?['mounting'] ?? 0,
+        "pressure": data?['pressure'] ?? 0,
+        "prof_external": data?['prof_external'] ?? 0,
+        "prof_center": data?['prof_center'] ?? 0,
+        "prof_internal": data?['prof_internal'] ?? 0,
+        "novelty": [],
+        "service": [],
+        "service_action": []
+      });
+    }
 
-//     try {
-//       // Si hay llantas, verificamos si es la última y mostramos el mensaje de éxito
-//       ToastHelper.show_success(context, "Inspecciona enviada con éxito.");
-//       ref.read(appRouterProvider).go('/home');
-//     } catch (e) {
-//       // Cerrar el loading en caso de error también
-//       Navigator.of(context, rootNavigator: true).pop();
-//       print("extra: $e");
-//       ToastHelper.show_alert(context, "Error al consultar la placa: $e");
-//     }
-//   }
+    final finalData = {
+      "mileage": {"vehicle": licensePlate, "km": widget.data.mileage},
+      "inspections": inspections
+    };
 
-//   @override
-//   void dispose() {
-//     _currentTireIndex = 0; // Reset
-//     _plateController.dispose();
-//     pressureController.dispose();
-//     externalProfController.dispose();
-//     internalProfController.dispose();
-//     centerProfController.dispose();
-//     super.dispose();
-//   }
-// }
+    print("=== DATOS DE INSPECCIÓN ===");
+    print(finalData);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentMounting = mountings[_currentTireIndex];
+    return Scaffold(
+      backgroundColor: Apptheme.backgroundColor,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTitleWidget(currentMounting.position.toString()),
+                    const SizedBox(height: 25),
+                    TireInspectionForm(
+                      currentMounting: currentMounting,
+                      onDataChanged: _onTireDataChanged,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            _buildBottomButtons(
+              isLast: inspectedTires.length >= mountings.length - 1,
+              isFirst: inspectedTires.isEmpty,
+              onNext: _nextTire,
+              onFinish: () =>
+                  proceedWithPlateInspection(context, ref, "DEFAULT_PLATE"),
+            ),
+            const SizedBox(height: 0),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void proceedWithPlateInspection(
+      BuildContext context, WidgetRef ref, String plate) async {
+    try {
+      _printInspectionData();
+      // Si hay llantas, verificamos si es la última y mostramos el mensaje de éxito
+      ToastHelper.show_success(context, "Inspección enviada con éxito.");
+      // TODO: Fix navigation - Check if appRouterProvider is available
+      // ref.read(appRouterProvider).go('/home');
+      // Navigator.of(context).pushReplacementNamed('/home');
+    } catch (e) {
+      // Cerrar el loading en caso de error también
+      Navigator.of(context, rootNavigator: true).pop();
+      // print("extra: $e");
+      ToastHelper.show_alert(context, "Error al consultar la placa: $e");
+    }
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      margin: const EdgeInsets.only(top: 30, bottom: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const Back(),
+          IconButton(
+            onPressed: () => context.go('/home'),
+            icon: SvgPicture.asset(
+              'assets/icons/Icono_Casa_Lorry.svg',
+              width: 40,
+              height: 40,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTitleWidget(String position) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        RichText(
+          text: TextSpan(
+            style: const TextStyle(
+              fontSize: 22,
+              color: Apptheme.textColorSecondary,
+              fontWeight: FontWeight.bold,
+            ),
+            children: [
+              const TextSpan(text: "Inspección Llanta "),
+              TextSpan(
+                text: 'P$position',
+                style: const TextStyle(
+                  color: Apptheme.textColorPrimary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 6),
+        const Image(
+          image: AssetImage('assets/icons/Alert_Icon.png'),
+          width: 20,
+          height: 20,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBottomButtons({
+    required bool isLast,
+    required bool isFirst,
+    required VoidCallback onNext,
+    required VoidCallback onFinish,
+  }) {
+    return Container(
+      width: double.infinity,
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        child: Row(
+          children: [
+            // Botón siguiente/finalizar
+            Expanded(
+              child: CustomButton(
+                340,
+                46,
+                Text(
+                  isLast ? "Finalizar Inspección" : "Siguiente Inspección",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                isLast ? onFinish : onNext,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _currentTireIndex = 0; // Reset
+    _plateController.dispose();
+    super.dispose();
+  }
+}

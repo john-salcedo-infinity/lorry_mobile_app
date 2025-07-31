@@ -1,14 +1,7 @@
 import 'package:app_lorry/models/models.dart';
-import 'package:app_lorry/screens/app/changePass/ChangePass.dart';
-import 'package:app_lorry/screens/app/new_inspection/02_manual_plate_registe.dart';
-import 'package:app_lorry/screens/app/new_inspection/03_new_plate_register.dart';
-import 'package:app_lorry/screens/app/vehiclesData/InfoVehicles.dart';
-// import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:app_lorry/screens/screens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:app_lorry/screens/app/dashboard/Dashboard.dart';
-import 'package:app_lorry/screens/screens.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'app_routes.g.dart';
@@ -57,10 +50,10 @@ GoRouter appRouter(Ref ref) {
       path: '/ManualPlateRegister',
       builder: (context, state) => ManualPlateRegister(),
     ),
-    GoRoute(
-      path: '/NewPlateRegister',
-      builder: (context, state) => NewPlateRegister(),
-    ),
+    // GoRoute(
+    //   path: '/NewPlateRegister',
+    //   builder: (context, state) => NewPlateRegister(),
+    // ),
     GoRoute(
       path: '/InfoVehicles',
       builder: (context, state) {
@@ -72,18 +65,18 @@ GoRouter appRouter(Ref ref) {
     ),
     GoRoute(
       path: '/DetailTire',
-      builder: (BuildContext context, state) {
+      builder: (context, state) {
         final data = state.extra as DetailTireParams;
         return DetailTire(data: data);
       },
     ),
-    // GoRoute(
-    //   path: '/TireProfundity',
-    //   builder: (context, state) {
-    //     final data = state.extra as Map<String, dynamic>;
-    //     return TireProfundity(data: data);
-    //   },
-    // ),
+    GoRoute(
+      path: '/TireProfundity',
+      builder: (context, state) {
+        final data = state.extra as TireProfundityParams;
+        return TireProfundity(data: data);
+      },
+    ),
     GoRoute(path: "/test", builder: ((context, state) => const TestScreen()))
   ]);
 }

@@ -1,6 +1,5 @@
 import 'package:app_lorry/models/models.dart';
 
-
 class Tire {
   int? id;
   bool? status;
@@ -19,6 +18,7 @@ class Tire {
   double? profExternalCurrent;
   double? profCenterCurrent;
   double? profInternalCurrent;
+  double? pressure;
   double? kmCurrent;
   String? inspectionsDate;
   String? dotPlate;
@@ -63,6 +63,7 @@ class Tire {
     this.profExternalCurrent,
     this.profCenterCurrent,
     this.profInternalCurrent,
+    this.pressure,
     this.kmCurrent,
     this.inspectionsDate,
     this.dotPlate,
@@ -108,6 +109,7 @@ class Tire {
         profExternalCurrent: json["prof_external_current"]?.toDouble(),
         profCenterCurrent: json["prof_center_current"]?.toDouble(),
         profInternalCurrent: json["prof_internal_current"]?.toDouble(),
+        pressure: json["pressure"]?.toDouble(),
         kmCurrent: json["km_current"]?.toDouble(),
         inspectionsDate: json["inspections_date"],
         dotPlate: json["dot_plate"],
@@ -126,11 +128,17 @@ class Tire {
         kmProyect: json["km_proyect"]?.toDouble(),
         dismantlingDate: json["dismantling_date"],
         stay: json["stay"] == null ? null : Stay.fromJson(json["stay"]),
-        statusTire: json["status_tire"] == null ? null : StatusTire.fromJson(json["status_tire"]),
+        statusTire: json["status_tire"] == null
+            ? null
+            : StatusTire.fromJson(json["status_tire"]),
         design: json["design"] == null ? null : Design.fromJson(json["design"]),
         band: json["band"] == null ? null : Band.fromJson(json["band"]),
-        warehouse: json["warehouse"] == null ? null : Warehouse.fromJson(json["warehouse"]),
-        consecutiveType: json["consecutive_type"] == null ? null : ConsecutiveType.fromJson(json["consecutive_type"]),
+        warehouse: json["warehouse"] == null
+            ? null
+            : Warehouse.fromJson(json["warehouse"]),
+        consecutiveType: json["consecutive_type"] == null
+            ? null
+            : ConsecutiveType.fromJson(json["consecutive_type"]),
         creationDate: json["creation_date"],
         lastUpdate: json["last_update"],
       );
@@ -153,6 +161,7 @@ class Tire {
         "prof_external_current": profExternalCurrent,
         "prof_center_current": profCenterCurrent,
         "prof_internal_current": profInternalCurrent,
+        "pressure": pressure,
         "km_current": kmCurrent,
         "inspections_date": inspectionsDate,
         "dot_plate": dotPlate,

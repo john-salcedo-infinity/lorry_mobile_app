@@ -1,4 +1,5 @@
 import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,44 +34,17 @@ class DetailTire extends ConsumerStatefulWidget {
 class _DetailTireState extends ConsumerState<DetailTire> {
   final TextEditingController _plateController = TextEditingController();
 
-  // late final String licensePlate;
-  // late final String typeVehicleName;
-  // late final String workLineName;
-  // late final String businessName;
-  // late final double mileage;
-  // late final double _mileage;
-  // late final List<Tire> tires;
-
   @override
   void initState() {
     super.initState();
-    final data = widget.data;
-
-    // licensePlate = data['licensePlate'] ?? '';
-    // typeVehicleName = data['typeVehicleName'] ?? '';
-    // workLineName = data['workLineName'] ?? '';
-    // businessName = data['businessName'] ?? '';
-    // mileage = (data['mileage'] as num?)?.toDouble() ?? 0.0;
-    // _mileage = (data['_mileage'] as num?)?.toDouble() ?? 0.0;
-
-    // tires = (data['tires'] as List<dynamic>?)
-    //         ?.map((e) => Tire.fromJson(e as Map<String, dynamic>))
-    //         .toList() ??
-    //     [];
-    // tires.sort((a, b) {
-    //   final aPos =
-    //       int.tryParse(a.positions?.replaceAll(RegExp(r'[^0-9]'), '') ?? '') ??
-    //           0;
-    //   final bPos =
-    //       int.tryParse(b.positions?.replaceAll(RegExp(r'[^0-9]'), '') ?? '') ??
-    //           0;
-    //   return aPos.compareTo(bPos);
-    // });
-    // _plateController.text = NumberFormat('#,###').format(_mileage.toInt());
   }
 
   @override
   Widget build(BuildContext context) {
+    final tires = widget.data.results
+        .where((result) => result.tire != null)
+        .toList()
+        .reversed;
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
       body: SafeArea(
@@ -100,11 +74,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                       const SizedBox(height: 20),
 
                       // Tarjetas de llantas generadas dinámicamente
-                      for (var result in widget.data.results
-                          .where((result) => result.tire != null)
-                          .toList()
-                          .reversed)
-                        _buildTireCard(result),
+                      for (var result in tires) _buildTireCard(result),
                     ],
                   ),
                 ),
@@ -112,7 +82,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
             ),
 
             // Botón fijo en la parte inferior
-            // _buildBottomButton(tires),
+            _buildBottomButton(tires),
           ],
         ),
       ),
@@ -142,10 +112,6 @@ class _DetailTireState extends ConsumerState<DetailTire> {
 
   /// Widget del kilometraje de la inspección
   Widget _buildMileageInpection() {
-    // Recalcula cada vez que se construye el widget
-    // final double updatedMileage =
-    //     (widget.data['_mileage'] as num?)?.toDouble() ?? 0.0;
-
     return Container(
       width: double.infinity,
       height: 140,
@@ -285,22 +251,38 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                     height: 46,
                     child: ElevatedButton(
                       onPressed: () {
-                        // ref
-                        //     .read(appRouterProvider)
-                        //     .go('/TireProfundity/$positionNumber');
+                        // Encontrar el índice de esta llanta en la lista completa
+                        final allTiresIterable = widget.data.results
+                            .where((result) => result.tire != null)
+                            .toList()
+                            .reversed;
+                        final allTires = allTiresIterable.toList();
+                        
+                        final tireIndex = allTires.indexOf(tire);
+
+                        // Navegar a la inspección empezando desde esta llanta específica
+                        ref.read(appRouterProvider).push(
+                              '/TireProfundity',
+                              extra: TireProfundityParams(
+                                data: allTires,
+                                vehicle: widget.data.vehicle.id ?? 0,
+                                mileage: widget.data.mileage,
+                                startIndex:
+                                    tireIndex, // Empezar desde esta llanta
+                              ),
+                            );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        side: const BorderSide(
-                          color: Apptheme.textColorPrimary,
-                          width: 2,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        elevation: 0
-                      ),
+                          backgroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          side: const BorderSide(
+                            color: Apptheme.textColorPrimary,
+                            width: 2,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          elevation: 0),
                       child: const Text(
                         "Inspeccionar",
                         style: TextStyle(
@@ -338,7 +320,8 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(label, style: const TextStyle(fontSize: 12, color: Apptheme.grayInput)),
+          Text(label,
+              style: const TextStyle(fontSize: 12, color: Apptheme.grayInput)),
           const SizedBox(height: 8),
           buildTireInfo(value),
         ],
@@ -347,7 +330,9 @@ class _DetailTireState extends ConsumerState<DetailTire> {
   }
 
   /// Botón de la parte inferior
-  Widget _buildBottomButton(List<Tire> tires) {
+  Widget _buildBottomButton(Iterable<MountingResult> mountingResults) {
+    final mountingWithTires =
+        mountingResults.where((result) => result.tire != null).toList();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
@@ -360,17 +345,13 @@ class _DetailTireState extends ConsumerState<DetailTire> {
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
         ),
         () {
-          // Pasamos toda la lista de llantas a la ruta
+          // Pasamos toda la lista de llantas a la ruta (sin startIndex = empezar desde 0)
           ref.read(appRouterProvider).push(
                 '/TireProfundity',
-                // extra: {
-                //   'licensePlate': licensePlate,
-                //   'typeVehicleName': typeVehicleName,
-                //   'workLineName': workLineName,
-                //   'businessName': businessName,
-                //   'mileage': mileage,
-                //   'tires': tires.map((t) => t.toJson()).toList(),
-                // },
+                extra: TireProfundityParams(
+                    data: mountingWithTires,
+                    vehicle: widget.data.vehicle.id ?? 0,
+                    mileage: widget.data.mileage),
               );
         },
       ),
@@ -391,7 +372,10 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       child: Center(
         child: Text(
           value,
-          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Apptheme.textColorPrimary),
+          style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Apptheme.textColorPrimary),
           overflow: TextOverflow
               .ellipsis, // Si el texto es muy largo, lo trunca con "..."
         ),
