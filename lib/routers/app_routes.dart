@@ -77,6 +77,11 @@ GoRouter appRouter(Ref ref) {
         return TireProfundity(data: data);
       },
     ),
+    GoRoute(
+        path: "/observations",
+        builder: ((context, state) {
+          return ObservationScreen();
+        })),
     GoRoute(path: "/test", builder: ((context, state) => const TestScreen()))
   ]);
 }

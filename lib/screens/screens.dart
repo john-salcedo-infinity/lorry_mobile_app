@@ -14,6 +14,7 @@ export './app/home/inspection_details.dart';
 // Tire inspection screens
 export './app/InpectionTire/DetailTire.dart';
 export './app/InpectionTire/TireProfundity.dart';
+export './app/InpectionTire/observations/observation_sceen.dart';
 
 // Vehicle data screens
 export './app/vehiclesData/InfoVehicles.dart';

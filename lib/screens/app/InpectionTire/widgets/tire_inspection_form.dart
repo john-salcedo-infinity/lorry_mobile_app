@@ -1,9 +1,11 @@
+import 'package:app_lorry/routers/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/models/models.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'tire_data_text_field.dart';
 
-class TireInspectionForm extends StatefulWidget {
+class TireInspectionForm extends ConsumerStatefulWidget {
   final MountingResult currentMounting;
   final Function(Map<String, dynamic>) onDataChanged;
 
@@ -14,10 +16,10 @@ class TireInspectionForm extends StatefulWidget {
   });
 
   @override
-  State<TireInspectionForm> createState() => _TireInspectionFormState();
+  ConsumerState<TireInspectionForm> createState() => _TireInspectionFormState();
 }
 
-class _TireInspectionFormState extends State<TireInspectionForm> {
+class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   late TextEditingController _pressureController;
   late TextEditingController _externalController;
   late TextEditingController _internalController;
@@ -159,8 +161,31 @@ class _TireInspectionFormState extends State<TireInspectionForm> {
                 widget.currentMounting.tire?.profCenterCurrent?.toDouble() ??
                     0.0,
           ),
+          const SizedBox(height: 30),
+          _buildAddObservationButton(),
           const SizedBox(height: 10),
         ],
+      ),
+    );
+  }
+  
+  Widget _buildAddObservationButton() {
+    return TextButton(
+      onPressed: () {
+        ref.read(appRouterProvider).push("/observations");
+      },
+      style: TextButton.styleFrom(
+        foregroundColor: Apptheme.textColorPrimary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+      child: const Text(
+        "Reportar Novedad",
+        style: TextStyle(
+          fontWeight: FontWeight.w900,
+          fontSize: 16,
+        ),
       ),
     );
   }
