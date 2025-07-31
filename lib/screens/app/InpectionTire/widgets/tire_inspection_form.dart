@@ -33,9 +33,12 @@ class _TireInspectionFormState extends State<TireInspectionForm> {
     final pressureValue = widget.currentMounting.tire?.pressure?.toString() ??
         widget.currentMounting.tire?.design?.dimension?.pressure?.toString() ??
         "0";
-    final externalProfValue = widget.currentMounting.tire?.profExternalCurrent?.toString() ?? "0";
-    final internalProfValue = widget.currentMounting.tire?.profInternalCurrent?.toString() ?? "0";
-    final centerProfValue = widget.currentMounting.tire?.profCenterCurrent?.toString() ?? "0";
+    final externalProfValue =
+        widget.currentMounting.tire?.profExternalCurrent?.toString() ?? "0";
+    final internalProfValue =
+        widget.currentMounting.tire?.profInternalCurrent?.toString() ?? "0";
+    final centerProfValue =
+        widget.currentMounting.tire?.profCenterCurrent?.toString() ?? "0";
 
     _pressureController = TextEditingController(text: pressureValue);
     _externalController = TextEditingController(text: externalProfValue);
@@ -58,12 +61,17 @@ class _TireInspectionFormState extends State<TireInspectionForm> {
       _internalController.removeListener(_notifyDataChanged);
       _centerController.removeListener(_notifyDataChanged);
 
-      _pressureController.text = widget.currentMounting.tire?.pressure?.toString() ??
-          widget.currentMounting.tire?.design?.dimension?.pressure?.toString() ??
-          "0";
-      _externalController.text = widget.currentMounting.tire?.profExternalCurrent?.toString() ?? "0";
-      _internalController.text = widget.currentMounting.tire?.profInternalCurrent?.toString() ?? "0";
-      _centerController.text = widget.currentMounting.tire?.profCenterCurrent?.toString() ?? "0";
+      _pressureController.text =
+          widget.currentMounting.tire?.pressure?.toString() ??
+              widget.currentMounting.tire?.design?.dimension?.pressure
+                  ?.toString() ??
+              "0";
+      _externalController.text =
+          widget.currentMounting.tire?.profExternalCurrent?.toString() ?? "0";
+      _internalController.text =
+          widget.currentMounting.tire?.profInternalCurrent?.toString() ?? "0";
+      _centerController.text =
+          widget.currentMounting.tire?.profCenterCurrent?.toString() ?? "0";
 
       _pressureController.addListener(_notifyDataChanged);
       _externalController.addListener(_notifyDataChanged);
@@ -122,28 +130,34 @@ class _TireInspectionFormState extends State<TireInspectionForm> {
             controller: _pressureController,
             isEditable: true,
             isPressure: true,
-            currentMounting: widget.currentMounting,
+            lastValue: widget.currentMounting.tire?.pressure?.toDouble() ?? 0.0,
           ),
           const SizedBox(height: 35),
           TireDataTextField(
             label: "Profun. Externa",
             controller: _externalController,
             isEditable: true,
-            currentMounting: widget.currentMounting,
+            lastValue:
+                widget.currentMounting.tire?.profExternalCurrent?.toDouble() ??
+                    0.0,
           ),
           const SizedBox(height: 10),
           TireDataTextField(
             label: "Profun. Interna",
             controller: _internalController,
             isEditable: true,
-            currentMounting: widget.currentMounting,
+            lastValue:
+                widget.currentMounting.tire?.profInternalCurrent?.toDouble() ??
+                    0.0,
           ),
           const SizedBox(height: 10),
           TireDataTextField(
             label: "Profun. Central",
             controller: _centerController,
             isEditable: true,
-            currentMounting: widget.currentMounting,
+            lastValue:
+                widget.currentMounting.tire?.profCenterCurrent?.toDouble() ??
+                    0.0,
           ),
           const SizedBox(height: 10),
         ],

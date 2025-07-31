@@ -23,13 +23,13 @@ class CustomButton extends ConsumerWidget {
     return Column(
       children: [
         Container(
-          width: width, //  Ajusta el ancho
+          width: width, // Ajusta el ancho
           height: height, // Ajusta la altura
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4), //  border-radius: 4px
+            borderRadius: BorderRadius.circular(4), // border-radius: 4px
             boxShadow: [
               BoxShadow(
-                color: Colors.white.withValues(alpha: 0.0), //  Simula el borde inferior
+                color: Colors.white.withAlpha(0), // Simula el borde inferior
                 offset: const Offset(0, 2), // Grosor del borde inferior
                 blurRadius: 0,
               ),
@@ -40,12 +40,16 @@ class CustomButton extends ConsumerWidget {
             style: ElevatedButton.styleFrom(
               foregroundColor: type == 0 ? Apptheme.primary : Colors.white,
               backgroundColor: type == 0 ? Colors.white : Apptheme.primary,
-              padding: EdgeInsets.zero, //  Elimina el padding interno
+              disabledBackgroundColor: Colors.grey[400],
+              disabledForegroundColor: Colors.grey[700],
+              padding: EdgeInsets.zero, // Elimina el padding interno
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4), //  border-radius: 4px
+                borderRadius: BorderRadius.circular(4), // border-radius: 4px
                 side: BorderSide(
                   width: 2,
-                  color: Apptheme.darkorange,
+                  color: onPressed == null
+                      ? Colors.transparent // Color del borde desactivado
+                      : (type == 0 ? Apptheme.darkorange : Apptheme.darkorange),
                 ),
               ),
             ),

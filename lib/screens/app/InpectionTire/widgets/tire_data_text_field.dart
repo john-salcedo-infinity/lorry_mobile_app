@@ -1,9 +1,10 @@
+import 'package:app_lorry/config/configs.dart';
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:flutter/material.dart';
 
 class TireDataTextField extends StatefulWidget {
   final String label;
-  final MountingResult currentMounting;
+  final double lastValue;
   final TextEditingController? controller;
   final dynamic rawValue;
   final bool isEditable;
@@ -12,7 +13,7 @@ class TireDataTextField extends StatefulWidget {
   const TireDataTextField({
     super.key,
     required this.label,
-    required this.currentMounting,
+    required this.lastValue,
     this.controller,
     this.rawValue,
     this.isEditable = true,
@@ -31,7 +32,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
   @override
   void initState() {
     super.initState();
-    
+
     // Usar el controller pasado o crear uno nuevo
     if (widget.controller != null) {
       _controller = widget.controller!;
@@ -39,7 +40,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
       final value = double.tryParse(widget.rawValue?.toString() ?? '') ?? 0;
       _controller = TextEditingController(text: value.toStringAsFixed(1));
     }
-    
+
     _focusNode.addListener(() {
       setState(() {
         _hasFocus = _focusNode.hasFocus;
@@ -62,7 +63,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
     final double value = double.tryParse(_controller.text) ?? 0;
 
     final colors = _getColorsForValue(
-        value, widget.isPressure ?? false, widget.currentMounting, _hasFocus);
+        value, widget.isPressure ?? false, widget.lastValue, _hasFocus);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -88,15 +89,13 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
             fillColor: colors['background'],
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: colors['border']!, width: 2),
+              borderSide: BorderSide(color: Apptheme.grayInput),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: colors['border']!, width: 2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: colors['border']!, width: 3),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
@@ -105,11 +104,11 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
           ),
           style: TextStyle(
             fontSize: 16,
-            fontFamily: 'Red Hat Mono',
-            fontWeight: FontWeight.w600,
+            fontFamily: 'Poppins',
+            fontWeight: FontWeight.w800,
             height: 1.2,
             letterSpacing: 0.5,
-            color: colors['text'],
+            color: Apptheme.textColorPrimary,
           ),
           textAlign: TextAlign.center,
         ),
@@ -118,50 +117,18 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
   }
 
   Map<String, Color> _getColorsForValue(
-      double value, bool isPressure, MountingResult currentMounting, bool hasFocus) {
-    
-    // Si el valor agregado en el campo es mayor que original (currentMounting) 
-    // entonces el campo se coloque rojo y no deje pasar a la siguiente inspección
-    final double? originalValue = _getOriginalValue(currentMounting, isPressure);
-    if (originalValue != null && value > originalValue) {
+      double value, bool isPressure, double lastValue, bool hasFocus) {
+    if (value > lastValue) {
       return {
         'text': const Color(0xFFD32F2F),
-        'background': isPressure || hasFocus ? Colors.white : const Color(0xFFFFCDD2),
+        'background':
+            isPressure || hasFocus ? Colors.white : const Color(0xFFFFCDD2),
         'border': const Color(0xFFD32F2F),
       };
     }
-    
+
     // 3.2 El color va a depender de profMinimum para campos que no son presión
-    if (!isPressure) {
-      final double? profMinimum = currentMounting.tire?.profMinimum;
-      if (profMinimum != null) {
-        // Si es menor o igual sale rojo
-        if (value <= profMinimum) {
-          return {
-            'text': const Color(0xFFD32F2F),
-            'background': hasFocus ? Colors.white : const Color(0xFFFFCDD2),
-            'border': const Color(0xFFD32F2F),
-          };
-        }
-        // Si está casi llegando a la mínima que sea amarilla (dentro del 20% por encima)
-        else if (value <= profMinimum * 1.2) {
-          return {
-            'text': const Color(0xFFFBC02D),
-            'background': hasFocus ? Colors.white : const Color(0xFFFFF9C4),
-            'border': const Color(0xFFFBC02D),
-          };
-        }
-        // Si está muy por encima va a ser verde
-        else {
-          return {
-            'text': const Color(0xFF388E3C),
-            'background': hasFocus ? Colors.white : const Color(0xFFC8E6C9),
-            'border': const Color(0xFF388E3C),
-          };
-        }
-      }
-    }
-    
+
     // Colores por defecto (especialmente para campos de presión)
     // 1. Si isPressure es true el fondo SIEMPRE va a ser blanco
     // 2. Cuando el foco lo tenga el input el fondo va a ser blanco
@@ -170,15 +137,5 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
       'background': Colors.white,
       'border': const Color(0xFFE0E0E0),
     };
-  }
-  
-  double? _getOriginalValue(MountingResult currentMounting, bool isPressure) {
-    if (isPressure) {
-      return currentMounting.tire?.pressure;
-    } else {
-      // Para profundidad, podemos usar profExternalCurrent, profCenterCurrent o profInternalCurrent
-      // dependiendo del contexto. Por ahora, usaremos profExternalCurrent como referencia
-      return currentMounting.tire?.profExternalCurrent;
-    }
   }
 }

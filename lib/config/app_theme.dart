@@ -22,6 +22,9 @@ class Apptheme {
   static const Color sucess_color_v2 = Color.fromRGBO(215, 250, 236, 1);
   static const Color tireBackground = Color.fromRGBO(220, 230, 227, 1);
 
+  static const Color AlertOrange = Color.fromRGBO(242, 100, 26, 1);
+  static const Color lightAlertOrange = Color.fromRGBO(255, 224, 235, 1);
+
   static ThemeData lightTheme = ThemeData.light().copyWith(
     primaryColor: primary,
   );
