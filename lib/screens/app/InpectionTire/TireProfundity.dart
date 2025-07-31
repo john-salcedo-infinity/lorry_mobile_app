@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_lorry/helpers/ToastHelper.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
@@ -33,8 +35,6 @@ class TireProfundity extends ConsumerStatefulWidget {
 }
 
 class _TireProfundityState extends ConsumerState<TireProfundity> {
-  final TextEditingController _plateController = TextEditingController();
-
   late final int licensePlate; // id del vehículo
   late final List<MountingResult> mountings; // Lista de montajes
 
@@ -104,8 +104,26 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     return _currentTireIndex;
   }
 
+  bool get btnDisabled {
+    final currentData = inspectionData[_currentTireIndex];
+    if (currentData == null) return false;
+
+    final tire = mountings[_currentTireIndex].tire;
+
+    // Comparar todos los valores de profundidad de una vez
+    final comparisons = [
+      (currentData["prof_external"] as double? ?? 0.0) >
+          (tire?.profExternalCurrent ?? 0.0),
+      (currentData["prof_center"] as double? ?? 0.0) >
+          (tire?.profCenterCurrent ?? 0.0),
+      (currentData["prof_internal"] as double? ?? 0.0) >
+          (tire?.profInternalCurrent ?? 0.0),
+    ];
+
+    return comparisons.any((isInvalid) => isInvalid);
+  }
+
   void _onTireDataChanged(Map<String, dynamic> data) {
-    // Actualizar solo los campos que han cambiado, manteniendo los valores originales para el resto
     final currentData = inspectionData[_currentTireIndex] ?? {};
 
     inspectionData[_currentTireIndex] = {
@@ -115,9 +133,12 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       'prof_center': data['prof_center'] ?? currentData['prof_center'],
       'prof_internal': data['prof_internal'] ?? currentData['prof_internal'],
     };
+
+    // Solo triggerea un rebuild - btnDisabled se recalcula automáticamente
+    setState(() {});
   }
 
-  void _printInspectionData() {
+  void _onFinish() {
     List<Map<String, dynamic>> inspections = [];
 
     for (int i = 0; i < mountings.length; i++) {
@@ -137,13 +158,15 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       });
     }
 
-    final finalData = {
-      "mileage": {"vehicle": licensePlate, "km": widget.data.mileage},
+    final jsonInspectionData = {
+      "mileage": {"vehicle": licensePlate, "km": widget.data.mileage.toInt()},
       "inspections": inspections
     };
 
-    print("=== DATOS DE INSPECCIÓN ===");
-    print(finalData);
+    final jsonString = JsonEncoder().convert(jsonInspectionData);
+
+    print("=== DATOS DE INSPECCIÓN (JSON) ===");
+    print(jsonString);
   }
 
   @override
@@ -180,6 +203,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               onNext: _nextTire,
               onFinish: () =>
                   proceedWithPlateInspection(context, ref, "DEFAULT_PLATE"),
+              btnDisabled: btnDisabled,
             ),
             const SizedBox(height: 0),
           ],
@@ -191,7 +215,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   void proceedWithPlateInspection(
       BuildContext context, WidgetRef ref, String plate) async {
     try {
-      _printInspectionData();
+      _onFinish();
       // Si hay llantas, verificamos si es la última y mostramos el mensaje de éxito
       ToastHelper.show_success(context, "Inspección enviada con éxito.");
       // TODO: Fix navigation - Check if appRouterProvider is available
@@ -264,6 +288,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     required bool isFirst,
     required VoidCallback onNext,
     required VoidCallback onFinish,
+    required bool btnDisabled,
   }) {
     return Container(
       width: double.infinity,
@@ -284,7 +309,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                     fontSize: 14,
                   ),
                 ),
-                isLast ? onFinish : onNext,
+                btnDisabled
+                    ? null
+                    : isLast
+                        ? onFinish
+                        : onNext,
               ),
             ),
           ],
@@ -296,7 +325,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   @override
   void dispose() {
     _currentTireIndex = 0; // Reset
-    _plateController.dispose();
     super.dispose();
   }
 }
