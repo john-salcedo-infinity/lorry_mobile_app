@@ -1,7 +1,9 @@
-import 'dart:convert';
-
+// ignore_for_file: use_build_context_synchronously
 import 'package:app_lorry/helpers/ToastHelper.dart';
 import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/providers/auth/loginProvider.dart';
+import 'package:app_lorry/routers/app_routes.dart';
+import 'package:app_lorry/services/InspectionService.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
@@ -138,8 +140,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     setState(() {});
   }
 
-  void _onFinish() {
+  Future<InspectionResponse> _onFinish() async {
     List<Map<String, dynamic>> inspections = [];
+    ref.read(loadingProviderProvider.notifier).changeLoading(true);
 
     for (int i = 0; i < mountings.length; i++) {
       final data = inspectionData[i];
@@ -163,15 +166,13 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       "inspections": inspections
     };
 
-    final jsonString = JsonEncoder().convert(jsonInspectionData);
-
-    print("=== DATOS DE INSPECCIÓN (JSON) ===");
-    print(jsonString);
+    return await InspectionService.createInspection(jsonInspectionData);
   }
 
   @override
   Widget build(BuildContext context) {
     final currentMounting = mountings[_currentTireIndex];
+    final isLoading = ref.watch(loadingProviderProvider);
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
       body: SafeArea(
@@ -200,6 +201,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
             _buildBottomButtons(
               isLast: inspectedTires.length >= mountings.length - 1,
               isFirst: inspectedTires.isEmpty,
+              isLoading: isLoading,
               onNext: _nextTire,
               onFinish: () =>
                   proceedWithPlateInspection(context, ref, "DEFAULT_PLATE"),
@@ -215,16 +217,20 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   void proceedWithPlateInspection(
       BuildContext context, WidgetRef ref, String plate) async {
     try {
-      _onFinish();
-      // Si hay llantas, verificamos si es la última y mostramos el mensaje de éxito
-      ToastHelper.show_success(context, "Inspección enviada con éxito.");
-      // TODO: Fix navigation - Check if appRouterProvider is available
-      // ref.read(appRouterProvider).go('/home');
-      // Navigator.of(context).pushReplacementNamed('/home');
+      final response = await _onFinish();
+
+      if (response.success == true) {
+        // Navegar al home
+        ref.read(loadingProviderProvider.notifier).changeLoading(false);
+        ref.read(appRouterProvider).replace("/home");
+        ToastHelper.show_success(context, "Inspección enviada con éxito.");
+      } else {
+        ref.read(loadingProviderProvider.notifier).changeLoading(false);
+        ToastHelper.show_alert(context, "Error al enviar la inspección.");
+      }
     } catch (e) {
-      // Cerrar el loading en caso de error también
+      ref.read(loadingProviderProvider.notifier).changeLoading(false);
       Navigator.of(context, rootNavigator: true).pop();
-      // print("extra: $e");
       ToastHelper.show_alert(context, "Error al consultar la placa: $e");
     }
   }
@@ -289,6 +295,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     required VoidCallback onNext,
     required VoidCallback onFinish,
     required bool btnDisabled,
+    required bool isLoading,
   }) {
     return Container(
       width: double.infinity,
@@ -302,14 +309,22 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               child: CustomButton(
                 340,
                 46,
-                Text(
-                  isLast ? "Finalizar Inspección" : "Siguiente Inspección",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
-                ),
-                btnDisabled
+                isLoading
+                    ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(
+                        isLast
+                            ? "Finalizar Inspección"
+                            : "Siguiente Inspección",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                btnDisabled || isLoading
                     ? null
                     : isLast
                         ? onFinish

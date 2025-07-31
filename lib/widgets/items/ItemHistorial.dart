@@ -64,7 +64,7 @@ class ItemHistorial extends ConsumerWidget {
                   Row(
                     children: [
                       Text(
-                        "${historical.inspection.lastInspectionDate.hour}:${historical.inspection.lastInspectionDate.minute}:${historical.inspection.lastInspectionDate.second}",
+                        "${historical.inspection.lastInspectionDate.hour.toString()}:${historical.inspection.lastInspectionDate.minute.toString().padLeft(2, '0')}:${historical.inspection.lastInspectionDate.second.toString().padLeft(2, '0')}",
                         style: Apptheme.titleStylev2,
                       ),
                       const Spacer(),
