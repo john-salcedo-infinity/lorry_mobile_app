@@ -3,6 +3,7 @@ import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:app_lorry/widgets/shared/select_novelty.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
+import 'package:app_lorry/widgets/shared/image_picker_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
@@ -12,10 +13,12 @@ import 'package:go_router/go_router.dart';
 class NoveltyItem {
   final TextEditingController descriptionController;
   int? conceptNovelty;
+  String? imageBase64;
 
   NoveltyItem({
     required this.descriptionController,
     this.conceptNovelty,
+    this.imageBase64,
   });
 
   void dispose() {
@@ -23,10 +26,17 @@ class NoveltyItem {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    final map = {
       'concept_novelty': conceptNovelty,
       'description': descriptionController.text,
     };
+
+    // Solo agregar image si no es null
+    if (imageBase64 != null) {
+      map['image'] = imageBase64;
+    }
+
+    return map;
   }
 }
 
@@ -43,6 +53,7 @@ class ObservationSceenParams {
 class ObservationScreen extends ConsumerStatefulWidget {
   final ObservationSceenParams data;
   const ObservationScreen({super.key, required this.data});
+
   @override
   ConsumerState<ObservationScreen> createState() => _ObservationScreenState();
 }
@@ -57,12 +68,13 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
   void initState() {
     super.initState();
     currentMounting = widget.data.currentMountingResult;
-    
+
     // Cargar novedades existentes si las hay
-    if (widget.data.existingNovelties != null && widget.data.existingNovelties!.isNotEmpty) {
+    if (widget.data.existingNovelties != null &&
+        widget.data.existingNovelties!.isNotEmpty) {
       _loadExistingNovelties(widget.data.existingNovelties!);
     } else {
-      // Agregar una novedad inicial si no hay novedades existentes
+      // Si no hay novedades existentes, agregar una por defecto
       _addNoveltyItem();
     }
   }
@@ -70,13 +82,15 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
   // Método para cargar novedades existentes
   void _loadExistingNovelties(List<Map<String, dynamic>> existingNovelties) {
     for (var novelty in existingNovelties) {
-      final controller = TextEditingController(text: novelty['description'] ?? '');
+      final controller =
+          TextEditingController(text: novelty['description'] ?? '');
       _noveltyItems.add(NoveltyItem(
         descriptionController: controller,
         conceptNovelty: novelty['concept_novelty'],
+        imageBase64: novelty['image'],
       ));
     }
-    
+
     // Si no hay novedades, agregar una por defecto
     if (_noveltyItems.isEmpty) {
       _addNoveltyItem();
@@ -137,7 +151,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
           Expanded(
               child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -295,6 +309,18 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Selector de tipo de novedad
+
+              ImagePickerCard(
+                initialImageBase64: noveltyItem.imageBase64,
+                onImageChanged: (imageBase64) {
+                  noveltyItem.imageBase64 = imageBase64;
+                },
+                width: 136,
+                height: 136,
+              ),
+
+              const SizedBox(height: 20),
+
               Text(
                 'TIPO DE NOVEDAD',
                 style: TextStyle(
@@ -319,10 +345,8 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                   }
                 },
               ),
-              const SizedBox(height: 15),
-
-              // Campo de observación
-              Text(
+              const SizedBox(height: 16),
+               Text(
                 'OBSERVACIÓN',
                 style: TextStyle(
                   fontSize: 14,
@@ -330,11 +354,10 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                   color: Apptheme.textColorSecondary,
                 ),
               ),
-              const SizedBox(height: 8),
               TextFormField(
                 controller: noveltyItem.descriptionController,
-                minLines: 6,
-                maxLines: 6,
+                minLines: 4,
+                maxLines: 4,
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
@@ -347,10 +370,10 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                   filled: true,
                   hintText: 'Escribe tu observación aquí...',
                 ),
-                onChanged: (value) {
-                  noveltyItem.descriptionController.text = value;
-                },
               ),
+              const SizedBox(height: 20),
+
+              // Selector de imagen
             ],
           ),
         ),

@@ -58,7 +58,6 @@ class _SelectNoveltyState extends ConsumerState<SelectNovelty> {
         final List<Novelty> novelties = noveltyResponse.data.results ?? [];
 
         return Container(
-          width: double.infinity,
           height: 50,
           decoration: BoxDecoration(
             border: Border.all(
@@ -84,7 +83,7 @@ class _SelectNoveltyState extends ConsumerState<SelectNovelty> {
                 color: Apptheme.backgroundColor,
                 borderRadius: BorderRadius.circular(4),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 12),
+              padding: const EdgeInsets.only(right: 12),
             ),
             dropdownStyleData: DropdownStyleData(
               maxHeight: 600,
@@ -120,7 +119,7 @@ class _SelectNoveltyState extends ConsumerState<SelectNovelty> {
                 value: novelty.id,
                 child: Column(
                   children: [
-                    Container(
+                    SizedBox(
                       width: double.infinity,
                       child: Text(
                         novelty.name ?? 'Sin nombre',

@@ -1,5 +1,4 @@
 import 'package:app_lorry/config/configs.dart';
-import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:flutter/material.dart';
 
 class TireDataTextField extends StatefulWidget {
