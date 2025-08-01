@@ -28,10 +28,10 @@ GoRouter appRouter(Ref ref) {
         return InspectionDetails(historical: data['historical']);
       },
     ),
-    GoRoute(
-      path: '/rotationview',
-      builder: (context, state) => const RotationScreen(),
-    ),
+    // GoRoute(
+    //   path: '/rotationview',
+    //   builder: (context, state) => const RotationScreen(),
+    // ),
     GoRoute(
       path: '/Dashboard',
       builder: (context, state) => const Dashboard(),
@@ -80,7 +80,8 @@ GoRouter appRouter(Ref ref) {
     GoRoute(
         path: "/observations",
         builder: ((context, state) {
-          return ObservationScreen();
+          final data = state.extra as ObservationSceenParams;
+          return ObservationScreen(data: data);
         })),
     GoRoute(path: "/test", builder: ((context, state) => const TestScreen()))
   ]);

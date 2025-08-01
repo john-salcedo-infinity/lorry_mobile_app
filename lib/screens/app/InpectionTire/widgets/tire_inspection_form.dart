@@ -1,4 +1,5 @@
 import 'package:app_lorry/routers/app_routes.dart';
+import 'package:app_lorry/screens/app/InpectionTire/observations/observation_sceen.dart';
 import 'package:flutter/material.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/models/models.dart';
@@ -168,11 +169,13 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
       ),
     );
   }
-  
+
   Widget _buildAddObservationButton() {
     return TextButton(
       onPressed: () {
-        ref.read(appRouterProvider).push("/observations");
+        ref.read(appRouterProvider).push("/observations",
+            extra: ObservationSceenParams(
+                currentMountingResult: widget.currentMounting));
       },
       style: TextButton.styleFrom(
         foregroundColor: Apptheme.textColorPrimary,

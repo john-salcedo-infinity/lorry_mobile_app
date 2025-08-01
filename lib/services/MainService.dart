@@ -15,12 +15,15 @@ class MainService {
   }
 
   static Future<http.Response> get(path, data, {token = ""}) {
-    Map<String, String> headers = {"Content-Type": "application/json"};
+    Map<String, String> headers = {
+      "Content-Type": "application/json; charset=UTF-8"
+    };
     if (token != "") {
       headers["Authorization"] = "Bearer $token";
     }
- 
-    final url = Uri.parse(Constants.baseUrl + path).replace(queryParameters: data);
+
+    final url =
+        Uri.parse(Constants.baseUrl + path).replace(queryParameters: data);
     final resp = http.get(url, headers: headers);
     return resp;
   }
