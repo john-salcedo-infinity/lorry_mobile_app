@@ -1,9 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:app_lorry/helpers/ToastHelper.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
-import 'package:app_lorry/services/InspectionService.dart';
+import 'package:app_lorry/screens/app/InpectionTire/DetailTire.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
@@ -157,7 +156,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     return noveltiesData[_currentTireIndex] ?? [];
   }
 
-  Future<InspectionResponse> _onFinish() async {
+  void _onFinish() async {
     List<Map<String, dynamic>> inspections = [];
     ref.read(loadingProviderProvider.notifier).changeLoading(true);
 
@@ -184,7 +183,14 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       "inspections": inspections
     };
 
-    return await InspectionService.createInspection(jsonInspectionData);
+    ref.read(appRouterProvider).go(
+          "/DetailTire",
+          extra: DetailTireParams(
+              results: mountings.reversed.toList(),
+              vehicle: mountings.first.vehicle!,
+              mileage: widget.data.mileage,
+              inspectionData: jsonInspectionData),
+        );
   }
 
   @override
@@ -223,8 +229,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               isFirst: inspectedTires.isEmpty,
               isLoading: isLoading,
               onNext: _nextTire,
-              onFinish: () =>
-                  proceedWithPlateInspection(context, ref, "DEFAULT_PLATE"),
+              onFinish: () => _onFinish(),
+              // proceedWithPlateInspection(context, ref, "DEFAULT_PLATE"),
               btnDisabled: btnDisabled,
             ),
             const SizedBox(height: 0),
@@ -232,27 +238,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         ),
       ),
     );
-  }
-
-  void proceedWithPlateInspection(
-      BuildContext context, WidgetRef ref, String plate) async {
-    try {
-      final response = await _onFinish();
-
-      if (response.success == true) {
-        // Navegar al home
-        ref.read(loadingProviderProvider.notifier).changeLoading(false);
-        ref.read(appRouterProvider).replace("/home");
-        ToastHelper.show_success(context, "Inspección enviada con éxito.");
-      } else {
-        ref.read(loadingProviderProvider.notifier).changeLoading(false);
-        ToastHelper.show_alert(context, "Error al enviar la inspección.");
-      }
-    } catch (e) {
-      ref.read(loadingProviderProvider.notifier).changeLoading(false);
-      Navigator.of(context, rootNavigator: true).pop();
-      ToastHelper.show_alert(context, "Error al consultar la placa: $e");
-    }
   }
 
   Widget _buildHeader() {

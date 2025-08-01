@@ -1,5 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
+import 'package:app_lorry/services/InspectionService.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,11 +19,13 @@ class DetailTireParams {
   final List<MountingResult> results;
   final Vehicle vehicle;
   final double mileage;
+  final Map<String, Object>? inspectionData;
 
   DetailTireParams({
     required this.results,
     required this.vehicle,
     required this.mileage,
+    this.inspectionData = const {},
   });
 }
 
@@ -74,7 +81,8 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                       const SizedBox(height: 20),
 
                       // Tarjetas de llantas generadas dinámicamente
-                      for (var result in tires) _buildTireCard(result),
+                      for (var result in tires)
+                        _buildTireCard(result, widget.data.inspectionData),
                     ],
                   ),
                 ),
@@ -82,7 +90,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
             ),
 
             // Botón fijo en la parte inferior
-            _buildBottomButton(tires),
+            _buildBottomButton(tires, widget.data.inspectionData),
           ],
         ),
       ),
@@ -180,12 +188,23 @@ class _DetailTireState extends ConsumerState<DetailTire> {
   }
 
   /// Widget de la tarjeta de llanta
-  Widget _buildTireCard(MountingResult tire) {
-    // Extraer número de posición como entero desde "P1", "P2", etc.
+  Widget _buildTireCard(
+      MountingResult tire, Map<String, Object>? inspectionData) {
+    // Verificar si la llanta está inspeccionada
+    bool isInspected = false;
+    if (inspectionData != null && inspectionData.containsKey('inspections')) {
+      final inspections = inspectionData['inspections'] as List<dynamic>;
+      isInspected =
+          inspections.any((inspection) => inspection['mounting'] == tire.id);
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
+        border: Border.all(
+          color: isInspected ? Apptheme.primary : Colors.transparent,
+          width: 1,
+        ),
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [BoxShadow(color: Colors.black12)],
@@ -203,7 +222,9 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                     topLeft: Radius.circular(12),
                     bottomLeft: Radius.circular(12),
                   ),
-                  color: Apptheme.tireBackground,
+                  color: isInspected
+                      ? Apptheme.lightOrange
+                      : Apptheme.tireBackground,
                 ),
               ),
               Positioned(
@@ -228,6 +249,17 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                   ),
                 ),
               ),
+              isInspected
+                  ? Positioned(
+                      left: 10,
+                      top: 10,
+                      child: Icon(
+                        Icons.check_circle,
+                        color: Apptheme.primary,
+                        size: 24,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ],
           ),
           Expanded(
@@ -237,58 +269,69 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTireRow("Serie", tire.tire?.integrationCode as String,
-                      "Diseño", tire.tire!.design?.name as String),
+                      "Diseño", tire.tire!.design?.name as String,
+                      isInspected: isInspected),
                   const SizedBox(height: 8),
                   _buildTireRow(
                     "Marca",
                     tire.tire?.design?.brand?.name ?? '-',
                     "Banda",
                     tire.tire?.band?.name ?? '-',
+                    isInspected: isInspected,
                   ),
                   const SizedBox(height: 15),
                   SizedBox(
                     width: 290,
                     height: 46,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Encontrar el índice de esta llanta en la lista completa
-                        final allTiresIterable = widget.data.results
-                            .where((result) => result.tire != null)
-                            .toList()
-                            .reversed;
-                        final allTires = allTiresIterable.toList();
-                        
-                        final tireIndex = allTires.indexOf(tire);
+                    child: Opacity(
+                      opacity: isInspected ? 0.5 : 1.0,
+                      child: ElevatedButton(
+                        onPressed: isInspected
+                            ? () {}
+                            : () {
+                                // Encontrar el índice de esta llanta en la lista completa
+                                final allTiresIterable = widget.data.results
+                                    .where((result) => result.tire != null)
+                                    .toList()
+                                    .reversed;
+                                final allTires = allTiresIterable.toList();
 
-                        // Navegar a la inspección empezando desde esta llanta específica
-                        ref.read(appRouterProvider).push(
-                              '/TireProfundity',
-                              extra: TireProfundityParams(
-                                data: allTires,
-                                vehicle: widget.data.vehicle.id ?? 0,
-                                mileage: widget.data.mileage,
-                                startIndex:
-                                    tireIndex, // Empezar desde esta llanta
-                              ),
-                            );
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          side: const BorderSide(
-                            color: Apptheme.textColorPrimary,
-                            width: 2,
+                                final tireIndex = allTires.indexOf(tire);
+
+                                // Navegar a la inspección empezando desde esta llanta específica
+                                ref.read(appRouterProvider).push(
+                                      '/TireProfundity',
+                                      extra: TireProfundityParams(
+                                        data: allTires,
+                                        vehicle: widget.data.vehicle.id ?? 0,
+                                        mileage: widget.data.mileage,
+                                        startIndex:
+                                            tireIndex, // Empezar desde esta llanta
+                                      ),
+                                    );
+                              },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            side: BorderSide(
+                              color: isInspected
+                                  ? Apptheme.primary
+                                  : Apptheme.textColorPrimary,
+                              width: 2,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            elevation: 0),
+                        child: Text(
+                          isInspected ? "Inspeccionado" : "Inspeccionar",
+                          style: TextStyle(
+                            color: isInspected
+                                ? Apptheme.primary
+                                : Apptheme.textColorPrimary,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          elevation: 0),
-                      child: const Text(
-                        "Inspeccionar",
-                        style: TextStyle(
-                          color: Apptheme.textColorPrimary,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -304,18 +347,20 @@ class _DetailTireState extends ConsumerState<DetailTire> {
 
   /// Widget de la fila de información de llanta
   Widget _buildTireRow(
-      String label1, String value1, String label2, String value2) {
+      String label1, String value1, String label2, String value2,
+      {bool isInspected = false}) {
     return Row(
       children: [
-        _buildTireColumn(label1, value1),
+        _buildTireColumn(label1, value1, isInspected: isInspected),
         const SizedBox(width: 12),
-        _buildTireColumn(label2, value2),
+        _buildTireColumn(label2, value2, isInspected: isInspected),
       ],
     );
   }
 
   /// Widget de una celda de llanta
-  Widget _buildTireColumn(String label, String value) {
+  Widget _buildTireColumn(String label, String value,
+      {bool isInspected = false}) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -323,16 +368,26 @@ class _DetailTireState extends ConsumerState<DetailTire> {
           Text(label,
               style: const TextStyle(fontSize: 12, color: Apptheme.grayInput)),
           const SizedBox(height: 8),
-          buildTireInfo(value),
+          buildTireInfo(value, isInspected: isInspected),
         ],
       ),
     );
   }
 
   /// Botón de la parte inferior
-  Widget _buildBottomButton(Iterable<MountingResult> mountingResults) {
+  Widget _buildBottomButton(Iterable<MountingResult> mountingResults,
+      Map<String, Object>? inspectionData) {
     final mountingWithTires =
         mountingResults.where((result) => result.tire != null).toList();
+
+    // Verificar si todas las llantas han sido inspeccionadas
+    bool allTiresInspected = false;
+    if (inspectionData != null && inspectionData.containsKey('inspections')) {
+      final inspections = inspectionData['inspections'] as List<dynamic>;
+      allTiresInspected = mountingWithTires.every((tire) =>
+          inspections.any((inspection) => inspection['mounting'] == tire.id));
+    }
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
@@ -340,28 +395,53 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       child: CustomButton(
         342,
         46,
-        const Text(
-          "Iniciar Inspección",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+        Text(
+          allTiresInspected ? "Finalizar Inspección" : "Iniciar Inspección",
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
         ),
         () {
-          // Pasamos toda la lista de llantas a la ruta (sin startIndex = empezar desde 0)
-          ref.read(appRouterProvider).push(
-                '/TireProfundity',
-                extra: TireProfundityParams(
-                    data: mountingWithTires,
-                    vehicle: widget.data.vehicle.id ?? 0,
-                    mileage: widget.data.mileage),
-              );
+          if (allTiresInspected) {
+            // Finalizar inspección
+            _finishInspection(inspectionData);
+          } else {
+            // Iniciar inspección normal
+            ref.read(appRouterProvider).push(
+                  '/TireProfundity',
+                  extra: TireProfundityParams(
+                      data: mountingWithTires,
+                      vehicle: widget.data.vehicle.id ?? 0,
+                      mileage: widget.data.mileage),
+                );
+          }
         },
       ),
     );
   }
 
-  Widget buildTireInfo(String value) {
+  // Método para finalizar la inspección
+  void _finishInspection(Map<String, Object>? inspectionData) async {
+    try {
+      ref.read(loadingProviderProvider.notifier).changeLoading(true);
+      final response = await InspectionService.createInspection(
+          inspectionData as Map<String, Object>);
+
+      ref.read(loadingProviderProvider.notifier).changeLoading(false);
+      if (response.success == true) {
+        ref.read(appRouterProvider).replace("/home");
+        ToastHelper.show_success(context, "Inspección enviada con éxito.");
+      } else {
+        ToastHelper.show_alert(context, "Error al enviar la inspección.");
+      }
+    } catch (e) {
+      ref.read(loadingProviderProvider.notifier).changeLoading(false);
+      ToastHelper.show_alert(context, "Error al finalizar la inspección: $e");
+    }
+  }
+
+  Widget buildTireInfo(String value, {bool isInspected = false}) {
     return Container(
       width: 110, // Aumentamos el ancho
-      height: 38, // Un poco más alto para mejorar la visibilidad
+      height: 38,
       padding:
           const EdgeInsets.symmetric(horizontal: 8), // Reducimos el padding
       decoration: BoxDecoration(
@@ -372,10 +452,10 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       child: Center(
         child: Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Apptheme.textColorPrimary),
+              color: isInspected ? Apptheme.primary : Apptheme.textColorPrimary,
+              fontWeight: FontWeight.bold),
           overflow: TextOverflow
               .ellipsis, // Si el texto es muy largo, lo trunca con "..."
         ),

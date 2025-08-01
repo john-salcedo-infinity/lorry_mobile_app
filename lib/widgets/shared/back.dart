@@ -11,10 +11,9 @@ class Back extends StatelessWidget {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     } else {
-      Navigator.pushNamedAndRemoveUntil(
+      Navigator.pushNamed(
         context,
-        '/', // or your home route name
-        (route) => false,
+        '/home', // or your home route name
       );
     }
   }
