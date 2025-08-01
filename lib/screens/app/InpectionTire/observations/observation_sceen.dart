@@ -32,8 +32,12 @@ class NoveltyItem {
 
 class ObservationSceenParams {
   final MountingResult currentMountingResult;
+  final List<Map<String, dynamic>>? existingNovelties;
 
-  ObservationSceenParams({required this.currentMountingResult});
+  ObservationSceenParams({
+    required this.currentMountingResult,
+    this.existingNovelties,
+  });
 }
 
 class ObservationScreen extends ConsumerStatefulWidget {
@@ -53,8 +57,30 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
   void initState() {
     super.initState();
     currentMounting = widget.data.currentMountingResult;
-    // Agregar una novedad inicial
-    _addNoveltyItem();
+    
+    // Cargar novedades existentes si las hay
+    if (widget.data.existingNovelties != null && widget.data.existingNovelties!.isNotEmpty) {
+      _loadExistingNovelties(widget.data.existingNovelties!);
+    } else {
+      // Agregar una novedad inicial si no hay novedades existentes
+      _addNoveltyItem();
+    }
+  }
+
+  // Método para cargar novedades existentes
+  void _loadExistingNovelties(List<Map<String, dynamic>> existingNovelties) {
+    for (var novelty in existingNovelties) {
+      final controller = TextEditingController(text: novelty['description'] ?? '');
+      _noveltyItems.add(NoveltyItem(
+        descriptionController: controller,
+        conceptNovelty: novelty['concept_novelty'],
+      ));
+    }
+    
+    // Si no hay novedades, agregar una por defecto
+    if (_noveltyItems.isEmpty) {
+      _addNoveltyItem();
+    }
   }
 
   @override
@@ -154,14 +180,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
               ),
               () {
                 final novelties = _getNoveltiesArray();
-                print('Novelties Array: $novelties');
-                // Aquí puedes procesar el array de novedades
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${novelties.length} novedades guardadas'),
-                    backgroundColor: Apptheme.AlertOrange,
-                  ),
-                );
+                Navigator.of(context).pop(novelties);
               },
             ),
           ),

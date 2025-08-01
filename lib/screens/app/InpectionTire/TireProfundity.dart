@@ -43,6 +43,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   // Mapa para almacenar los datos de inspección de cada mounting
   Map<int, Map<String, dynamic>> inspectionData = {};
 
+  // Mapa para almacenar las novedades de cada mounting
+  Map<int, List<Map<String, dynamic>>> noveltiesData = {};
+
   // Lista para trackear qué llantas han sido inspeccionadas
   Set<int> inspectedTires = {};
 
@@ -75,6 +78,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         'prof_center': mounting.tire?.profCenterCurrent ?? 0.0,
         'prof_internal': mounting.tire?.profInternalCurrent ?? 0.0,
       };
+
+      // Inicializar el array de novedades vacío para cada mounting
+      noveltiesData[i] = [];
     }
   }
 
@@ -140,12 +146,24 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     setState(() {});
   }
 
+  // Método para agregar novedades al mounting actual
+  void _addNoveltiesToCurrentMounting(List<Map<String, dynamic>> novelties) {
+    noveltiesData[_currentTireIndex] = novelties;
+    setState(() {});
+  }
+
+  // Método para obtener las novedades del mounting actual
+  List<Map<String, dynamic>> _getCurrentMountingNovelties() {
+    return noveltiesData[_currentTireIndex] ?? [];
+  }
+
   Future<InspectionResponse> _onFinish() async {
     List<Map<String, dynamic>> inspections = [];
     ref.read(loadingProviderProvider.notifier).changeLoading(true);
 
     for (int i = 0; i < mountings.length; i++) {
       final data = inspectionData[i];
+      final novelties = noveltiesData[i] ?? [];
 
       inspections.add({
         "unmount": false,
@@ -155,7 +173,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         "prof_external": data?['prof_external'] ?? 0,
         "prof_center": data?['prof_center'] ?? 0,
         "prof_internal": data?['prof_internal'] ?? 0,
-        "novelty": [],
+        "novelty": novelties,
         "service": [],
         "service_action": []
       });
@@ -193,6 +211,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                     TireInspectionForm(
                       currentMounting: currentMounting,
                       onDataChanged: _onTireDataChanged,
+                      existingNovelties: _getCurrentMountingNovelties(),
+                      onNoveltiesChanged: _addNoveltiesToCurrentMounting,
                     ),
                   ],
                 ),

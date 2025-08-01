@@ -9,11 +9,15 @@ import 'tire_data_text_field.dart';
 class TireInspectionForm extends ConsumerStatefulWidget {
   final MountingResult currentMounting;
   final Function(Map<String, dynamic>) onDataChanged;
+  final List<Map<String, dynamic>> existingNovelties;
+  final Function(List<Map<String, dynamic>>) onNoveltiesChanged;
 
   const TireInspectionForm({
     super.key,
     required this.currentMounting,
     required this.onDataChanged,
+    required this.existingNovelties,
+    required this.onNoveltiesChanged,
   });
 
   @override
@@ -172,10 +176,19 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
 
   Widget _buildAddObservationButton() {
     return TextButton(
-      onPressed: () {
-        ref.read(appRouterProvider).push("/observations",
-            extra: ObservationSceenParams(
-                currentMountingResult: widget.currentMounting));
+      onPressed: () async {
+        final result = await ref.read(appRouterProvider).push<List<Map<String, dynamic>>>(
+          "/observations",
+          extra: ObservationSceenParams(
+            currentMountingResult: widget.currentMounting,
+            existingNovelties: widget.existingNovelties,
+          ),
+        );
+        
+        // Si se devolvieron novedades, actualizar el estado
+        if (result != null) {
+          widget.onNoveltiesChanged(result);
+        }
       },
       style: TextButton.styleFrom(
         foregroundColor: Apptheme.textColorPrimary,
@@ -183,12 +196,37 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
           borderRadius: BorderRadius.circular(8),
         ),
       ),
-      child: const Text(
-        "Reportar Novedad",
-        style: TextStyle(
-          fontWeight: FontWeight.w900,
-          fontSize: 16,
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            widget.existingNovelties.isNotEmpty 
+              ? "Editar Novedades"
+              : "Reportar Novedad",
+            style: const TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 16,
+            ),
+          ),
+          if (widget.existingNovelties.isNotEmpty) ...[
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                color: Apptheme.AlertOrange,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                '${widget.existingNovelties.length}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }
