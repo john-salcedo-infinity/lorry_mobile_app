@@ -49,4 +49,5 @@ flutter:
   assets:
     - assets/
     - assets/icons/
+    - assets/icons/services/
     - .env

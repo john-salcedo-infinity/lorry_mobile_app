@@ -38,8 +38,8 @@ class CustomButton extends ConsumerWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              foregroundColor: type == 0 ? Apptheme.primary : Colors.white,
-              backgroundColor: type == 0 ? Colors.white : Apptheme.primary,
+              foregroundColor: _getForegroundColor(type),
+              backgroundColor: _getBackgroundColor(type),
               disabledBackgroundColor: Colors.grey[400],
               disabledForegroundColor: Colors.grey[700],
               padding: EdgeInsets.zero, // Elimina el padding interno
@@ -49,7 +49,7 @@ class CustomButton extends ConsumerWidget {
                   width: 2,
                   color: onPressed == null
                       ? Colors.transparent // Color del borde desactivado
-                      : (type == 0 ? Apptheme.darkorange : Apptheme.darkorange),
+                      : _getBorderColor(type),
                 ),
               ),
             ),
@@ -61,5 +61,50 @@ class CustomButton extends ConsumerWidget {
         const SizedBox(height: 12), //  gap: 12px
       ],
     );
+  }
+
+  Color _getForegroundColor(int? type) {
+    switch (type) {
+      case 0:
+        return Apptheme.primary; // Texto naranja en fondo blanco
+      case 2:
+        return Apptheme.primary; // Texto naranja en fondo blanco
+      case 3:
+        return Colors.white; // Texto blanco en fondo verde
+      case 4:
+        return Apptheme.secondary; // Texto verde en fondo blanco
+      default:
+        return Colors.white; // Texto blanco en fondo naranja (type 1)
+    }
+  }
+
+  Color _getBackgroundColor(int? type) {
+    switch (type) {
+      case 0:
+        return Colors.white; // Fondo blanco
+      case 2:
+        return Colors.white; // Fondo blanco
+      case 3:
+        return Apptheme.secondary; // Fondo verde
+      case 4:
+        return Colors.white; // Fondo blanco
+      default:
+        return Apptheme.primary; // Fondo naranja (type 1)
+    }
+  }
+
+  Color _getBorderColor(int? type) {
+    switch (type) {
+      case 0:
+        return Apptheme.darkorange; // Borde naranja oscuro
+      case 2:
+        return Apptheme.darkorange; // Borde naranja oscuro
+      case 3:
+        return Apptheme.textColorPrimary; // Borde verde oscuro
+      case 4:
+        return Apptheme.secondary; // Borde verde
+      default:
+        return Apptheme.darkorange; // Borde naranja oscuro (type 1)
+    }
   }
 }

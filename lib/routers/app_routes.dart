@@ -1,4 +1,5 @@
 import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/screens/app/InpectionTire/services/services_screen.dart';
 import 'package:app_lorry/screens/screens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -17,9 +18,13 @@ GoRouter appRouter(Ref ref) {
       path: '/login',
       builder: (context, state) => const LoginScreen(),
     ),
+    // GoRoute(
+    //   path: '/home',
+    //   builder: (context, state) => const HomeScreen(),
+    // ),
     GoRoute(
       path: '/home',
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const ServicesScreen(),
     ),
     GoRoute(
       path: '/inspectionDetails',
