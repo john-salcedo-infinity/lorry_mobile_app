@@ -1,3 +1,4 @@
+import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/models/Service_data.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:flutter/material.dart';
@@ -5,39 +6,69 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class ServiceButton extends StatelessWidget {
   final ServiceConfig serviceConfig;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final int serviceCount;
+  final bool isDisabled;
 
   const ServiceButton({
     super.key,
     required this.serviceConfig,
     required this.onTap,
+    this.serviceCount = 0,
+    this.isDisabled = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return CustomButton(
-      159,
-      110,
-      Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _buildServiceIcon(context, serviceConfig.icon),
-          const SizedBox(height: 8),
-          Text(
-            serviceConfig.text,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w900,
-            ),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        CustomButton(
+          159,
+          110,
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildServiceIcon(context, serviceConfig.icon),
+              const SizedBox(height: 8),
+              Text(
+                serviceConfig.text,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: isDisabled ? Colors.grey : null,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
           ),
-        ],
-      ),
-      onTap,
-      type: 4,
+          isDisabled ? null : onTap,
+          type: 4,
+        ),
+        if (serviceCount > 0)
+          Positioned(
+            top: -8,
+            right: 10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration:  BoxDecoration(
+                color: Apptheme.lightOrange2,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                serviceCount.toString(),
+                style: const TextStyle(
+                  color: Apptheme.primary,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 

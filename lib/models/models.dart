@@ -5,6 +5,10 @@ export './User.dart';
 // Manual Plate Register
 export './ManualPlateRegisterResponse.dart';
 
+// Services
+export './Service_data.dart';
+export './ProviderResponse.dart';
+
 // Inspection
 export './InspectionHistory.dart';
 export './InspectionResponse.dart';

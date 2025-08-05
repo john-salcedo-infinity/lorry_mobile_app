@@ -3,6 +3,7 @@ import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/screens/app/InpectionTire/DetailTire.dart';
+import 'package:app_lorry/screens/app/InpectionTire/services/services_screen.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   // Mapa para almacenar las novedades de cada mounting
   Map<int, List<Map<String, dynamic>>> noveltiesData = {};
 
+  // Mapa para almacenar los servicios de cada mounting
+  Map<int, List<Map<String, dynamic>>> servicesData = {};
+
   // Lista para trackear qué llantas han sido inspeccionadas
   Set<int> inspectedTires = {};
 
@@ -80,6 +84,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
       // Inicializar el array de novedades vacío para cada mounting
       noveltiesData[i] = [];
+      servicesData[i] = [];
     }
   }
 
@@ -156,6 +161,29 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     return noveltiesData[_currentTireIndex] ?? [];
   }
 
+  // Método para obtener los servicios del mounting actual
+  List<Map<String, dynamic>> _getCurrentMountingServices() {
+    return servicesData[_currentTireIndex] ?? [];
+  }
+
+  void _onService() async {
+    final currentMounting = mountings[_currentTireIndex];
+    final currentServices = _getCurrentMountingServices();
+    
+    final result = await context.push(
+      '/services',
+      extra: ServiceScreenParams(
+        currentMountingResult: currentMounting,
+        existingServices: currentServices,
+      ),
+    );
+    
+    if (result != null && result is List<Map<String, dynamic>>) {
+      servicesData[_currentTireIndex] = result;
+      setState(() {});
+    }
+  }
+
   void _onFinish() async {
     List<Map<String, dynamic>> inspections = [];
     ref.read(loadingProviderProvider.notifier).changeLoading(true);
@@ -163,6 +191,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     for (int i = 0; i < mountings.length; i++) {
       final data = inspectionData[i];
       final novelties = noveltiesData[i] ?? [];
+      final services = servicesData[i] ?? [];
 
       inspections.add({
         "unmount": false,
@@ -173,7 +202,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         "prof_center": data?['prof_center'] ?? 0,
         "prof_internal": data?['prof_internal'] ?? 0,
         "novelty": novelties,
-        "service": [],
+        "service": services,
         "service_action": []
       });
     }
@@ -230,6 +259,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               isLoading: isLoading,
               onNext: _nextTire,
               onFinish: () => _onFinish(),
+              onService: () => _onService(),
               // proceedWithPlateInspection(context, ref, "DEFAULT_PLATE"),
               btnDisabled: btnDisabled,
             ),
@@ -298,18 +328,62 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     required bool isLast,
     required bool isFirst,
     required VoidCallback onNext,
+    required VoidCallback onService,
     required VoidCallback onFinish,
     required bool btnDisabled,
     required bool isLoading,
   }) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Botón siguiente/finalizar
+            Expanded(
+              child: CustomButton(
+                  340,
+                  46,
+                  type: 2,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Servicios",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      if (_getCurrentMountingServices().isNotEmpty) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
+                          decoration: const BoxDecoration(
+                            color: Apptheme.primary,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.all(Radius.circular(4)),
+                          ),
+                          child: Text(
+                            '${_getCurrentMountingServices().length}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  onService),
+            ),
+            const SizedBox(width: 20), // Espacio entre botones
             Expanded(
               child: CustomButton(
                 340,
@@ -326,7 +400,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                             : "Siguiente Inspección",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                          fontSize: 16,
                         ),
                       ),
                 btnDisabled || isLoading

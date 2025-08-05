@@ -144,6 +144,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Apptheme.backgroundColor,
       body: SafeArea(
           child: Column(
         children: [

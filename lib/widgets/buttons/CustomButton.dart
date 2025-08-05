@@ -22,41 +22,57 @@ class CustomButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
-        Container(
-          width: width, // Ajusta el ancho
-          height: height, // Ajusta la altura
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4), // border-radius: 4px
-            boxShadow: [
-              BoxShadow(
-                color: Colors.white.withAlpha(0), // Simula el borde inferior
-                offset: const Offset(0, 2), // Grosor del borde inferior
-                blurRadius: 0,
-              ),
-            ],
-          ),
-          child: ElevatedButton(
-            onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              foregroundColor: _getForegroundColor(type),
-              backgroundColor: _getBackgroundColor(type),
-              disabledBackgroundColor: Colors.grey[400],
-              disabledForegroundColor: Colors.grey[700],
-              padding: EdgeInsets.zero, // Elimina el padding interno
-              shape: RoundedRectangleBorder(
+        Stack(
+          children: [
+            Container(
+              width: width, // Ajusta el ancho
+              height: height, // Ajusta la altura
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4), // border-radius: 4px
-                side: BorderSide(
-                  width: 2,
-                  color: onPressed == null
-                      ? Colors.transparent // Color del borde desactivado
-                      : _getBorderColor(type),
+                boxShadow: [
+                  BoxShadow(
+                    color: onPressed == null 
+                        ? _getBorderColor(type).withAlpha(50) // Sombra difuminada cuando está desactivado
+                        : _getBorderColor(type), // Sombra normal cuando está activo
+                    offset: const Offset(0, 3), // Grosor del borde inferior
+                    blurRadius: 0,
+                  ),
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: onPressed,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: _getForegroundColor(type),
+                  backgroundColor: _getBackgroundColor(type),
+                  disabledBackgroundColor: _getBackgroundColor(type).withAlpha(50),
+                  disabledForegroundColor: _getForegroundColor(type).withAlpha(50),
+                  padding: EdgeInsets.zero, // Elimina el padding interno
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4), // border-radius: 4px
+                    side: BorderSide(
+                      width: 2,
+                      color: onPressed == null
+                          ? _getBorderColor(type).withAlpha(50)
+                          : _getBorderColor(type),
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: child,
                 ),
               ),
             ),
-            child: Center(
-              child: child,
-            ),
-          ),
+            // Overlay difuminado cuando está desactivado
+            if (onPressed == null)
+              Container(
+                width: width,
+                height: height,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: Colors.white.withAlpha(150), 
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 12), //  gap: 12px
       ],
