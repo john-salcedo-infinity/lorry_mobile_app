@@ -210,28 +210,11 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     final isLoading = ref.watch(manualPlateRegisterLoadingProvider);
 
     return Center(
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: isLoading 
-              ? Apptheme.primary.withAlpha(20) 
-              : Apptheme.primary,
-          minimumSize: const Size(double.infinity, 46),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        onPressed: isLoading ? null : () => _validateAndShowDialog(context),
-        child: isLoading
-            ? Apptheme.loadingIndicator()
-            : const Text(
-                "Guardar",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-      ),
+      child: CustomButton(
+          double.infinity,
+          50,
+          isLoading ? Apptheme.loadingIndicatorButton() : const Text("Guardar"),
+          isLoading ? null : () => _validateAndShowDialog(context)),
     );
   }
 
