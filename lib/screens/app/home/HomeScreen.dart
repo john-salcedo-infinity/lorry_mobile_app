@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:app_lorry/services/services.dart';
+import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/forms/customInput.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,7 +10,6 @@ import 'package:app_lorry/models/models.dart' hide Provider;
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/providers/app/home/homeProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
-import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/widgets/items/ItemHistorial.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -119,8 +119,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         if (pageNumber != null) 'page': pageNumber,
       };
 
-      final response =
-          await Homeservice.GetInspectionHistory(ref, newQueryParams.cast<String, String>());
+      final response = await Homeservice.GetInspectionHistory(
+          ref, newQueryParams.cast<String, String>());
 
       ref.read(inspectionsProvider.notifier).addResults(response.data.results);
       ref.read(inspectionPaginationProvider.notifier).state =
@@ -243,172 +243,165 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         backgroundColor: Apptheme.backgroundColor,
         title: const Image(image: AssetImage('assets/icons/logo_lorryv2.png')),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: (ScrollNotification notification) {
-                // Detectar cambios en la dirección del scroll
-                if (notification is ScrollUpdateNotification) {
-                  final position = _scrollController.position;
-                  final currentPosition = position.pixels;
-
-                  // Si está en zona de pull-to-refresh (posición negativa)
-                  if (currentPosition < 0) {
-                    // Detectar si cambió de dirección hacia abajo después de haber ido hacia arriba
-                    if (_lastScrollPosition < currentPosition &&
-                        currentPosition > -30) {
-                      // Usuario cambió de dirección hacia abajo, marcar para cancelar refresh
-                      setState(() {
-                        _shouldCancelRefresh = true;
-                      });
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (ScrollNotification notification) {
+                  // Detectar cambios en la dirección del scroll
+                  if (notification is ScrollUpdateNotification) {
+                    final position = _scrollController.position;
+                    final currentPosition = position.pixels;
+        
+                    // Si está en zona de pull-to-refresh (posición negativa)
+                    if (currentPosition < 0) {
+                      // Detectar si cambió de dirección hacia abajo después de haber ido hacia arriba
+                      if (_lastScrollPosition < currentPosition &&
+                          currentPosition > -30) {
+                        // Usuario cambió de dirección hacia abajo, marcar para cancelar refresh
+                        setState(() {
+                          _shouldCancelRefresh = true;
+                        });
+                      }
+                      // Si está yendo más hacia arriba, permitir refresh
+                      else if (_lastScrollPosition > currentPosition) {
+                        setState(() {
+                          _shouldCancelRefresh = false;
+                        });
+                      }
                     }
-                    // Si está yendo más hacia arriba, permitir refresh
-                    else if (_lastScrollPosition > currentPosition) {
+                    // Reset cuando vuelve a posición normal
+                    else if (currentPosition >= 0) {
                       setState(() {
                         _shouldCancelRefresh = false;
                       });
                     }
+        
+                    _lastScrollPosition = currentPosition;
                   }
-                  // Reset cuando vuelve a posición normal
-                  else if (currentPosition >= 0) {
-                    setState(() {
-                      _shouldCancelRefresh = false;
-                    });
-                  }
-
-                  _lastScrollPosition = currentPosition;
-                }
-                return false;
-              },
-              child: RefreshIndicator(
-                key: _refreshIndicatorKey,
-                color: Apptheme.primary,
-                backgroundColor: Colors.white,
-                strokeWidth: 2.0,
-                displacement: 50.0,
-                onRefresh: _onRefresh,
-                child: CustomScrollView(
-                  controller: _scrollController,
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const _Profile(),
-                              const SizedBox(height: 10),
-                              const Text(
-                                "ÚLTIMAS INSPECCIONES",
-                                style: Apptheme.subtitleStyle,
-                              ),
-                              const SizedBox(height: 10),
-                              Container(
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(4)),
+                  return false;
+                },
+                child: RefreshIndicator(
+                  key: _refreshIndicatorKey,
+                  color: Apptheme.primary,
+                  backgroundColor: Colors.white,
+                  strokeWidth: 2.0,
+                  displacement: 50.0,
+                  onRefresh: _onRefresh,
+                  child: CustomScrollView(
+                    controller: _scrollController,
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    slivers: [
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const _Profile(),
+                                const SizedBox(height: 10),
+                                const Text(
+                                  "ÚLTIMAS INSPECCIONES",
+                                  style: Apptheme.subtitleStyle,
                                 ),
-                                child: CustomInputField(
-                                  showBorder: false,
-                                  hint: "Buscar por VHC asociada",
-                                  onChanged: _onSearchChanged,
-                                  showLabel: false,
-                                  suffixIcon: Icon(
-                                    Icons.search,
-                                    color: Apptheme.textColorPrimary,
+                                const SizedBox(height: 10),
+                                Container(
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(4)),
+                                  ),
+                                  child: CustomInputField(
+                                    showBorder: false,
+                                    hint: "Buscar por VHC asociada",
+                                    onChanged: _onSearchChanged,
+                                    showLabel: false,
+                                    suffixIcon: Icon(
+                                      Icons.search,
+                                      color: Apptheme.textColorPrimary,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                            ],
+                                const SizedBox(height: 20),
+                              ],
+                            ),
                           ),
                         ),
                       ),
-                    ),
-
-                    // Lista de inspecciones
-                    if (isLoading && inspectionsList.isEmpty)
-                      SliverToBoxAdapter(
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          child: Center(child: Apptheme.loadingIndicator()),
+        
+                      // Lista de inspecciones
+                      if (isLoading && inspectionsList.isEmpty)
+                        SliverToBoxAdapter(
+                          child: Container(
+                            padding: const EdgeInsets.all(20),
+                            child: Center(child: Apptheme.loadingIndicator()),
+                          ),
+                        )
+                      else if (inspectionsList.isEmpty && !isLoading)
+                        const SliverToBoxAdapter(
+                          child: Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(20.0),
+                              child: Text('No se encontraron inspecciones'),
+                            ),
+                          ),
+                        )
+                      else
+                        SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              if (index < inspectionsList.length) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 20),
+                                  child: ItemHistorial(
+                                    historical: inspectionsList[index],
+                                    isSelected: selectedIndex == index,
+                                    onTap: () {
+                                      setState(() {
+                                        // Si ya está seleccionado, deseleccionar; si no, seleccionar
+                                        selectedIndex =
+                                            selectedIndex == index ? null : index;
+                                      });
+                                    },
+                                  ),
+                                );
+                              } else if (isLoadingMore) {
+                                // Mostrar indicador de carga al final
+                                return Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child:
+                                      Center(child: Apptheme.loadingIndicator()),
+                                );
+                              }
+                              return null;
+                            },
+                            childCount:
+                                inspectionsList.length + (isLoadingMore ? 1 : 0),
+                          ),
                         ),
-                      )
-                    else if (inspectionsList.isEmpty && !isLoading)
+        
+                      // Espacio adicional al final para mejor UX
                       const SliverToBoxAdapter(
-                        child: Center(
-                          child: Padding(
-                            padding: EdgeInsets.all(20.0),
-                            child: Text('No se encontraron inspecciones'),
-                          ),
-                        ),
-                      )
-                    else
-                      SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            if (index < inspectionsList.length) {
-                              return Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 20),
-                                child: ItemHistorial(
-                                  historical: inspectionsList[index],
-                                  isSelected: selectedIndex == index,
-                                  onTap: () {
-                                    setState(() {
-                                      // Si ya está seleccionado, deseleccionar; si no, seleccionar
-                                      selectedIndex = selectedIndex == index ? null : index;
-                                    });
-                                  },
-                                ),
-                              );
-                            } else if (isLoadingMore) {
-                              // Mostrar indicador de carga al final
-                              return Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child:
-                                    Center(child: Apptheme.loadingIndicator()),
-                              );
-                            }
-                            return null;
-                          },
-                          childCount:
-                              inspectionsList.length + (isLoadingMore ? 1 : 0),
-                        ),
+                        child: SizedBox(height: 20),
                       ),
-
-                    // Espacio adicional al final para mejor UX
-                    const SliverToBoxAdapter(
-                      child: SizedBox(height: 20),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ), // Cierre del NotificationListener
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-            child: CustomButton(
-              342,
-              46,
-              const Text(
-                "Iniciar nueva inspección",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-              () {
-                ref.read(appRouterProvider).push('/ManualPlateRegister');
-              },
+              ), // Cierre del NotificationListener
             ),
-          ),
-        ],
+            BottomButton(
+              params: BottombuttonParams(
+                  text: "Iniciar nueva inspección",
+                  onPressed: () {
+                    ref.read(appRouterProvider).push('/ManualPlateRegister');
+                  }),
+            ),
+          ],
+        ),
       ),
     );
   }

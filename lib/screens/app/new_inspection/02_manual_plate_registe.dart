@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
+import 'package:app_lorry/widgets/shared/ballBeatLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -121,7 +122,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
               style: const TextStyle(
                 fontSize: 12,
                 color: Apptheme.textColorSecondary,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.normal,
               ),
             ),
           ),
@@ -164,11 +165,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
         children: [
           SvgPicture.asset(
             'assets/icons/Car_Icon.svg',
-            width: 24,
-            height: 24,
-            // colorFilter: Apptheme.,
           ),
-          const SizedBox(width: 5),
           Expanded(
             child: TextField(
               controller: _plateController,
@@ -213,7 +210,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       child: CustomButton(
           double.infinity,
           50,
-          isLoading ? Apptheme.loadingIndicatorButton() : const Text("Guardar"),
+          isLoading ? BallBeatLoading() : const Text("Guardar"),
           isLoading ? null : () => _validateAndShowDialog(context)),
     );
   }

@@ -5,6 +5,7 @@ import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
 import 'package:app_lorry/services/InspectionService.dart';
+import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -61,7 +62,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
             Expanded(
               child: SingleChildScrollView(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -74,12 +75,12 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                         ),
                       ),
                       const SizedBox(height: 20),
-
+        
                       // Kilometraje de la inspección
                       _buildMileageInpection(),
-
+        
                       const SizedBox(height: 20),
-
+        
                       // Tarjetas de llantas generadas dinámicamente
                       for (var result in tires)
                         _buildTireCard(result, widget.data.inspectionData),
@@ -88,7 +89,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                 ),
               ),
             ),
-
+        
             // Botón fijo en la parte inferior
             _buildBottomButton(tires, widget.data.inspectionData),
           ],
@@ -388,34 +389,26 @@ class _DetailTireState extends ConsumerState<DetailTire> {
           inspections.any((inspection) => inspection['mounting'] == tire.id));
     }
 
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-      color: Colors.white,
-      child: CustomButton(
-        342,
-        46,
-        Text(
-          allTiresInspected ? "Finalizar Inspección" : "Iniciar Inspección",
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-        ),
-        () {
-          if (allTiresInspected) {
-            // Finalizar inspección
-            _finishInspection(inspectionData);
-          } else {
-            // Iniciar inspección normal
-            ref.read(appRouterProvider).push(
-                  '/TireProfundity',
-                  extra: TireProfundityParams(
-                      data: mountingWithTires,
-                      vehicle: widget.data.vehicle.id ?? 0,
-                      mileage: widget.data.mileage),
-                );
-          }
-        },
-      ),
-    );
+    return BottomButton(
+        params: BottombuttonParams(
+            text: allTiresInspected
+                ? "Finalizar Inspección"
+                : "Iniciar Inspección",
+            onPressed: () {
+              if (allTiresInspected) {
+                // Finalizar inspección
+                _finishInspection(inspectionData);
+              } else {
+                // Iniciar inspección normal
+                ref.read(appRouterProvider).push(
+                      '/TireProfundity',
+                      extra: TireProfundityParams(
+                          data: mountingWithTires,
+                          vehicle: widget.data.vehicle.id ?? 0,
+                          mileage: widget.data.mileage),
+                    );
+              }
+            }));
   }
 
   // Método para finalizar la inspección

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_lorry/widgets/shared/ballBeatLoading.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -40,7 +41,8 @@ class _MainContent extends ConsumerWidget {
       child: SingleChildScrollView(
         reverse: true,
         physics: const NeverScrollableScrollPhysics(),
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           children: [
             SizedBox(height: screenHeight),
@@ -57,7 +59,6 @@ class _MainContent extends ConsumerWidget {
   }
 }
 
-
 class _CardLogin extends ConsumerWidget {
   const _CardLogin();
 
@@ -70,7 +71,7 @@ class _CardLogin extends ConsumerWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            const SizedBox(height:80),
+            const SizedBox(height: 80),
             const Hero(
               tag: "logo",
               child: Image(
@@ -84,7 +85,6 @@ class _CardLogin extends ConsumerWidget {
     );
   }
 }
-
 
 class _FormLogin extends ConsumerWidget {
   const _FormLogin({
@@ -172,11 +172,7 @@ class _FormLogin extends ConsumerWidget {
                 : const SizedBox(
                     width: 50,
                     height: 20,
-                    child: LoadingIndicator(
-                      indicatorType: Indicator.ballBeat,
-                      strokeWidth: 3.0,
-                      colors: [Colors.white],
-                    ),
+                    child: BallBeatLoading(),
                   ), () async {
           ref.read(loadingProviderProvider.notifier).changeLoading(true);
           //  quitar foucs

@@ -5,7 +5,7 @@ import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:app_lorry/config/tire_services.dart';
 import 'package:app_lorry/models/Service_data.dart';
 import 'package:app_lorry/screens/app/InpectionTire/services/widgets/service_button.dart';
-import 'package:app_lorry/widgets/buttons/CustomButton.dart';
+import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/dialogs/service_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -151,7 +151,6 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
               ),
             ),
             _buildBottomButtons(),
-            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -215,43 +214,22 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   }
 
   Widget _buildBottomButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          Expanded(
-            child: CustomButton(
-              double.infinity,
-              46,
-              const Text(
-                'Reiniciar',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              _resetAllServices,
-              type: 2,
-            ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: CustomButton(
-              double.infinity,
-              46,
-              Text(
-                'Enviar Servicios',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              _serviceItems.isNotEmpty ? _sendServices : null,
-              type: 1,
-            ),
-          ),
-        ],
-      ),
+    return BottomButton(
+
+      gap: 20,
+      buttons: [
+        BottomButtonItem(
+          text: 'Reiniciar',
+          buttonType: 2,
+          onPressed: _resetAllServices,
+        ),
+        BottomButtonItem(
+          text: 'Enviar Servicios',
+          buttonType: 1,
+          onPressed: _serviceItems.isNotEmpty ? _sendServices : null,
+          disabled: _serviceItems.isEmpty,
+        ),
+      ],
     );
   }
 

@@ -4,7 +4,7 @@ import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/screens/app/InpectionTire/DetailTire.dart';
 import 'package:app_lorry/screens/app/InpectionTire/services/services_screen.dart';
-import 'package:app_lorry/widgets/buttons/CustomButton.dart';
+import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -169,7 +169,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   void _onService() async {
     final currentMounting = mountings[_currentTireIndex];
     final currentServices = _getCurrentMountingServices();
-    
+
     final result = await context.push(
       '/services',
       extra: ServiceScreenParams(
@@ -177,7 +177,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         existingServices: currentServices,
       ),
     );
-    
+
     if (result != null && result is List<Map<String, dynamic>>) {
       servicesData[_currentTireIndex] = result;
       setState(() {});
@@ -235,8 +235,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
             _buildHeader(),
             Expanded(
               child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,7 +271,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   Widget _buildHeader() {
     return Container(
-      margin: const EdgeInsets.only(top: 30, bottom: 10),
+      margin: const EdgeInsets.only(top: 20, bottom: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -333,86 +332,68 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     required bool btnDisabled,
     required bool isLoading,
   }) {
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // Botón siguiente/finalizar
-            Expanded(
-              child: CustomButton(
-                  340,
-                  46,
-                  type: 2,
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Servicios",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                      if (_getCurrentMountingServices().isNotEmpty) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: const BoxDecoration(
-                            color: Apptheme.primary,
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.all(Radius.circular(4)),
-                          ),
-                          child: Text(
-                            '${_getCurrentMountingServices().length}',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  onService),
-            ),
-            const SizedBox(width: 20), // Espacio entre botones
-            Expanded(
-              child: CustomButton(
-                340,
-                46,
-                isLoading
-                    ? const SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(
-                        isLast
-                            ? "Finalizar Inspección"
-                            : "Siguiente Inspección",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                btnDisabled || isLoading
-                    ? null
-                    : isLast
-                        ? onFinish
-                        : onNext,
+    return BottomButton(
+      gap: 20,
+      buttons: [
+        BottomButtonItem(
+          text: "Servicios",
+          buttonType: 2,
+          onPressed: onService,
+          customChild: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Servicios",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
-            ),
-          ],
+              if (_getCurrentMountingServices().isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: const BoxDecoration(
+                    color: Apptheme.primary,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                  ),
+                  child: Text(
+                    '${_getCurrentMountingServices().length}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
-      ),
+        BottomButtonItem(
+          text: isLast ? "Finalizar Inspección" : "Siguiente Inspección",
+          onPressed:
+              btnDisabled || isLoading ? null : (isLast ? onFinish : onNext),
+          isLoading: isLoading,
+          customChild: isLoading
+              ? const SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(
+                  isLast ? "Finalizar Inspección" : "Siguiente Inspección",
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+        ),
+      ],
     );
   }
 
