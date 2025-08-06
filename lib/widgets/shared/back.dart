@@ -11,9 +11,9 @@ class Back extends StatelessWidget {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     } else {
-      Navigator.pushNamed(
+      Navigator.pushReplacementNamed(
         context,
-        '/home', // or your home route name
+        '/', // Use the root route instead
       );
     }
   }

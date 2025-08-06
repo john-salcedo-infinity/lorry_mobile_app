@@ -59,37 +59,43 @@ class _DetailTireState extends ConsumerState<DetailTire> {
         child: Column(
           children: [
             _buildHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Llantas De VHC",
-                        style: TextStyle(
-                          fontSize: 23,
-                          color: Apptheme.textColorSecondary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-        
-                      // Kilometraje de la inspección
-                      _buildMileageInpection(),
-        
-                      const SizedBox(height: 20),
-        
-                      // Tarjetas de llantas generadas dinámicamente
-                      for (var result in tires)
-                        _buildTireCard(result, widget.data.inspectionData),
-                    ],
+            
+            // Elementos estáticos - Título y kilometraje
+            Container(
+              padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Llantas De VHC",
+                    style: TextStyle(
+                      fontSize: 23,
+                      color: Apptheme.textColorSecondary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                  
+                  // Kilometraje de la inspección
+                  _buildMileageInpection(),
+                  
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-        
+            
+            // Lista scrollable de llantas
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: tires.length,
+                itemBuilder: (context, index) {
+                  final tire = tires.elementAt(index);
+                  return _buildTireCard(tire, widget.data.inspectionData);
+                },
+              ),
+            ),
+
             // Botón fijo en la parte inferior
             _buildBottomButton(tires, widget.data.inspectionData),
           ],

@@ -128,7 +128,10 @@ class BottomButton extends StatelessWidget {
       button.height ?? 46,
       button.customChild ?? (button.isLoading
           ? BallBeatLoading()
-          : Text(button.text)),
+          : Text(button.text, style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+            ))),
       button.isLoading || button.disabled ? null : button.onPressed,
       type: button.buttonType ?? 1,
     );

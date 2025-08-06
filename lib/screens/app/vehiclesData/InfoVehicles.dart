@@ -371,7 +371,11 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             child: CustomButton(
               _Constants.inputFieldWidth,
               _Constants.inputFieldHeight,
-              const Text("Actualizar Kilometraje"),
+              const Text("Actualizar Kilometraje", 
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  )),
               () => _validateAndNavigate(context),
             ),
           ),

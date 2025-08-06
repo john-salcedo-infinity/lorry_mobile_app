@@ -241,11 +241,52 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       backgroundColor: Apptheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Apptheme.backgroundColor,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
         title: const Image(image: AssetImage('assets/icons/logo_lorryv2.png')),
       ),
       body: SafeArea(
         child: Column(
           children: [
+            // Elementos estáticos - Perfil, título y búsqueda
+            Padding(
+              padding: const EdgeInsets.all(4),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const _Profile(),
+                    const SizedBox(height: 10),
+                    const Text(
+                      "ÚLTIMAS INSPECCIONES",
+                      style: Apptheme.subtitleStyle,
+                    ),
+                    const SizedBox(height: 10),
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                      ),
+                      child: CustomInputField(
+                        showBorder: false,
+                        hint: "Buscar por VHC asociada",
+                        onChanged: _onSearchChanged,
+                        showLabel: false,
+                        suffixIcon: Icon(
+                          Icons.search,
+                          color: Apptheme.textColorPrimary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+            
+            // Lista scrollable de inspecciones
             Expanded(
               child: NotificationListener<ScrollNotification>(
                 onNotification: (ScrollNotification notification) {
@@ -289,109 +330,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   strokeWidth: 2.0,
                   displacement: 50.0,
                   onRefresh: _onRefresh,
-                  child: CustomScrollView(
-                    controller: _scrollController,
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    slivers: [
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const _Profile(),
-                                const SizedBox(height: 10),
-                                const Text(
-                                  "ÚLTIMAS INSPECCIONES",
-                                  style: Apptheme.subtitleStyle,
-                                ),
-                                const SizedBox(height: 10),
-                                Container(
-                                  decoration: const BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(4)),
-                                  ),
-                                  child: CustomInputField(
-                                    showBorder: false,
-                                    hint: "Buscar por VHC asociada",
-                                    onChanged: _onSearchChanged,
-                                    showLabel: false,
-                                    suffixIcon: Icon(
-                                      Icons.search,
-                                      color: Apptheme.textColorPrimary,
-                                    ),
+                  child: isLoading && inspectionsList.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(20),
+                              child: Center(child: Apptheme.loadingIndicator()),
+                            ),
+                          ],
+                        )
+                      : inspectionsList.isEmpty && !isLoading
+                          ? ListView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              children: const [
+                                Center(
+                                  child: Padding(
+                                    padding: EdgeInsets.all(20.0),
+                                    child: Text('No se encontraron inspecciones'),
                                   ),
                                 ),
-                                const SizedBox(height: 20),
                               ],
+                            )
+                          : ListView.builder(
+                              controller: _scrollController,
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              itemCount:
+                                  inspectionsList.length + (isLoadingMore ? 1 : 0),
+                              itemBuilder: (context, index) {
+                                if (index < inspectionsList.length) {
+                                  return Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    child: ItemHistorial(
+                                      historical: inspectionsList[index],
+                                      isSelected: selectedIndex == index,
+                                      onTap: () {
+                                        setState(() {
+                                          // Si ya está seleccionado, deseleccionar; si no, seleccionar
+                                          selectedIndex =
+                                              selectedIndex == index ? null : index;
+                                        });
+                                      },
+                                    ),
+                                  );
+                                } else if (isLoadingMore) {
+                                  // Mostrar indicador de carga al final
+                                  return Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Center(child: Apptheme.loadingIndicator()),
+                                  );
+                                }
+                                return null;
+                              },
                             ),
-                          ),
-                        ),
-                      ),
-        
-                      // Lista de inspecciones
-                      if (isLoading && inspectionsList.isEmpty)
-                        SliverToBoxAdapter(
-                          child: Container(
-                            padding: const EdgeInsets.all(20),
-                            child: Center(child: Apptheme.loadingIndicator()),
-                          ),
-                        )
-                      else if (inspectionsList.isEmpty && !isLoading)
-                        const SliverToBoxAdapter(
-                          child: Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(20.0),
-                              child: Text('No se encontraron inspecciones'),
-                            ),
-                          ),
-                        )
-                      else
-                        SliverList(
-                          delegate: SliverChildBuilderDelegate(
-                            (context, index) {
-                              if (index < inspectionsList.length) {
-                                return Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 20),
-                                  child: ItemHistorial(
-                                    historical: inspectionsList[index],
-                                    isSelected: selectedIndex == index,
-                                    onTap: () {
-                                      setState(() {
-                                        // Si ya está seleccionado, deseleccionar; si no, seleccionar
-                                        selectedIndex =
-                                            selectedIndex == index ? null : index;
-                                      });
-                                    },
-                                  ),
-                                );
-                              } else if (isLoadingMore) {
-                                // Mostrar indicador de carga al final
-                                return Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child:
-                                      Center(child: Apptheme.loadingIndicator()),
-                                );
-                              }
-                              return null;
-                            },
-                            childCount:
-                                inspectionsList.length + (isLoadingMore ? 1 : 0),
-                          ),
-                        ),
-        
-                      // Espacio adicional al final para mejor UX
-                      const SliverToBoxAdapter(
-                        child: SizedBox(height: 20),
-                      ),
-                    ],
-                  ),
                 ),
-              ), // Cierre del NotificationListener
+              ),
             ),
             BottomButton(
               params: BottombuttonParams(

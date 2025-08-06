@@ -210,7 +210,10 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       child: CustomButton(
           double.infinity,
           50,
-          isLoading ? BallBeatLoading() : const Text("Guardar"),
+          isLoading ? BallBeatLoading() : const Text("Guardar", style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w900,
+          )),
           isLoading ? null : () => _validateAndShowDialog(context)),
     );
   }
@@ -293,7 +296,6 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: Apptheme.primary,
-        minimumSize: const Size(130, 40),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
           side: const BorderSide(width: 2, color: Apptheme.darkorange),
