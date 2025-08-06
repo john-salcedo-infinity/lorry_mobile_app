@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui';
+import 'package:app_lorry/helpers/helpers.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,16 +63,16 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
       final hasPermission = await _checkPermissions(source);
       if (!hasPermission) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                source == ImageSource.camera
-                    ? 'Permisos de cámara requeridos'
-                    : 'Permisos de galería requeridos',
-              ),
-              backgroundColor: Colors.red,
-            ),
-          );
+          ToastHelper.show_alert(
+              context,
+              source == ImageSource.camera
+                  ? 'Permisos de cámara requeridos'
+                  : 'Permisos de galería requeridos');
+
+        // pedir los permisos
+          await PermissionHandler.requestInitialPermissions();
+          // Volver a intentar la selección de imagen
+          _pickImage(source);
         }
         return;
       }

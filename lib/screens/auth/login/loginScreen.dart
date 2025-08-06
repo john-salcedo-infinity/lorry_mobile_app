@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app_lorry/widgets/shared/ballBeatLoading.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -72,10 +73,12 @@ class _CardLogin extends ConsumerWidget {
         child: Column(
           children: [
             const SizedBox(height: 80),
-            const Hero(
+            Hero(
               tag: "logo",
-              child: Image(
-                image: AssetImage('assets/icons/lorry_logo_orange.png'),
+              child: SvgPicture.asset(
+                'assets/icons/lorry_logo_orange.svg',
+                width: 350, // Ajusta el tamaño según sea necesario
+                height: 54,
               ),
             ),
             _FormLogin(screenwidth: screenwidth),
@@ -111,7 +114,7 @@ class _FormLogin extends ConsumerWidget {
               "CORREO",
               style: TextStyle(
                   color: Apptheme.textColorSecondary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                   fontSize: 15),
             )
           ],
@@ -141,7 +144,7 @@ class _FormLogin extends ConsumerWidget {
               "CONTRASEÑA",
               style: TextStyle(
                   color: Apptheme.textColorSecondary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                   fontSize: 15),
             )
           ],
@@ -168,7 +171,11 @@ class _FormLogin extends ConsumerWidget {
             500,
             50,
             !loading
-                ? const Text("Iniciar Sesión")
+                ? const Text("Iniciar Sesión", style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize:16
+                ),)
                 : const SizedBox(
                     width: 50,
                     height: 20,

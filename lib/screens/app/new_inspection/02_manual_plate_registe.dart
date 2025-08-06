@@ -11,7 +11,6 @@ import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/providers/providers.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/widgets/widgets.dart';
-import 'package:go_router/go_router.dart';
 
 class ManualPlateRegister extends ConsumerStatefulWidget {
   const ManualPlateRegister({super.key});
@@ -37,53 +36,37 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Apptheme.backgroundColor,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeader(),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildTitle(),
-                  const SizedBox(height: 30),
-                  _buildAlertSection(),
-                  const SizedBox(height: 2),
-                  _buildPlateInputSection(),
-                ],
-              ),
-            )
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildTitle(),
+                    const SizedBox(height: 30),
+                    _buildAlertSection(),
+                    const SizedBox(height: 2),
+                    _buildPlateInputSection(),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildHeader() {
-    return Container(
-      margin: const EdgeInsets.only(top: 30, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Back(),
-          Row(
-            children: [
-              IconButton(
-                onPressed: () => context.go('/home'),
-                icon: SvgPicture.asset(
-                  'assets/icons/Icono_Casa_Lorry.svg',
-                  width: 40,
-                  height: 40,
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
+    return const Back(
+      showHome: true,
+      // showDelete: true,
+      showNotifications: true,
     );
   }
 
@@ -210,10 +193,13 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       child: CustomButton(
           double.infinity,
           50,
-          isLoading ? BallBeatLoading() : const Text("Guardar", style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-          )),
+          isLoading
+              ? BallBeatLoading()
+              : const Text("Guardar",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w900,
+                  )),
           isLoading ? null : () => _validateAndShowDialog(context)),
     );
   }
@@ -246,7 +232,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 color: Apptheme.textColorPrimary,
               ),
             ),
@@ -262,11 +248,11 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
           ),
           actions: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                _buildCancelButton(dialogContext),
+                Expanded(child: _buildCancelButton(dialogContext)),
                 const SizedBox(width: 16),
-                _buildAcceptButton(dialogContext, plate),
+                Expanded(child: _buildAcceptButton(dialogContext, plate)),
               ],
             ),
           ],
@@ -278,14 +264,11 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   Widget _buildCancelButton(BuildContext dialogContext) {
     return TextButton(
       onPressed: () => Navigator.of(dialogContext).pop(),
-      style: TextButton.styleFrom(
-        minimumSize: const Size(130, 40),
-      ),
       child: const Text(
         "Cancelar",
         style: TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           color: Apptheme.primary,
         ),
       ),
@@ -309,7 +292,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
         "Aceptar",
         style: TextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
           color: Colors.white,
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
@@ -44,11 +45,13 @@ class MainContent extends ConsumerWidget {
             onTap: () {
               ref.read(appRouterProvider).go('/login');
             },
-            child: const Hero(
-              tag: "logo",
-              child:
-                  Image(image: AssetImage('assets/icons/Logo_lorry_white.png')),
-            ),
+            child: Hero(
+                tag: "logo",
+                child: SvgPicture.asset(
+                  'assets/icons/Logo_lorry_white.svg',
+                  width: 190,
+                  height: 45, // Ajusta el tamaño según sea necesario
+                )),
           ),
           Expanded(child: Container()),
           const SizedBox(height: 40),
@@ -79,8 +82,7 @@ class _backgroundState extends State<_background> {
     String token = pref.getValue("token");
     if (token == "") {
       context.go("/login");
-      
-    }else{
+    } else {
       context.go("/home");
     }
     print("Hola");

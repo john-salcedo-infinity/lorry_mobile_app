@@ -27,81 +27,85 @@ class ItemHistorial extends ConsumerWidget {
       });
     }
 
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () {
-            printHistoricalData();
-            onTap();
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              border: isSelected
-                  ? Border.all(color: Apptheme.secondary, width: 1)
-                  : null,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        HelpersGeneral.formatDayDate(
-                            historical.inspection.lastInspectionDate),
-                        style: Apptheme.subtitleStyle,
-                      ),
-                      const Spacer(),
-                      const Text(
-                        "VCH ASOCIADO",
-                        style: Apptheme.titleStylev2,
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        "${historical.inspection.lastInspectionDate.hour.toString()}:${historical.inspection.lastInspectionDate.minute.toString().padLeft(2, '0')}:${historical.inspection.lastInspectionDate.second.toString().padLeft(2, '0')}",
-                        style: Apptheme.titleStylev2,
-                      ),
-                      const Spacer(),
-                      LicensePlate(
-                          licensePlate: historical.vehicle.licensePlate ?? '')
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _ItemBadge(
-                          title: "CLIENTE",
-                          values:
-                              historical.vehicle.customer?.businessName ?? '',
-                          width: 120),
-                      const Spacer(),
-                      _ItemBadge(
-                          title: "KILOMETRAJE",
-                          values: HelpersGeneral.numberFormat(
-                              historical.inspection.mileage),
-                          width: 120),
-                      const Spacer(),
-                      _ItemBadge(
-                          title: "LLANTAS",
-                          values: "${historical.inspection.totalTires}",
-                          width: 50),
-                    ],
-                  ),
-                ],
+    return RepaintBoundary(
+      // Optimización: Evita repaints innecesarios
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () {
+              printHistoricalData();
+              onTap();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                border: isSelected
+                    ? Border.all(color: Apptheme.secondary, width: 1)
+                    : null,
+              ),
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          HelpersGeneral.formatDayDate(
+                              historical.inspection.lastInspectionDate),
+                          style: Apptheme.titleStyle,
+                        ),
+                        const Spacer(),
+                        const Text(
+                          "VCH ASOCIADO",
+                          style: Apptheme.titleStylev2,
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Text(
+                          "${historical.inspection.lastInspectionDate.hour.toString()}:${historical.inspection.lastInspectionDate.minute.toString().padLeft(2, '0')}:${historical.inspection.lastInspectionDate.second.toString().padLeft(2, '0')}",
+                          style: Apptheme.titleStyle,
+                        ),
+                        const Spacer(),
+                        LicensePlate(
+                            licensePlate: historical.vehicle.licensePlate ?? '')
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _ItemBadge(
+                            title: "CLIENTE",
+                            values:
+                                historical.vehicle.customer?.businessName ?? '',
+                            width: 120),
+                        const Spacer(),
+                        _ItemBadge(
+                            title: "KILOMETRAJE",
+                            values: HelpersGeneral.numberFormat(
+                                historical.inspection.mileage),
+                            width: 120),
+                        const Spacer(),
+                        _ItemBadge(
+                            title: "LLANTAS",
+                            values: "${historical.inspection.totalTires}",
+                            width: 50),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 10),
-      ],
+          const SizedBox(height: 10),
+        ],
+      ),
     );
   }
 }

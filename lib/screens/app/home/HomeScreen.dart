@@ -24,6 +24,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   Timer? _debounce;
+  Timer? _scrollThrottle; // Throttle para el scroll
   final ScrollController _scrollController = ScrollController();
   bool _shouldCancelRefresh =
       false; // Bandera para cancelar refresh si cambió dirección
@@ -44,10 +45,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      _loadMoreData();
-    }
+    // Throttle para evitar llamadas excesivas durante scroll rápido
+    if (_scrollThrottle?.isActive ?? false) return;
+
+    _scrollThrottle = Timer(const Duration(milliseconds: 100), () {
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        _loadMoreData();
+      }
+    });
   }
 
   Future<void> _loadInitialData() async {
@@ -220,6 +226,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void dispose() {
     _debounce?.cancel();
+    _scrollThrottle?.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -240,12 +247,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Apptheme.backgroundColor,
-        surfaceTintColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        title: const Image(image: AssetImage('assets/icons/logo_lorryv2.png')),
-      ),
+          backgroundColor: Apptheme.backgroundColor,
+          surfaceTintColor: Colors.transparent,
+          scrolledUnderElevation: 0,
+          elevation: 0,
+          title: Container(
+            margin: const EdgeInsets.only(top: 12),
+            child: SvgPicture.asset(
+              'assets/icons/logo_lorryv2.svg',
+              width: 125, // Ajusta el tamaño según sea necesario
+              height: 22,
+            ),
+          )),
       body: SafeArea(
         child: Column(
           children: [
@@ -258,12 +271,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const _Profile(),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 30),
                     const Text(
                       "ÚLTIMAS INSPECCIONES",
                       style: Apptheme.subtitleStyle,
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     Container(
                       decoration: const BoxDecoration(
                         color: Colors.white,
@@ -285,7 +298,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
-            
+
             // Lista scrollable de inspecciones
             Expanded(
               child: NotificationListener<ScrollNotification>(
@@ -294,7 +307,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   if (notification is ScrollUpdateNotification) {
                     final position = _scrollController.position;
                     final currentPosition = position.pixels;
-        
+
                     // Si está en zona de pull-to-refresh (posición negativa)
                     if (currentPosition < 0) {
                       // Detectar si cambió de dirección hacia abajo después de haber ido hacia arriba
@@ -318,7 +331,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         _shouldCancelRefresh = false;
                       });
                     }
-        
+
                     _lastScrollPosition = currentPosition;
                   }
                   return false;
@@ -347,7 +360,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 Center(
                                   child: Padding(
                                     padding: EdgeInsets.all(20.0),
-                                    child: Text('No se encontraron inspecciones'),
+                                    child:
+                                        Text('No se encontraron inspecciones'),
                                   ),
                                 ),
                               ],
@@ -355,20 +369,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           : ListView.builder(
                               controller: _scrollController,
                               physics: const AlwaysScrollableScrollPhysics(),
-                              itemCount:
-                                  inspectionsList.length + (isLoadingMore ? 1 : 0),
+                              // Optimizaciones de rendimiento
+                              cacheExtent:
+                                  1000.0, // Cache más elementos fuera de pantalla
+                              addAutomaticKeepAlives:
+                                  false, // Evita mantener widgets fuera de pantalla
+                              addRepaintBoundaries: true, // Mejora el repaint
+                              addSemanticIndexes:
+                                  false, // Reduce cálculos innecesarios
+                              itemCount: inspectionsList.length +
+                                  (isLoadingMore ? 1 : 0),
                               itemBuilder: (context, index) {
                                 if (index < inspectionsList.length) {
                                   return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
                                     child: ItemHistorial(
+                                      key: ValueKey(
+                                          '${inspectionsList[index].vehicle.licensePlate}_${inspectionsList[index].inspection.lastInspectionDate.millisecondsSinceEpoch}'), // Key para optimizar rebuilds
                                       historical: inspectionsList[index],
                                       isSelected: selectedIndex == index,
                                       onTap: () {
                                         setState(() {
                                           // Si ya está seleccionado, deseleccionar; si no, seleccionar
-                                          selectedIndex =
-                                              selectedIndex == index ? null : index;
+                                          selectedIndex = selectedIndex == index
+                                              ? null
+                                              : index;
                                         });
                                       },
                                     ),
@@ -377,7 +403,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   // Mostrar indicador de carga al final
                                   return Padding(
                                     padding: const EdgeInsets.all(16.0),
-                                    child: Center(child: Apptheme.loadingIndicator()),
+                                    child: Center(
+                                        child: Apptheme.loadingIndicator()),
                                   );
                                 }
                                 return null;
@@ -420,6 +447,20 @@ class _ProfileState extends State<_Profile> {
     });
   }
 
+  String _getInitials() {
+    String firstName = authUser.persons?.name ?? '';
+    String lastName = authUser.persons?.lastName ?? '';
+    
+    String firstInitial = firstName.isNotEmpty ? firstName[0].toUpperCase() : '';
+    String lastInitial = lastName.isNotEmpty ? lastName[0].toUpperCase() : '';
+    
+    if (firstInitial.isEmpty && lastInitial.isEmpty) {
+      return 'U'; // Default to 'U' for User if no name available
+    }
+    
+    return firstInitial + lastInitial;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -431,21 +472,35 @@ class _ProfileState extends State<_Profile> {
       padding: const EdgeInsets.all(20),
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 24,
             backgroundColor: Apptheme.primary,
             child: CircleAvatar(
-              radius: 21,
-              backgroundImage: AssetImage('assets/icons/Vector.png'),
+              radius: 22,
+              backgroundColor: authUser.image != null ? Colors.transparent : Colors.grey,
+              backgroundImage: authUser.image != null 
+                ? NetworkImage(authUser.image!) 
+                : null,
+              child: authUser.image == null
+                ? Text(
+                    _getInitials(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                : null,
             ),
-            // backgroundImage: AssetImage('assets/icons/Vector.png'),
           ),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                authUser.name ?? 'Usuario',
+                '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'.trim().isNotEmpty
+                    ? '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'.trim()
+                    : 'Usuario',
                 style: Apptheme.titleStylev2,
               ),
               Text(

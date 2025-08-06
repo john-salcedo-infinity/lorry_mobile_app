@@ -3,13 +3,13 @@
 
     <!-- Permisos necesarios -->
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <!-- Para Android 13 (API 33) o superior -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
-        android:label="app_lorry"
+        android:label="Lorry"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

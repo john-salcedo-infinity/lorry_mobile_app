@@ -95,24 +95,25 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Apptheme.backgroundColor,
-      body: SingleChildScrollView(
-      
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildHeader(),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildPageTitle(),
-            ),
-            const SizedBox(height: 20),
-            _buildVehicleInfoContainer(),
-            const SizedBox(height: 20),
-            _buildAlertContainer(),
-            const SizedBox(height: 1),
-            _buildMileageUpdateContainer(),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildHeader(),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: _buildPageTitle(),
+              ),
+              const SizedBox(height: 20),
+              _buildVehicleInfoContainer(),
+              const SizedBox(height: 20),
+              _buildAlertContainer(),
+              const SizedBox(height: 1),
+              _buildMileageUpdateContainer(),
+            ],
+          ),
         ),
       ),
     );
@@ -120,23 +121,9 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
 
   // Widget Builders
   Widget _buildHeader() {
-    return Container(
-      margin: const EdgeInsets.only(top: 30, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Back(),
-          IconButton(
-            onPressed: () => context.go('/home'),
-            icon: SvgPicture.asset(
-              'assets/icons/Icono_Casa_Lorry.svg',
-              width: _Constants.homeIconSize,
-              height: _Constants.homeIconSize,
-            ),
-          ),
-        ],
-      ),
+    return const Back(
+      showHome: true,
+      showNotifications: true,
     );
   }
 
@@ -371,7 +358,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             child: CustomButton(
               _Constants.inputFieldWidth,
               _Constants.inputFieldHeight,
-              const Text("Actualizar Kilometraje", 
+              const Text("Actualizar Kilometraje",
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,

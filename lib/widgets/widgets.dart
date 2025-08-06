@@ -5,3 +5,7 @@ export './items/ItemTite.dart';
 export './items/ItemHistorial.dart';
 export './items/LicensePlate.dart';
 export './shared/Back.dart';
+export './shared/back_button.dart';
+export './shared/home_button.dart';
+export './shared/notification_button.dart';
+export './shared/delete_button.dart';

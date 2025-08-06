@@ -81,7 +81,7 @@ class BottomButton extends StatelessWidget {
             color: Color(0x1A000000), 
             offset: Offset(0, -2), // Solo hacia arriba
             blurRadius: 8,
-            spreadRadius: 0,
+            spreadRadius: 1,
           )
         ]
       ),
