@@ -14,15 +14,19 @@ import 'package:go_router/go_router.dart';
 
 // Clase para manejar cada novedad individual
 class NoveltyItem {
+  final String id;
   final TextEditingController descriptionController;
   int? conceptNovelty;
   String? imageBase64;
 
   NoveltyItem({
+    String? id,
     required this.descriptionController,
     this.conceptNovelty,
     this.imageBase64,
-  });
+  }) : id = id ??
+            DateTime.now().millisecondsSinceEpoch.toString() +
+                (DateTime.now().microsecond.toString());
 
   void dispose() {
     descriptionController.dispose();
@@ -84,10 +88,12 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
 
   // Método para cargar novedades existentes
   void _loadExistingNovelties(List<Map<String, dynamic>> existingNovelties) {
-    for (var novelty in existingNovelties) {
+    for (int i = 0; i < existingNovelties.length; i++) {
+      var novelty = existingNovelties[i];
       final controller =
           TextEditingController(text: novelty['description'] ?? '');
       _noveltyItems.add(NoveltyItem(
+        id: 'existing_$i',
         descriptionController: controller,
         conceptNovelty: novelty['concept_novelty'],
         imageBase64: novelty['image'],
@@ -317,6 +323,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
               // Selector de tipo de novedad
 
               ImagePickerCard(
+                key: ValueKey('novelty_image_${noveltyItem.id}'),
                 initialImageBase64: noveltyItem.imageBase64,
                 onImageChanged: (imageBase64) {
                   noveltyItem.imageBase64 = imageBase64;
