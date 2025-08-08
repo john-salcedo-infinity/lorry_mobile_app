@@ -1,6 +1,8 @@
 import 'package:app_lorry/config/configs.dart';
 import 'package:app_lorry/constants/services.dart';
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
+import 'package:app_lorry/routers/app_routes.dart';
+import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:app_lorry/config/tire_services.dart';
 import 'package:app_lorry/models/Service_data.dart';
@@ -158,23 +160,36 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      margin: const EdgeInsets.only(top: 30, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Back(),
-          IconButton(
-            onPressed: () => context.go('/home'),
-            icon: SvgPicture.asset(
-              'assets/icons/Icono_Casa_Lorry.svg',
-              width: 40,
-              height: 40,
-            ),
-          ),
-        ],
-      ),
+    return Back(
+      showHome: true,
+      showDelete: true,
+      showNotifications: true,
+      onDeletePressed: () {
+        ConfirmationDialog.show(
+          context: context,
+          title: "Eliminar Inspección",
+          message:
+              "¿Estás seguro que deseas eliminar la inspección? No podrás deshacer esta acción",
+          cancelText: "Cancelar",
+          acceptText: "Aceptar",
+          onAccept: () {
+            ref.read(appRouterProvider).pushReplacement('/ManualPlateRegister');
+          },
+        );
+      },
+      onBackPressed: () {
+        ConfirmationDialog.show(
+          context: context,
+          title: "Salir de Servicios",
+          message:
+              "¿Estás seguro que deseas salir de los Servicios? No podrás deshacer esta acción",
+          cancelText: "Cancelar",
+          acceptText: "Aceptar",
+          onAccept: () {
+            Navigator.pop(context);
+          },
+        );
+      },
     );
   }
 
@@ -182,14 +197,14 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
     final services = servicesConfiguration.physicalServices;
 
     return Container(
-      child: Column(
-        children: [
+      child: Column(children: [
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 10 / 8,
+            childAspectRatio: 10 / 9,
+            crossAxisSpacing: 20,
           ),
           itemCount: services.length,
           itemBuilder: (context, index) {
@@ -199,13 +214,14 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
             final isDisabled =
                 serviceConfig.service.id == SERVICE_ROTATE_TURN.id &&
                     _isRotationTurnDisabled();
-      
+
             return ServiceButton(
               serviceConfig: serviceConfig,
               serviceCount: serviceCount,
               isDisabled: isDisabled,
-              onTap:
-                  isDisabled ? null : () => _onServiceTap(serviceConfig.service),
+              onTap: isDisabled
+                  ? null
+                  : () => _onServiceTap(serviceConfig.service),
             );
           },
         ),
@@ -215,7 +231,6 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
   Widget _buildBottomButtons() {
     return BottomButton(
-
       gap: 20,
       buttons: [
         BottomButtonItem(

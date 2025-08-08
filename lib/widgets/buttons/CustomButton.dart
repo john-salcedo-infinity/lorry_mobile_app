@@ -31,9 +31,10 @@ class CustomButton extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(4), // border-radius: 4px
                 boxShadow: [
                   BoxShadow(
-                    color: onPressed == null 
-                        ? _getBorderColor(type).withAlpha(50) // Sombra difuminada cuando está desactivado
-                        : _getBorderColor(type), // Sombra normal cuando está activo
+                    color: onPressed == null
+                        ? _getBorderColor(type).withAlpha(50)
+                        : _getBorderColor(
+                            type), // Sombra normal cuando está activo
                     offset: const Offset(0, 3), // Grosor del borde inferior
                     blurRadius: 0,
                   ),
@@ -44,11 +45,12 @@ class CustomButton extends ConsumerWidget {
                 style: ElevatedButton.styleFrom(
                   foregroundColor: _getForegroundColor(type),
                   backgroundColor: _getBackgroundColor(type),
-                  disabledBackgroundColor: _getBackgroundColor(type).withAlpha(50),
-                  disabledForegroundColor: _getForegroundColor(type).withAlpha(50),
+                  disabledBackgroundColor: _getBackgroundColor(type),
+                  disabledForegroundColor: _getForegroundColor(type),
                   padding: EdgeInsets.zero, // Elimina el padding interno
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4), // border-radius: 4px
+                    borderRadius:
+                        BorderRadius.circular(4), // border-radius: 4px
                     side: BorderSide(
                       width: 2,
                       color: onPressed == null
@@ -69,7 +71,7 @@ class CustomButton extends ConsumerWidget {
                 height: height,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  color: Colors.white.withAlpha(150), 
+                  color: Colors.white.withAlpha(150),
                 ),
               ),
           ],

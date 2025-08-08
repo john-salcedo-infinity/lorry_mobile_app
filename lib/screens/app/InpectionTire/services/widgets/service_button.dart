@@ -24,7 +24,7 @@ class ServiceButton extends StatelessWidget {
       clipBehavior: Clip.none,
       children: [
         CustomButton(
-          159,
+          double.infinity,
           110,
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -51,7 +51,7 @@ class ServiceButton extends StatelessWidget {
         if (serviceCount > 0)
           Positioned(
             top: -8,
-            right: 10,
+            right: -8,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration:  BoxDecoration(

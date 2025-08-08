@@ -69,7 +69,7 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
                   ? 'Permisos de cámara requeridos'
                   : 'Permisos de galería requeridos');
 
-        // pedir los permisos
+          // pedir los permisos
           await PermissionHandler.requestInitialPermissions();
           // Volver a intentar la selección de imagen
           _pickImage(source);
@@ -145,7 +145,7 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const SizedBox(
-                height: 20,
+                height: 10,
                 width: double.infinity,
               ),
               Row(
@@ -160,7 +160,7 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
                     child: Column(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(30),
+                          padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: Apptheme.secondary,
@@ -198,7 +198,7 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 30),
+                              horizontal: 35, vertical: 20),
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: Apptheme.secondary,
@@ -252,7 +252,7 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
           child: DottedBorder(
             options: RoundedRectDottedBorderOptions(
               radius: const Radius.circular(4),
-              dashPattern: [10, 8],
+              dashPattern: [7, 8],
               strokeWidth: 2,
               padding: const EdgeInsets.all(8),
               color: Apptheme.grayInput,

@@ -1,5 +1,8 @@
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
+import 'package:app_lorry/routers/app_routes.dart';
+import 'package:app_lorry/widgets/buttons/BottomButton.dart';
+import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:app_lorry/widgets/shared/select_novelty.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
@@ -149,6 +152,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
           child: Column(
         children: [
           _buildHeader(),
+          SizedBox(height: 20),
           Expanded(
               child: SingleChildScrollView(
             child: Padding(
@@ -179,49 +183,50 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
               ),
             ),
           )),
-          // Botón fijo en la parte inferior
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            child: CustomButton(
-              double.infinity,
-              50,
-              const Text(
-                'Guardar Novedades',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              () {
-                final novelties = _getNoveltiesArray();
-                Navigator.of(context).pop(novelties);
-              },
-            ),
-          ),
+          BottomButton(
+            params: BottombuttonParams(
+                text: "Guardar Novedades",
+                onPressed: () {
+                  final novelties = _getNoveltiesArray();
+                  Navigator.of(context).pop(novelties);
+                }),
+          )
         ],
       )),
     );
   }
 
   Widget _buildHeader() {
-    return Container(
-      margin: const EdgeInsets.only(top: 30, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Back(),
-          IconButton(
-            onPressed: () => context.go('/home'),
-            icon: SvgPicture.asset(
-              'assets/icons/Icono_Casa_Lorry.svg',
-              width: 40,
-              height: 40,
-            ),
-          ),
-        ],
-      ),
+    return Back(
+      showHome: true,
+      showDelete: true,
+      showNotifications: true,
+      onDeletePressed: () {
+        ConfirmationDialog.show(
+          context: context,
+          title: "Eliminar Inspección",
+          message:
+              "¿Estás seguro que deseas eliminar la inspección? No podrás deshacer esta acción",
+          cancelText: "Cancelar",
+          acceptText: "Aceptar",
+          onAccept: () {
+            ref.read(appRouterProvider).pushReplacement('/ManualPlateRegister');
+          },
+        );
+      },
+      onBackPressed: () {
+        ConfirmationDialog.show(
+          context: context,
+          title: "Salir de Novedades",
+          message:
+              "¿Estás seguro que deseas salir de las novedades? No podrás deshacer esta acción",
+          cancelText: "Cancelar",
+          acceptText: "Aceptar",
+          onAccept: () {
+            Navigator.pop(context);
+          },
+        );
+      },
     );
   }
 
@@ -331,6 +336,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                 ),
               ),
               const SizedBox(height: 8),
+
               SelectNovelty(
                 hintText: 'Selecciona una novedad',
                 selectedId: noveltyItem.conceptNovelty,
@@ -347,7 +353,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                 },
               ),
               const SizedBox(height: 16),
-               Text(
+              Text(
                 'OBSERVACIÓN',
                 style: TextStyle(
                   fontSize: 14,
@@ -355,21 +361,26 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                   color: Apptheme.textColorSecondary,
                 ),
               ),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: noveltyItem.descriptionController,
                 minLines: 4,
                 maxLines: 4,
+                style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: Apptheme.textColorSecondary),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
+                    borderSide: BorderSide(color: Apptheme.grayInput, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide:
-                        BorderSide(color: Apptheme.AlertOrange, width: 2),
+                        BorderSide(color: Apptheme.AlertOrange, width: 1),
                   ),
                   fillColor: Apptheme.backgroundColor,
                   filled: true,
                   hintText: 'Escribe tu observación aquí...',
+                  labelStyle: TextStyle(fontWeight: FontWeight.w700),
                 ),
               ),
               const SizedBox(height: 20),

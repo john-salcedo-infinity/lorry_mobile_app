@@ -248,11 +248,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Image.asset(
-            'assets/icons/Alert_Icon.png',
-            width: 20,
-            height: 20,
-          ),
+          Icon(Icons.error, color: Apptheme.primary, size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -364,6 +360,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
                     fontWeight: FontWeight.w900,
                   )),
               () => _validateAndNavigate(context),
+              type: 1,
             ),
           ),
         );
@@ -379,7 +376,9 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     }
 
     final navigationData = _toNavigationData(_currentMileage);
-    ref.read(appRouterProvider).pushReplacement('/DetailTire', extra: navigationData);
+    ref
+        .read(appRouterProvider)
+        .pushReplacement('/DetailTire', extra: navigationData);
   }
 
   DetailTireParams _toNavigationData(double updatedMileage) {

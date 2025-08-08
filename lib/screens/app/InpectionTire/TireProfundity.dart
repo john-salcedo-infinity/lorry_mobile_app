@@ -314,11 +314,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           ),
         ),
         const SizedBox(width: 6),
-        const Image(
-          image: AssetImage('assets/icons/Alert_Icon.png'),
-          width: 20,
-          height: 20,
-        ),
+        const Icon(Icons.error, color: Apptheme.primary),
       ],
     );
   }

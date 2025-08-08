@@ -25,6 +25,8 @@ class _ServiceDialogState extends State<ServiceDialog> {
   final _formKey = GlobalKey<FormState>();
   final _costController = TextEditingController();
   ProviderSelection? _selectedProvider;
+  String? _costError;
+  String? _providerError;
 
   @override
   void initState() {
@@ -46,7 +48,8 @@ class _ServiceDialogState extends State<ServiceDialog> {
       child: AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         backgroundColor: Colors.white,
-        contentPadding: const EdgeInsets.all(24), // Agregar más padding interno
+        contentPadding: const EdgeInsets.symmetric(
+            horizontal: 32, vertical: 32), // Agregar más padding interno
         title: _buildHeader(),
         content: SizedBox(
           child: SingleChildScrollView(
@@ -54,11 +57,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 24, vertical: 16), // Padding para las acciones
-            child: _buildActions(),
-          ),
+          Expanded(child: _buildActions()),
         ],
       ),
     );
@@ -70,7 +69,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
         Text(
           widget.service.name,
           style: const TextStyle(
-            fontSize: 22,
+            fontSize: 25,
             fontWeight: FontWeight.w900,
             color: Apptheme.textColorPrimary,
           ),
@@ -82,7 +81,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
             textAlign: TextAlign.center,
             text: TextSpan(
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 color: Apptheme.textColorSecondary,
                 fontWeight: FontWeight.normal,
               ),
@@ -110,7 +109,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCostField(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
           _buildProviderField(),
         ],
       ),
@@ -129,14 +128,9 @@ class _ServiceDialogState extends State<ServiceDialog> {
             color: Apptheme.textColorSecondary,
           ),
         ),
-        const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(color: Apptheme.grayInput),
-            color: Apptheme.backgroundColor, // Agregar color de fondo
-          ),
-          child: TextFormField(
+        SizedBox(
+          height: 40,
+          child: TextField(
             controller: _costController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [
@@ -144,32 +138,55 @@ class _ServiceDialogState extends State<ServiceDialog> {
               _CurrencyInputFormatter(),
             ],
             decoration: const InputDecoration(
-              border: InputBorder.none,
-              contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-              hintText: '0.00',
+              filled: true,
+              fillColor: Apptheme.backgroundColor,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                borderSide:
+                    BorderSide(color: Apptheme.backgroundColor, width: 1),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                borderSide: BorderSide(color: Apptheme.grayInput, width: 1),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                borderSide:
+                    BorderSide(color: Apptheme.primary, width: 1),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                borderSide: BorderSide(color: Colors.red, width: 1),
+              ),
+              hintText: '000.00',
               hintStyle: TextStyle(
+                height: 1.2,
                 color: Apptheme.grayInput,
               ),
             ),
             style: const TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Apptheme.textColorSecondary,
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor ingresa el costo';
+            onChanged: (value) {
+              if (_costError != null) {
+                setState(() {
+                  _costError = null;
+                });
               }
-              final cleanValue =
-                  value.replaceAll(',', '').replaceAll('.', '').trim();
-              final cost = double.tryParse(cleanValue);
-              if (cost == null || cost < 0) {
-                return 'Por favor ingresa un costo válido';
-              }
-              return null;
             },
           ),
         ),
+        if (_costError != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            _costError!,
+            style: const TextStyle(
+              color: Colors.red,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -189,39 +206,85 @@ class _ServiceDialogState extends State<ServiceDialog> {
         const SizedBox(height: 8),
         SelectProvider(
           hintText: 'Selecciona un proveedor',
+          showBorder: false,
           onChanged: (ProviderSelection? selection) {
             setState(() {
               _selectedProvider = selection;
+              if (_providerError != null) {
+                _providerError = null;
+              }
             });
           },
         ),
+        if (_providerError != null) ...[
+          const SizedBox(height: 4),
+          Text(
+            _providerError!,
+            style: const TextStyle(
+              color: Colors.red,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ],
     );
   }
 
   Widget _buildActions() {
-    return SizedBox(
-      width: double.infinity,
-      child: CustomButton(
-        double.infinity,
-        50,
-        const Text(
-          'Realizar Servicio',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+    return CustomButton(
+      // double.infinity,
+      900000,
+      50,
+      const Text(
+        'Realizar Servicio',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
         ),
-        () => _onRealizeService(),
-        type: 1,
       ),
+      () => _onRealizeService(),
+      type: 1,
     );
   }
 
   void _onRealizeService() {
-    if (_formKey.currentState!.validate()) {
-      // Aquí puedes procesar los datos del formulario
+    // Limpiar errores previos
+    setState(() {
+      _costError = null;
+      _providerError = null;
+    });
+
+    bool hasErrors = false;
+
+    // Validar costo
+    if (_costController.text.isEmpty) {
+      setState(() {
+        _costError = 'Por favor ingresa el costo';
+      });
+      hasErrors = true;
+    } else {
+      final cleanValue =
+          _costController.text.replaceAll(',', '').replaceAll('.', '').trim();
+      final cost = double.tryParse(cleanValue);
+      if (cost == null || cost < 0) {
+        setState(() {
+          _costError = 'Por favor ingresa un costo válido';
+        });
+        hasErrors = true;
+      }
+    }
+
+    // Validar proveedor
+    if (_selectedProvider == null) {
+      setState(() {
+        _providerError = 'Por favor selecciona un proveedor';
+      });
+      hasErrors = true;
+    }
+
+    // Si no hay errores, procesar el formulario
+    if (!hasErrors) {
       final cleanValue =
           _costController.text.replaceAll(',', '').replaceAll('.', '').trim();
       final cost = double.tryParse(cleanValue) ?? 0.0;
@@ -249,7 +312,7 @@ class _CurrencyInputFormatter extends TextInputFormatter {
 
     // Remover todos los caracteres no numéricos
     String newText = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
-    
+
     // Si está vacío, retornar vacío
     if (newText.isEmpty) {
       return const TextEditingValue(

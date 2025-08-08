@@ -93,7 +93,7 @@ class CameraSection extends StatelessWidget {
               292,
               46,
               const Text(
-                "Tomar Foto",
+                "Tomar foto",
                  style: TextStyle(
                   fontWeight: FontWeight.bold, //  Ajusta el estilo del texto
                   fontSize: 14,
@@ -106,7 +106,7 @@ class CameraSection extends StatelessWidget {
               292,
               50,
               const Text(
-                "Repetir Foto",
+                "Repetir foto",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,

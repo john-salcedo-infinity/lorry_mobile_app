@@ -42,7 +42,7 @@ class ConfirmationDialog extends StatelessWidget {
           message,
           textAlign: TextAlign.center,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 14,
             color: Apptheme.textColorSecondary,
             fontWeight: FontWeight.normal,
           ),
@@ -71,7 +71,6 @@ class ConfirmationDialog extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
-        side: const BorderSide(color: Apptheme.textColorSecondary, width: 1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
@@ -80,7 +79,7 @@ class ConfirmationDialog extends StatelessWidget {
       child: Text(
         cancelText,
         style: const TextStyle(
-          color: Apptheme.textColorSecondary,
+          color: Apptheme.primary,
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
@@ -100,6 +99,8 @@ class ConfirmationDialog extends StatelessWidget {
         backgroundColor: Apptheme.primary,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
+          side: BorderSide(color: Apptheme.darkorange, width: 2),
+
         ),
         elevation: 0,
       ),

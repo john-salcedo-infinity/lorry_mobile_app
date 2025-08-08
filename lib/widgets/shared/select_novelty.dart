@@ -58,58 +58,76 @@ class _SelectNoveltyState extends ConsumerState<SelectNovelty> {
         final List<Novelty> novelties = noveltyResponse.data.results ?? [];
 
         return Container(
-          height: 50,
+          width: double.infinity,
+          height: 40,
           decoration: BoxDecoration(
-            border: Border.all(
-              color: _isDropdownOpen ? Colors.orange : Colors.grey,
-              width: 2,
-            ),
             borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: _isDropdownOpen
+                  ? Colors.orange
+                  : Apptheme.grayInput,
+              width: 1,
+            ),
             color: Apptheme.backgroundColor,
           ),
           child: DropdownButtonFormField2<int>(
             value: _selectedValue,
-            hint: Text(widget.hintText ?? 'Selecciona una novedad'),
+            hint: Text(
+              widget.hintText ?? 'Selecciona una novedad',
+              style: TextStyle(
+                color: widget.enabled
+                    ? Apptheme.textColorSecondary
+                    : Apptheme.grayInput,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             isExpanded: true,
             style: TextStyle(
               color: widget.enabled
                   ? Apptheme.textColorSecondary
                   : Apptheme.grayInput,
               fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
             buttonStyleData: ButtonStyleData(
-              decoration: BoxDecoration(
-                color: Apptheme.backgroundColor,
-                borderRadius: BorderRadius.circular(4),
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
               ),
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+              height: 40,
+              width: double.infinity,
             ),
             dropdownStyleData: DropdownStyleData(
               maxHeight: 600,
-              offset: Offset(0, -3),
+              offset: const Offset(0, 0),
               useSafeArea: true,
               direction: DropdownDirection.textDirection,
               decoration: BoxDecoration(
                 color: Apptheme.backgroundColor,
                 borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: const Color.fromRGBO(148, 148, 148, 0.5),
+                  width: 1,
+                ),
               ),
               scrollbarTheme: ScrollbarThemeData(
                 thumbColor: WidgetStateProperty.all(Apptheme.secondaryv3),
                 trackColor: WidgetStateProperty.all(Apptheme.lightGreen),
               ),
             ),
-            iconStyleData: IconStyleData(
+            iconStyleData: const IconStyleData(
               icon: Icon(
                 Icons.keyboard_arrow_down,
-                color: widget.enabled
-                    ? Apptheme.textColorSecondary
-                    : Apptheme.textColorPrimary,
+                color: Color.fromRGBO(148, 148, 148, 1),
+                size: 20,
               ),
+              iconSize: 20,
             ),
             decoration: const InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
+              isDense: true,
             ),
             items:
                 novelties.asMap().entries.map<DropdownMenuItem<int>>((entry) {

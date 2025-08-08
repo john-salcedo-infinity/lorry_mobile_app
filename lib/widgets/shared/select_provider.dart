@@ -18,6 +18,7 @@ class SelectProvider extends ConsumerStatefulWidget {
   final ValueChanged<ProviderSelection?>? onChanged;
   final String? hintText;
   final bool enabled;
+  final bool showBorder;
 
   const SelectProvider({
     super.key,
@@ -25,6 +26,7 @@ class SelectProvider extends ConsumerStatefulWidget {
     this.onChanged,
     this.hintText = 'Selecciona un proveedor',
     this.enabled = true,
+    this.showBorder = true,
   });
 
   @override
@@ -55,63 +57,81 @@ class _SelectProviderState extends ConsumerState<SelectProvider> {
 
     return providerAsync.when(
       data: (providerResponse) {
-        final List<ProviderModel.Provider> providers = providerResponse.data.results ?? [];
+        final List<ProviderModel.Provider> providers =
+            providerResponse.data.results ?? [];
 
         return Container(
-          height: 50,
+          width: double.infinity,
+          height: 40,
           decoration: BoxDecoration(
-            border: Border.all(
-              color: _isDropdownOpen ? Colors.orange : Colors.grey,
-              width: 2,
-            ),
             borderRadius: BorderRadius.circular(4),
+            border: Border.all(
+              color: _isDropdownOpen ? Colors.orange : Apptheme.grayInput,
+              width: 1,
+            ),
             color: Apptheme.backgroundColor,
           ),
           child: DropdownButtonFormField2<int>(
             value: _selectedValue,
-            hint: Text(widget.hintText ?? 'Selecciona un proveedor'),
+            hint: Text(
+              widget.hintText ?? 'Selecciona un proveedor',
+              style: TextStyle(
+                color: widget.enabled
+                    ? Apptheme.textColorSecondary
+                    : Apptheme.grayInput,
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             isExpanded: true,
             style: TextStyle(
               color: widget.enabled
                   ? Apptheme.textColorSecondary
                   : Apptheme.grayInput,
               fontSize: 16,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
             ),
             buttonStyleData: ButtonStyleData(
-              decoration: BoxDecoration(
-                color: Apptheme.backgroundColor,
-                borderRadius: BorderRadius.circular(4),
+              decoration: const BoxDecoration(
+                color: Colors.transparent,
               ),
-              padding: const EdgeInsets.only(right: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
+              height: 40,
+              width: double.infinity,
             ),
             dropdownStyleData: DropdownStyleData(
               maxHeight: 600,
-              offset: Offset(0, -3),
+              offset: const Offset(0, 0),
               useSafeArea: true,
               direction: DropdownDirection.textDirection,
               decoration: BoxDecoration(
                 color: Apptheme.backgroundColor,
                 borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: const Color.fromRGBO(148, 148, 148, 0.5),
+                  width: 1,
+                ),
               ),
               scrollbarTheme: ScrollbarThemeData(
                 thumbColor: WidgetStateProperty.all(Apptheme.secondaryv3),
                 trackColor: WidgetStateProperty.all(Apptheme.lightGreen),
               ),
             ),
-            iconStyleData: IconStyleData(
+            iconStyleData: const IconStyleData(
               icon: Icon(
                 Icons.keyboard_arrow_down,
-                color: widget.enabled
-                    ? Apptheme.textColorSecondary
-                    : Apptheme.textColorPrimary,
+                color: Color.fromRGBO(148, 148, 148, 1),
+                size: 20,
               ),
+              iconSize: 20,
             ),
             decoration: const InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.zero,
+              isDense: true,
             ),
-            items: providers.asMap().entries.map<DropdownMenuItem<int>>((entry) {
+            items:
+                providers.asMap().entries.map<DropdownMenuItem<int>>((entry) {
               ProviderModel.Provider provider = entry.value;
 
               return DropdownMenuItem<int>(

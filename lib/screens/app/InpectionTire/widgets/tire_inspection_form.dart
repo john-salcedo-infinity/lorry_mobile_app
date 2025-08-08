@@ -114,7 +114,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
       height: 565,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: const Color(0xFFDDEAE4),
+        color: Apptheme.lightGreen,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -133,7 +133,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
           ),
           const SizedBox(height: 16),
           TireDataTextField(
-            label: "Presión Llanta",
+            label: "Presión llanta",
             controller: _pressureController,
             isEditable: true,
             isPressure: true,

@@ -88,13 +88,15 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
             fillColor: colors['background'],
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Apptheme.grayInput),
+              borderSide: BorderSide(color: Apptheme.lightGreen, width: 1),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Apptheme.textColorPrimary, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,

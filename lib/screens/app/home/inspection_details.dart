@@ -3,7 +3,6 @@ import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 import '../../../widgets/widgets.dart';
 
 class InspectionDetails extends StatelessWidget {
@@ -13,6 +12,7 @@ class InspectionDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Apptheme.backgroundColor,
       body: historical != null
           ? SafeArea(
               child: SingleChildScrollView(
@@ -172,27 +172,9 @@ class _DetailsBadge extends StatelessWidget {
 class _DetailsAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20, bottom: 10),
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Row(
-          children: [
-            Back(),
-          ],
-        ),
-        Row(
-          children: [
-            IconButton(
-              onPressed: () => context.go('/home'),
-              icon: SvgPicture.asset(
-                'assets/icons/Icono_Casa_Lorry.svg',
-                width: 40,
-                height: 40,
-              ),
-            ),
-          ],
-        )
-      ]),
+    return Back(
+      showHome: true,
+      showNotifications: true,
     );
   }
 }

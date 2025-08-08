@@ -6,6 +6,7 @@ import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
 import 'package:app_lorry/services/InspectionService.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
+import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
@@ -106,7 +107,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
   Widget _buildHeader() {
     // Observar el estado de loading del provider
     final isLoading = ref.watch(loadingProviderProvider);
-    
+
     return Back(
       showDelete: true,
       showHome: true,
@@ -294,62 +295,98 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                     isInspected: isInspected,
                   ),
                   const SizedBox(height: 15),
-                  SizedBox(
-                    width: 290,
-                    height: 46,
-                    child: Opacity(
-                      opacity: isInspected ? 0.5 : 1.0,
-                      child: ElevatedButton(
-                        onPressed: isInspected
-                            ? () {}
-                            : () {
-                                // Encontrar el índice de esta llanta en la lista completa
-                                final allTiresIterable = widget.data.results
-                                    .where((result) => result.tire != null)
-                                    .toList()
-                                    .reversed;
-                                final allTires = allTiresIterable.toList();
-
-                                final tireIndex = allTires.indexOf(tire);
-
-                                // Navegar a la inspección empezando desde esta llanta específica
-                                ref.read(appRouterProvider).push(
-                                      '/TireProfundity',
-                                      extra: TireProfundityParams(
-                                        data: allTires,
-                                        vehicle: widget.data.vehicle.id ?? 0,
-                                        mileage: widget.data.mileage,
-                                        startIndex:
-                                            tireIndex, // Empezar desde esta llanta
-                                      ),
-                                    );
-                              },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            side: BorderSide(
-                              color: isInspected
-                                  ? Apptheme.primary
-                                  : Apptheme.textColorPrimary,
-                              width: 2,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            elevation: 0),
-                        child: Text(
-                          isInspected ? "Inspeccionado" : "Inspeccionar",
-                          style: TextStyle(
-                            color: isInspected
-                                ? Apptheme.primary
-                                : Apptheme.textColorPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                  CustomButton(
+                    double.infinity,
+                    46,
+                    isInspected
+                        ? Text("Inspeccionado")
+                        : Text(
+                            "Inspeccionar",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w900, fontSize: 16),
                           ),
-                        ),
-                      ),
-                    ),
-                  ),
+                    isInspected
+                        ? null
+                        : () {
+                            // Encontrar el índice de esta llanta en la lista completa
+                            final allTiresIterable = widget.data.results
+                                .where((result) => result.tire != null)
+                                .toList()
+                                .reversed;
+                            final allTires = allTiresIterable.toList();
+
+                            final tireIndex = allTires.indexOf(tire);
+
+                            // Navegar a la inspección empezando desde esta llanta específica
+                            ref.read(appRouterProvider).push(
+                                  '/TireProfundity',
+                                  extra: TireProfundityParams(
+                                    data: allTires,
+                                    vehicle: widget.data.vehicle.id ?? 0,
+                                    mileage: widget.data.mileage,
+                                    startIndex:
+                                        tireIndex, // Empezar desde esta llanta
+                                  ),
+                                );
+                          },
+                    type: isInspected ? 2 : 4,
+                  )
+                  // SizedBox(
+                  //   width: 290,
+                  //   height: 46,
+                  //   child: Opacity(
+                  //     opacity: isInspected ? 0.5 : 1.0,
+                  //     child: ElevatedButton(
+                  //       onPressed: isInspected
+                  //           ? () {}
+                  //           : () {
+                  //               // Encontrar el índice de esta llanta en la lista completa
+                  //               final allTiresIterable = widget.data.results
+                  //                   .where((result) => result.tire != null)
+                  //                   .toList()
+                  //                   .reversed;
+                  //               final allTires = allTiresIterable.toList();
+
+                  //               final tireIndex = allTires.indexOf(tire);
+
+                  //               // Navegar a la inspección empezando desde esta llanta específica
+                  //               ref.read(appRouterProvider).push(
+                  //                     '/TireProfundity',
+                  //                     extra: TireProfundityParams(
+                  //                       data: allTires,
+                  //                       vehicle: widget.data.vehicle.id ?? 0,
+                  //                       mileage: widget.data.mileage,
+                  //                       startIndex:
+                  //                           tireIndex, // Empezar desde esta llanta
+                  //                     ),
+                  //                   );
+                  //             },
+                  //       style: ElevatedButton.styleFrom(
+                  //           backgroundColor: Colors.white,
+                  //           padding: const EdgeInsets.symmetric(horizontal: 10),
+                  //           side: BorderSide(
+                  //             color: isInspected
+                  //                 ? Apptheme.primary
+                  //                 : Apptheme.textColorPrimary,
+                  //             width: 2,
+                  //           ),
+                  //           shape: RoundedRectangleBorder(
+                  //             borderRadius: BorderRadius.circular(4),
+                  //           ),
+                  //           elevation: 0),
+                  //       child: Text(
+                  //         isInspected ? "Inspeccionado" : "Inspeccionar",
+                  //         style: TextStyle(
+                  //           color: isInspected
+                  //               ? Apptheme.primary
+                  //               : Apptheme.textColorPrimary,
+                  //           fontSize: 16,
+                  //           fontWeight: FontWeight.bold,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
