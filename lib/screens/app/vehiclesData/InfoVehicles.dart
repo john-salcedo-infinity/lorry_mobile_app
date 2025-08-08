@@ -379,7 +379,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     }
 
     final navigationData = _toNavigationData(_currentMileage);
-    ref.read(appRouterProvider).push('/DetailTire', extra: navigationData);
+    ref.read(appRouterProvider).pushReplacement('/DetailTire', extra: navigationData);
   }
 
   DetailTireParams _toNavigationData(double updatedMileage) {

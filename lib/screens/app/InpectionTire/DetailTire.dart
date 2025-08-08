@@ -7,13 +7,12 @@ import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
 import 'package:app_lorry/services/InspectionService.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
+import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class DetailTireParams {
@@ -59,7 +58,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
         child: Column(
           children: [
             _buildHeader(),
-            
+
             // Elementos estáticos - Título y kilometraje
             Container(
               padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
@@ -67,7 +66,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    "Llantas De VHC",
+                    "Llantas de VHC",
                     style: TextStyle(
                       fontSize: 23,
                       color: Apptheme.textColorSecondary,
@@ -75,15 +74,15 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Kilometraje de la inspección
                   _buildMileageInpection(),
-                  
+
                   const SizedBox(height: 20),
                 ],
               ),
             ),
-            
+
             // Lista scrollable de llantas
             Expanded(
               child: ListView.builder(
@@ -105,23 +104,31 @@ class _DetailTireState extends ConsumerState<DetailTire> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      margin: const EdgeInsets.only(top: 30, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Back(),
-          IconButton(
-            onPressed: () => context.go('/home'),
-            icon: SvgPicture.asset(
-              'assets/icons/Icono_Casa_Lorry.svg',
-              width: 40,
-              height: 40,
-            ),
-          ),
-        ],
-      ),
+    // Observar el estado de loading del provider
+    final isLoading = ref.watch(loadingProviderProvider);
+    
+    return Back(
+      showDelete: true,
+      showHome: true,
+      showNotifications: true,
+      isLoading: isLoading,
+      onDeletePressed: () {
+        _showDeleteDialog();
+      },
+    );
+  }
+
+  void _showDeleteDialog() {
+    ConfirmationDialog.show(
+      context: context,
+      title: "Eliminar Inspección",
+      message:
+          "¿Estás seguro que deseas eliminar la inspección? No podrás deshacer esta acción",
+      cancelText: "Cancelar",
+      acceptText: "Aceptar",
+      onAccept: () {
+        ref.read(appRouterProvider).pushReplacement('/ManualPlateRegister');
+      },
     );
   }
 
@@ -395,26 +402,30 @@ class _DetailTireState extends ConsumerState<DetailTire> {
           inspections.any((inspection) => inspection['mounting'] == tire.id));
     }
 
+    // Observar el estado de loading del provider
+    final isLoading = ref.watch(loadingProviderProvider);
+
     return BottomButton(
-        params: BottombuttonParams(
-            text: allTiresInspected
-                ? "Finalizar Inspección"
-                : "Iniciar Inspección",
-            onPressed: () {
-              if (allTiresInspected) {
-                // Finalizar inspección
-                _finishInspection(inspectionData);
-              } else {
-                // Iniciar inspección normal
-                ref.read(appRouterProvider).push(
-                      '/TireProfundity',
-                      extra: TireProfundityParams(
-                          data: mountingWithTires,
-                          vehicle: widget.data.vehicle.id ?? 0,
-                          mileage: widget.data.mileage),
-                    );
-              }
-            }));
+      params: BottombuttonParams(
+        text: allTiresInspected ? "Finalizar Inspección" : "Iniciar Inspección",
+        onPressed: () {
+          if (allTiresInspected) {
+            // Finalizar inspección
+            _finishInspection(inspectionData);
+          } else {
+            // Iniciar inspección normal
+            ref.read(appRouterProvider).push(
+                  '/TireProfundity',
+                  extra: TireProfundityParams(
+                      data: mountingWithTires,
+                      vehicle: widget.data.vehicle.id ?? 0,
+                      mileage: widget.data.mileage),
+                );
+          }
+        },
+        isLoading: isLoading,
+      ),
+    );
   }
 
   // Método para finalizar la inspección
@@ -426,7 +437,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
 
       ref.read(loadingProviderProvider.notifier).changeLoading(false);
       if (response.success == true) {
-        ref.read(appRouterProvider).replace("/home");
+        ref.read(appRouterProvider).go("/home");
         ToastHelper.show_success(context, "Inspección enviada con éxito.");
       } else {
         ToastHelper.show_alert(context, "Error al enviar la inspección.");

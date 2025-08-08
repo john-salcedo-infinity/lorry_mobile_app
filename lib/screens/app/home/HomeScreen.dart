@@ -251,6 +251,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           surfaceTintColor: Colors.transparent,
           scrolledUnderElevation: 0,
           elevation: 0,
+          automaticallyImplyLeading: false,
           title: Container(
             margin: const EdgeInsets.only(top: 12),
             child: SvgPicture.asset(
@@ -450,14 +451,15 @@ class _ProfileState extends State<_Profile> {
   String _getInitials() {
     String firstName = authUser.persons?.name ?? '';
     String lastName = authUser.persons?.lastName ?? '';
-    
-    String firstInitial = firstName.isNotEmpty ? firstName[0].toUpperCase() : '';
+
+    String firstInitial =
+        firstName.isNotEmpty ? firstName[0].toUpperCase() : '';
     String lastInitial = lastName.isNotEmpty ? lastName[0].toUpperCase() : '';
-    
+
     if (firstInitial.isEmpty && lastInitial.isEmpty) {
       return 'U'; // Default to 'U' for User if no name available
     }
-    
+
     return firstInitial + lastInitial;
   }
 
@@ -477,20 +479,20 @@ class _ProfileState extends State<_Profile> {
             backgroundColor: Apptheme.primary,
             child: CircleAvatar(
               radius: 22,
-              backgroundColor: authUser.image != null ? Colors.transparent : Colors.grey,
-              backgroundImage: authUser.image != null 
-                ? NetworkImage(authUser.image!) 
-                : null,
+              backgroundColor:
+                  authUser.image != null ? Colors.transparent : Colors.grey,
+              backgroundImage:
+                  authUser.image != null ? NetworkImage(authUser.image!) : null,
               child: authUser.image == null
-                ? Text(
-                    _getInitials(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                : null,
+                  ? Text(
+                      _getInitials(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  : null,
             ),
           ),
           const SizedBox(width: 10),
@@ -498,8 +500,11 @@ class _ProfileState extends State<_Profile> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'.trim().isNotEmpty
-                    ? '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'.trim()
+                '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'
+                        .trim()
+                        .isNotEmpty
+                    ? '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'
+                        .trim()
                     : 'Usuario',
                 style: Apptheme.titleStylev2,
               ),

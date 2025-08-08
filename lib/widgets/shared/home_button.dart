@@ -4,12 +4,14 @@ import 'package:go_router/go_router.dart';
 
 class HomeButton extends StatelessWidget {
   final VoidCallback? onPressed;
+  final bool isEnabled;
   final double? width;
   final double? height;
 
   const HomeButton({
     super.key,
     this.onPressed,
+    this.isEnabled = true,
     this.width = 40,
     this.height = 40,
   });
@@ -25,7 +27,9 @@ class HomeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: () => _handleHome(context),
+      onPressed: !isEnabled 
+          ? null  // Si isEnabled es false (loading), deshabilitar completamente
+          : () => _handleHome(context), // Si está habilitado, usar la lógica normal (custom o default)
       icon: SvgPicture.asset(
         'assets/icons/Icono_Casa_Lorry.svg',
         width: width,

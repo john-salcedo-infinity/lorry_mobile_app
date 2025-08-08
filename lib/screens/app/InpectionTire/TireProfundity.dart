@@ -5,6 +5,7 @@ import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/screens/app/InpectionTire/DetailTire.dart';
 import 'package:app_lorry/screens/app/InpectionTire/services/services_screen.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
+import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -186,7 +187,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   void _onFinish() async {
     List<Map<String, dynamic>> inspections = [];
-    ref.read(loadingProviderProvider.notifier).changeLoading(true);
 
     for (int i = 0; i < mountings.length; i++) {
       final data = inspectionData[i];
@@ -212,7 +212,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       "inspections": inspections
     };
 
-    ref.read(appRouterProvider).go(
+    ref.read(appRouterProvider).push(
           "/DetailTire",
           extra: DetailTireParams(
               results: mountings.reversed.toList(),
@@ -235,7 +235,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
             _buildHeader(),
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +261,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               onFinish: () => _onFinish(),
               onService: () => _onService(),
               // proceedWithPlateInspection(context, ref, "DEFAULT_PLATE"),
-              btnDisabled: btnDisabled,
             ),
             const SizedBox(height: 0),
           ],
@@ -270,23 +270,23 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20, bottom: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          const Back(),
-          IconButton(
-            onPressed: () => context.go('/home'),
-            icon: SvgPicture.asset(
-              'assets/icons/Icono_Casa_Lorry.svg',
-              width: 40,
-              height: 40,
-            ),
-          ),
-        ],
-      ),
+    return Back(
+      showHome: true,
+      showDelete: true,
+      showNotifications: true,
+      onDeletePressed: () {
+        ConfirmationDialog.show(
+          context: context,
+          title: "Eliminar Inspección",
+          message:
+              "¿Estás seguro que deseas eliminar la inspección? No podrás deshacer esta acción",
+          cancelText: "Cancelar",
+          acceptText: "Aceptar",
+          onAccept: () {
+            ref.read(appRouterProvider).pushReplacement('/ManualPlateRegister');
+          },
+        );
+      },
     );
   }
 
@@ -302,7 +302,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               fontWeight: FontWeight.bold,
             ),
             children: [
-              const TextSpan(text: "Inspección Llanta "),
+              const TextSpan(text: "Inspección llanta "),
               TextSpan(
                 text: 'P$position',
                 style: const TextStyle(
@@ -329,7 +329,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     required VoidCallback onNext,
     required VoidCallback onService,
     required VoidCallback onFinish,
-    required bool btnDisabled,
     required bool isLoading,
   }) {
     return BottomButton(
@@ -376,22 +375,15 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         ),
         BottomButtonItem(
           text: isLast ? "Finalizar Inspección" : "Siguiente Inspección",
-          onPressed:
-              btnDisabled || isLoading ? null : (isLast ? onFinish : onNext),
+          onPressed: isLast ? onFinish : onNext,
           isLoading: isLoading,
-          customChild: isLoading
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(
-                  isLast ? "Finalizar Inspección" : "Siguiente Inspección",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
+          customChild: Text(
+            isLast ? "Finalizar Inspección" : "Siguiente Inspección",
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
         ),
       ],
     );

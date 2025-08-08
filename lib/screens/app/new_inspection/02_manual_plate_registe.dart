@@ -1,6 +1,5 @@
-import 'dart:ui';
-
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
+import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/ballBeatLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -63,10 +62,11 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   }
 
   Widget _buildHeader() {
-    return const Back(
+    final isLoading = ref.watch(manualPlateRegisterLoadingProvider);
+    return Back(
       showHome: true,
-      // showDelete: true,
       showNotifications: true,
+      isLoading: isLoading,
     );
   }
 
@@ -218,84 +218,15 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
 
   /// Shows the confirmation dialog for plate inspection
   void _showSaveConfirmationDialog(BuildContext context, String plate) {
-    showDialog(
+    ConfirmationDialog.show(
       context: context,
-      barrierColor: Apptheme.secondary.withValues(alpha: 0.5),
-      builder: (dialogContext) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-        child: AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          backgroundColor: Colors.white,
-          title: Center(
-            child: Text(
-              "PLACA $plate",
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: Apptheme.textColorPrimary,
-              ),
-            ),
-          ),
-          content: const Text(
-            "¿Deseas iniciar el proceso de inspección con este vehículo?",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              color: Apptheme.textColorSecondary,
-              fontWeight: FontWeight.normal,
-            ),
-          ),
-          actions: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Expanded(child: _buildCancelButton(dialogContext)),
-                const SizedBox(width: 16),
-                Expanded(child: _buildAcceptButton(dialogContext, plate)),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCancelButton(BuildContext dialogContext) {
-    return TextButton(
-      onPressed: () => Navigator.of(dialogContext).pop(),
-      child: const Text(
-        "Cancelar",
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-          color: Apptheme.primary,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAcceptButton(BuildContext dialogContext, String plate) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Apptheme.primary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
-          side: const BorderSide(width: 2, color: Apptheme.darkorange),
-        ),
-      ),
-      onPressed: () async {
-        Navigator.of(dialogContext).pop();
+      title: "PLACA $plate",
+      message: "¿Deseas iniciar el proceso de inspección con este vehículo?",
+      cancelText: "Cancelar",
+      acceptText: "Aceptar",
+      onAccept: () async {
         await _proceedWithPlateInspection(plate);
       },
-      child: const Text(
-        "Aceptar",
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w700,
-          color: Colors.white,
-        ),
-      ),
     );
   }
 

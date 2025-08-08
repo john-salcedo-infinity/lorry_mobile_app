@@ -4,6 +4,7 @@ import 'package:app_lorry/config/app_theme.dart';
 
 class BackButton extends StatelessWidget {
   final VoidCallback? onPressed;
+  final bool isEnabled;
   final String? text;
   final double? iconWidth;
   final double? iconHeight;
@@ -11,6 +12,7 @@ class BackButton extends StatelessWidget {
   const BackButton({
     super.key,
     this.onPressed,
+    this.isEnabled = true,
     this.text = 'Atrás',
     this.iconWidth = 25,
     this.iconHeight = 25,
@@ -34,11 +36,13 @@ class BackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => _handleBack(context),
+      onTap: !isEnabled ? null : () => _handleBack(context),
       child: Row(
         children: [
           IconButton(
-            onPressed: () => _handleBack(context),
+            onPressed: !isEnabled 
+                ? null  // Si isEnabled es false (loading), deshabilitar completamente
+                : () => _handleBack(context), // Si está habilitado, usar la lógica normal (custom o default)
             icon: Transform.rotate(
               angle: 3.14159,
               child: SvgPicture.asset(
@@ -50,9 +54,11 @@ class BackButton extends StatelessWidget {
           ),
           Text(
             text!,
-            style: const TextStyle(
+            style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: Apptheme.textColorPrimary,
+                color: !isEnabled 
+                    ? Apptheme.textColorPrimary.withOpacity(0.5)
+                    : Apptheme.textColorPrimary,
                 fontSize: 16),
           ),
         ],
