@@ -49,7 +49,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (_scrollThrottle?.isActive ?? false) return;
 
     _scrollThrottle = Timer(const Duration(milliseconds: 100), () {
-      if (_scrollController.position.pixels >=
+      // Verificar que el ScrollController esté adjunto a una vista de scroll
+      if (_scrollController.hasClients && 
+          _scrollController.position.pixels >=
           _scrollController.position.maxScrollExtent - 200) {
         _loadMoreData();
       }
@@ -143,6 +145,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
       ref.read(searchQueryProvider.notifier).state = value;
+      
+      // Mostrar loading durante el proceso de búsqueda
+      ref.read(loadinginspectionsProvider.notifier).changeloading(true);
+      
       _loadInitialData(); // Recargar con nuevo filtro
     });
   }
@@ -304,6 +310,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             Expanded(
               child: NotificationListener<ScrollNotification>(
                 onNotification: (ScrollNotification notification) {
+                  // Verificar que el ScrollController esté adjunto antes de procesar notificaciones
+                  if (!_scrollController.hasClients) return false;
+                  
                   // Detectar cambios en la dirección del scroll
                   if (notification is ScrollUpdateNotification) {
                     final position = _scrollController.position;
@@ -344,7 +353,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   strokeWidth: 2.0,
                   displacement: 50.0,
                   onRefresh: _onRefresh,
-                  child: isLoading && inspectionsList.isEmpty
+                  child: isLoading
                       ? ListView(
                           physics: const AlwaysScrollableScrollPhysics(),
                           children: [
