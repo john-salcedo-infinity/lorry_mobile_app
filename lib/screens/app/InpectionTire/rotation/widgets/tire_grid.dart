@@ -1,3 +1,5 @@
+import 'package:app_lorry/config/app_theme.dart';
+import 'package:app_lorry/models/models.dart';
 import 'package:flutter/material.dart';
 import '../spinAndRotationScreen.dart';
 import 'tire_layout.dart';
@@ -6,13 +8,19 @@ import 'tire_layout.dart';
 class TireGrid extends StatelessWidget {
   final List<TirePosition> configuration;
   final bool isEmpty;
+  final int sectionType;
   final Function(TirePosition)? onTireSelect;
+  final List<TireMovement> movements;
+  final ServiceData? activeService; // Información del servicio activo
 
   const TireGrid({
     super.key,
     required this.configuration,
     required this.isEmpty,
+    required this.sectionType,
     this.onTireSelect,
+    this.movements = const [],
+    this.activeService,
   });
 
   @override
@@ -24,7 +32,9 @@ class TireGrid extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(8),
-        color: Colors.white,
+        color: (activeService != null && sectionType == 2)
+            ? Apptheme.lightOrange
+            : Colors.white,
       ),
       child: Column(
         children: [
@@ -32,6 +42,8 @@ class TireGrid extends StatelessWidget {
             regularTires: regularTires,
             isEmpty: isEmpty,
             onTireSelect: onTireSelect,
+            sectionType: sectionType,
+            movements: movements,
           ),
           if (spareTires.isNotEmpty) ...[
             const SizedBox(height: 10),
@@ -39,6 +51,8 @@ class TireGrid extends StatelessWidget {
               spareTires: spareTires,
               isEmpty: isEmpty,
               onTireSelect: onTireSelect,
+              sectionType: sectionType,
+              movements: movements,
             ),
           ],
         ],

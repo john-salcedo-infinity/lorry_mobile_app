@@ -258,10 +258,12 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                 bottom: 10,
                 child: Text(
                   'P${tire.position?.toString() ?? '?'}',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w900,
-                    color: Apptheme.textColorPrimary,
+                    color: isInspected
+                        ? Apptheme.primary
+                        : Apptheme.textColorPrimary,
                   ),
                 ),
               ),
@@ -332,62 +334,6 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                           },
                     type: isInspected ? 2 : 4,
                   )
-                  // SizedBox(
-                  //   width: 290,
-                  //   height: 46,
-                  //   child: Opacity(
-                  //     opacity: isInspected ? 0.5 : 1.0,
-                  //     child: ElevatedButton(
-                  //       onPressed: isInspected
-                  //           ? () {}
-                  //           : () {
-                  //               // Encontrar el índice de esta llanta en la lista completa
-                  //               final allTiresIterable = widget.data.results
-                  //                   .where((result) => result.tire != null)
-                  //                   .toList()
-                  //                   .reversed;
-                  //               final allTires = allTiresIterable.toList();
-
-                  //               final tireIndex = allTires.indexOf(tire);
-
-                  //               // Navegar a la inspección empezando desde esta llanta específica
-                  //               ref.read(appRouterProvider).push(
-                  //                     '/TireProfundity',
-                  //                     extra: TireProfundityParams(
-                  //                       data: allTires,
-                  //                       vehicle: widget.data.vehicle.id ?? 0,
-                  //                       mileage: widget.data.mileage,
-                  //                       startIndex:
-                  //                           tireIndex, // Empezar desde esta llanta
-                  //                     ),
-                  //                   );
-                  //             },
-                  //       style: ElevatedButton.styleFrom(
-                  //           backgroundColor: Colors.white,
-                  //           padding: const EdgeInsets.symmetric(horizontal: 10),
-                  //           side: BorderSide(
-                  //             color: isInspected
-                  //                 ? Apptheme.primary
-                  //                 : Apptheme.textColorPrimary,
-                  //             width: 2,
-                  //           ),
-                  //           shape: RoundedRectangleBorder(
-                  //             borderRadius: BorderRadius.circular(4),
-                  //           ),
-                  //           elevation: 0),
-                  //       child: Text(
-                  //         isInspected ? "Inspeccionado" : "Inspeccionar",
-                  //         style: TextStyle(
-                  //           color: isInspected
-                  //               ? Apptheme.primary
-                  //               : Apptheme.textColorPrimary,
-                  //           fontSize: 16,
-                  //           fontWeight: FontWeight.bold,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -434,48 +380,63 @@ class _DetailTireState extends ConsumerState<DetailTire> {
 
     // Verificar si todas las llantas han sido inspeccionadas
     bool allTiresInspected = false;
+    bool thereIsTurnRotation = false;
+    List<String> TurnRotationMountigs = <String>[];
+
     if (inspectionData != null && inspectionData.containsKey('inspections')) {
       final inspections = inspectionData['inspections'] as List<dynamic>;
       allTiresInspected = mountingWithTires.every((tire) =>
           inspections.any((inspection) => inspection['mounting'] == tire.id));
     }
 
+    // Verificar si hay servicios de rotación y guarda sus id de montajes
+    if (inspectionData != null && inspectionData.containsKey('inspections')) {
+      final inspections = inspectionData['inspections'] as List<dynamic>;
+      for (var inspection in inspections) {
+        if (inspection['service'] != null) {
+          final services = inspection['service'] as List<dynamic>;
+          final hasRotationService =
+              services.any((service) => service['type_service'] == 19);
+          if (hasRotationService) {
+            thereIsTurnRotation = true;
+            TurnRotationMountigs.add(inspection['mounting'].toString());
+          }
+        }
+      }
+    }
+
     // Observar el estado de loading del provider
     final isLoading = ref.watch(loadingProviderProvider);
 
     return BottomButton(
-      // params: BottombuttonParams(
-      //   text: allTiresInspected ? "Finalizar Inspección" : "Iniciar Inspección",
-      //   onPressed: () {
-      //     if (allTiresInspected) {
-      //       // Finalizar inspección
-      //       _finishInspection(inspectionData);
-      //     } else {
-      //       // Iniciar inspección normal
-      //       ref.read(appRouterProvider).push(
-      //             '/TireProfundity',
-      //             extra: TireProfundityParams(
-      //                 data: mountingWithTires,
-      //                 vehicle: widget.data.vehicle.id ?? 0,
-      //                 mileage: widget.data.mileage),
-      //           );
-      //     }
-      //   },
-      //   isLoading: isLoading,
-      // ),
       params: BottombuttonParams(
-        text: "Realizar Acciones",
+        text: (allTiresInspected && thereIsTurnRotation)
+            ? "Realizar Acciones"
+            : allTiresInspected
+                ? "Finalizar Inspección"
+                : "Iniciar Inspección",
         onPressed: () {
           if (allTiresInspected) {
             // Finalizar inspección
-            _finishInspection(inspectionData);
+            if (thereIsTurnRotation) {
+              ref.read(appRouterProvider).push(
+                    '/rotation',
+                    extra: SpinandrotationParams(
+                      results: mountingWithTires,
+                      turnRotationMountigs: TurnRotationMountigs,
+                    ),
+                  );
+            } else {
+              _finishInspection(inspectionData);
+            }
           } else {
             // Iniciar inspección normal
             ref.read(appRouterProvider).push(
-                  '/rotation',
-                  extra: SpinandrotationParams(
-                    results: mountingWithTires,
-                  ),
+                  '/TireProfundity',
+                  extra: TireProfundityParams(
+                      data: mountingWithTires,
+                      vehicle: widget.data.vehicle.id ?? 0,
+                      mileage: widget.data.mileage),
                 );
           }
         },

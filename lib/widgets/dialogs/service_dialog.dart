@@ -129,6 +129,9 @@ class _ServiceDialogState extends State<ServiceDialog> {
           ),
         ),
         SizedBox(
+          height: 8,
+        ),
+        SizedBox(
           height: 40,
           child: TextField(
             controller: _costController,
@@ -151,8 +154,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
-                borderSide:
-                    BorderSide(color: Apptheme.primary, width: 1),
+                borderSide: BorderSide(color: Apptheme.primary, width: 1),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),

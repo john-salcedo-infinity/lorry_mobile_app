@@ -7,12 +7,16 @@ class RegularTiresGrid extends StatelessWidget {
   final List<TirePosition> regularTires;
   final bool isEmpty;
   final Function(TirePosition)? onTireSelect;
+  final int sectionType;
+  final List<TireMovement> movements; // Lista de movimientos
 
   const RegularTiresGrid({
     super.key,
     required this.regularTires,
     required this.isEmpty,
+    required this.sectionType,
     this.onTireSelect,
+    this.movements = const [],
   });
 
   @override
@@ -41,6 +45,17 @@ class RegularTiresGrid extends StatelessWidget {
     );
   }
 
+  /// Encuentra el movimiento asociado a una posición específica
+  TireMovement? _findMovementForPosition(String position) {
+    try {
+      return movements.firstWhere(
+        (movement) => movement.destinationPosition == position,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
   Widget _buildGridCell(int row, int col, int tiresPerCell) {
     const columnsCount = 3;
     final tiresPerRow = columnsCount * tiresPerCell;
@@ -67,6 +82,8 @@ class RegularTiresGrid extends StatelessWidget {
               tire: cellTires[i],
               isEmpty: isEmpty,
               onTireSelect: onTireSelect,
+              sectionType: sectionType,
+              movement: _findMovementForPosition(cellTires[i].position),
             ),
           ),
         ],
@@ -84,14 +101,29 @@ class RegularTiresGrid extends StatelessWidget {
 class SpareTiresRow extends StatelessWidget {
   final List<TirePosition> spareTires;
   final bool isEmpty;
+  final int sectionType;
   final Function(TirePosition)? onTireSelect;
+  final List<TireMovement> movements; // Lista de movimientos
 
   const SpareTiresRow({
     super.key,
     required this.spareTires,
     required this.isEmpty,
+    required this.sectionType,
     this.onTireSelect,
+    this.movements = const [],
   });
+
+  /// Encuentra el movimiento asociado a una posición específica
+  TireMovement? _findMovementForPosition(String position) {
+    try {
+      return movements.firstWhere(
+        (movement) => movement.destinationPosition == position,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +137,8 @@ class SpareTiresRow extends StatelessWidget {
                   tire: entry.value,
                   isEmpty: isEmpty,
                   onTireSelect: onTireSelect,
+                  sectionType: sectionType,
+                  movement: _findMovementForPosition(entry.value.position),
                 ),
                 if (entry.key < spareTires.length - 1) const SizedBox(width: 8),
               ])

@@ -12,30 +12,46 @@ import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'widgets/tire_grid.dart';
 
 class TirePosition {
-  final String id;
+  final String? id;
+  final String position;
+  final String? mounting;
   final String? serialNumber;
   final bool isSpare;
   final bool isSelected;
+  final String?
+      destinationPosition; // Nueva posición donde quedará en la nueva configuración
 
   TirePosition({
-    required this.id,
+    this.id,
+    required this.position,
+    this.mounting,
     this.serialNumber,
     this.isSpare = false,
     this.isSelected = false,
+    this.destinationPosition,
   });
 
   // Método para clonar la posición (útil para arrastrar y soltar)
   TirePosition copyWith({
     String? id,
+    String? position,
     String? serialNumber,
+    String? mounting,
     bool? isSpare,
     bool? isSelected,
+    String? destinationPosition,
+    bool clearId = false,
+    bool clearSerialNumber = false,
   }) {
     return TirePosition(
-      id: id ?? this.id,
-      serialNumber: serialNumber ?? this.serialNumber,
+      id: clearId ? null : (id ?? this.id),
+      position: position ?? this.position,
+      serialNumber:
+          clearSerialNumber ? null : (serialNumber ?? this.serialNumber),
+      mounting: mounting ?? this.mounting,
       isSpare: isSpare ?? this.isSpare,
       isSelected: isSelected ?? this.isSelected,
+      destinationPosition: destinationPosition ?? this.destinationPosition,
     );
   }
 
@@ -43,10 +59,36 @@ class TirePosition {
   bool get hasTire => serialNumber != null;
 }
 
+// Clase para representar un movimiento realizado (para poder deshacerlo)
+class TireMovement {
+  final String tireId;
+  final String serialNumber;
+  final String sourcePosition;
+  final String destinationPosition;
+  final String sourceMounting;
+  final String destinationMounting;
+  final ServiceData service;
+  final int sourceIndex;
+  final int destinationIndex;
+
+  TireMovement({
+    required this.tireId,
+    required this.serialNumber,
+    required this.sourcePosition,
+    required this.destinationPosition,
+    required this.sourceMounting,
+    required this.destinationMounting,
+    required this.service,
+    required this.sourceIndex,
+    required this.destinationIndex,
+  });
+}
+
 class SpinandrotationParams {
   final List<MountingResult> results;
+  final List<String>? turnRotationMountigs;
 
-  SpinandrotationParams({required this.results});
+  SpinandrotationParams({required this.results, this.turnRotationMountigs});
 }
 
 class SpinAndRotationScreen extends ConsumerStatefulWidget {
@@ -65,6 +107,10 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
   TirePosition? selectedTire;
   TirePosition? tireWithActiveService;
   ServiceData? activeService;
+  bool canPlaceTire = false; // Para controlar cuando se puede colocar la llanta
+
+  // Historial de movimientos para la funcionalidad de deshacer
+  List<TireMovement> movementHistory = [];
 
   @override
   void initState() {
@@ -74,7 +120,7 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
 
   void _initializeConfigurations() {
     currentConfiguration = _buildCurrentConfigurationFromResults();
-    newConfiguration = _buildEmptyConfiguration();
+    newConfiguration = _buildNewConfigurationFromResults();
   }
 
   List<TirePosition> _buildCurrentConfigurationFromResults() {
@@ -84,108 +130,84 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
     for (int i = 0; i < widget.data.results.length; i++) {
       final result = widget.data.results[i];
       if (result.tire != null && result.position != null) {
-        positions.add(TirePosition(
-          id: 'P${result.position}',
-          serialNumber: result.tire!.integrationCode,
-          isSpare: result.position! >= 100,
-        ));
+        // Mostrar todas las posiciones, pero solo con neumáticos si están en turnRotationMountigs
+        if (widget.data.turnRotationMountigs != null &&
+            widget.data.turnRotationMountigs!.contains(result.id.toString())) {
+          // Posición con neumático (está en la lista de rotación)
+          positions.add(TirePosition(
+              id: result.tire!.id.toString(),
+              position: result.position!.toString(),
+              serialNumber: result.tire!.integrationCode,
+              isSpare: result.position! >= 100,
+              mounting: result.id.toString(),
+              destinationPosition: null));
+        } else {
+          // Posición vacía (no está en la lista de rotación)
+          // La destinationPosition es la misma posición actual ya que no se mueve
+          positions.add(TirePosition(
+            id: null,
+            position: result.position!.toString(),
+            serialNumber: null,
+            isSpare: result.position! >= 100,
+            mounting: result.id.toString(),
+            destinationPosition: result.position!.toString(),
+          ));
+        }
       }
     }
 
     // Ordenar por número de posición
-    positions.sort((a, b) =>
-        _extractPositionNumber(a.id).compareTo(_extractPositionNumber(b.id)));
+    positions.sort(
+        (a, b) => (int.parse(a.position)).compareTo(int.parse(b.position)));
 
     return positions;
   }
 
-  List<TirePosition> _buildEmptyConfiguration() {
-    final allPositions =
-        currentConfiguration.map((t) => _extractPositionNumber(t.id)).toList();
-
-    final regularPositions = allPositions.where((pos) => pos < 100).toList();
-    final sparePositions = allPositions.where((pos) => pos >= 100).toList();
-
-    final maxRegularPosition = regularPositions.isEmpty
-        ? 12
-        : regularPositions.reduce((a, b) => a > b ? a : b);
-
+  List<TirePosition> _buildNewConfigurationFromResults() {
     List<TirePosition> newConfig = [];
 
-    // Agregar posiciones regulares vacías
-    for (int i = 1; i <= maxRegularPosition; i++) {
-      newConfig.add(TirePosition(id: 'P$i'));
+    for (int i = 0; i < widget.data.results.length; i++) {
+      final result = widget.data.results[i];
+      if (result.tire != null && result.position != null) {
+        // Si está en turnRotationMountigs, crear posición vacía
+        if (widget.data.turnRotationMountigs != null &&
+            widget.data.turnRotationMountigs!.contains(result.id.toString())) {
+          newConfig.add(TirePosition(
+            id: null,
+            position: result.position!.toString(),
+            serialNumber: null,
+            isSpare: result.position! >= 100,
+            mounting: result.id.toString(),
+            isSelected: false,
+          ));
+        } else {
+          // Si NO está en turnRotationMountigs, colocar el neumático en nueva configuración
+          newConfig.add(TirePosition(
+            id: result.tire!.id.toString(),
+            position: result.position!.toString(),
+            serialNumber: result.tire!.integrationCode,
+            isSpare: result.position! >= 100,
+            mounting: result.id.toString(),
+            isSelected: false,
+          ));
+        }
+      }
     }
 
-    // Agregar posiciones de repuesto vacías
-    for (int sparePos in sparePositions) {
-      newConfig.add(TirePosition(id: 'P$sparePos', isSpare: true));
-    }
+    // Ordenar por número de posiciones
+    newConfig.sort(
+        (a, b) => (int.parse(a.position)).compareTo(int.parse(b.position)));
 
     return newConfig;
   }
 
-  int _extractPositionNumber(String positionId) {
-    return int.tryParse(positionId.replaceAll('P', '')) ?? 0;
-  }
-
-  // ignore: unused_element
-  void _moveTire(String fromPositionId, String toPositionId) {
-    setState(() {
-      final fromIndex =
-          newConfiguration.indexWhere((t) => t.id == fromPositionId);
-      final toIndex = newConfiguration.indexWhere((t) => t.id == toPositionId);
-
-      if (fromIndex != -1 && toIndex != -1) {
-        // Intercambiar las llantas
-        final fromTire = newConfiguration[fromIndex];
-        final toTire = newConfiguration[toIndex];
-
-        newConfiguration[fromIndex] = toTire.copyWith(
-          id: fromTire.id,
-          isSpare: fromTire.isSpare,
-        );
-        newConfiguration[toIndex] = fromTire.copyWith(
-          id: toTire.id,
-          isSpare: toTire.isSpare,
-        );
-      }
-    });
-  }
-
-  /// Copia una llanta de la configuración actual a la nueva configuración
-  // ignore: unused_element
-  void _copyTireToNewConfiguration(String fromPositionId, String toPositionId) {
-    setState(() {
-      final currentTire = currentConfiguration.firstWhere(
-        (t) => t.id == fromPositionId,
-        orElse: () => TirePosition(id: fromPositionId),
-      );
-
-      final toIndex = newConfiguration.indexWhere((t) => t.id == toPositionId);
-      if (toIndex != -1) {
-        newConfiguration[toIndex] = newConfiguration[toIndex].copyWith(
-          serialNumber: currentTire.serialNumber,
-        );
-      }
-    });
-  }
-
-  /// Limpia una posición en la nueva configuración
-  // ignore: unused_element
-  void _clearPosition(String positionId) {
-    setState(() {
-      final index = newConfiguration.indexWhere((t) => t.id == positionId);
-      if (index != -1) {
-        newConfiguration[index] = newConfiguration[index].copyWith(
-          serialNumber: null,
-        );
-      }
-    });
-  }
-
   /// Maneja la selección/deselección de una llanta
   void _toggleTireSelection(TirePosition tire) {
+    // No permitir selección si la posición está vacía (no tiene neumático)
+    if (!tire.hasTire) {
+      return;
+    }
+
     // Si hay un servicio activo, verificar si es la misma llanta o mostrar alerta
     if (tireWithActiveService != null) {
       if (tireWithActiveService!.id != tire.id) {
@@ -197,8 +219,9 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
     setState(() {
       // Limpiar todas las selecciones previas en la configuración actual
       for (int i = 0; i < currentConfiguration.length; i++) {
-        currentConfiguration[i] =
-            currentConfiguration[i].copyWith(isSelected: false);
+        currentConfiguration[i] = currentConfiguration[i].copyWith(
+          isSelected: false,
+        );
       }
 
       // Buscar en configuración actual
@@ -206,7 +229,9 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
           currentConfiguration.indexWhere((t) => t.id == tire.id);
       if (currentIndex != -1) {
         currentConfiguration[currentIndex] =
-            currentConfiguration[currentIndex].copyWith(isSelected: true);
+            currentConfiguration[currentIndex].copyWith(
+          isSelected: true,
+        );
         selectedTire = currentConfiguration[currentIndex];
         print(
             'Llanta seleccionada en configuración actual: ${selectedTire!.id}, isSelected: ${selectedTire!.isSelected}');
@@ -237,11 +262,141 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
         setState(() {
           activeService = service;
           tireWithActiveService = selectedTire;
+          canPlaceTire = true; // Habilitar la colocación de la llanta
         });
-        print(
-            'Servicio ${service.id} asignado a llanta LL-${selectedTire!.serialNumber}');
       },
     );
+  }
+
+  /// Deshace el último movimiento realizado
+  void _undoLastMovement() {
+    if (movementHistory.isEmpty) {
+      ToastHelper.show_alert(context, 'No hay movimientos para deshacer.');
+      return;
+    }
+
+    setState(() {
+      // Obtener el último movimiento
+      final lastMovement = movementHistory.removeLast();
+
+      // Restaurar la llanta en la configuración actual
+      currentConfiguration[lastMovement.sourceIndex] =
+          currentConfiguration[lastMovement.sourceIndex].copyWith(
+        id: lastMovement.tireId,
+        serialNumber: lastMovement.serialNumber,
+        isSelected: false,
+        destinationPosition: null, // Limpiar destinationPosition
+      );
+
+      // Quitar la llanta de la nueva configuración
+      newConfiguration[lastMovement.destinationIndex] =
+          newConfiguration[lastMovement.destinationIndex].copyWith(
+        clearId: true,
+        clearSerialNumber: true,
+      );
+
+      // Limpiar cualquier selección activa
+      selectedTire = null;
+      tireWithActiveService = null;
+      activeService = null;
+      canPlaceTire = false;
+
+      print(
+          'Movimiento deshecho: Llanta ${lastMovement.serialNumber} regresó a posición ${lastMovement.sourcePosition}');
+
+      // Mostrar mensaje de confirmación
+      ToastHelper.show_success(context,
+          'Movimiento deshecho: Llanta LL-${lastMovement.serialNumber} regresó a posición P${lastMovement.sourcePosition}');
+    });
+  }
+
+  /// Maneja el tap en una posición de la nueva configuración
+  void _handleNewConfigurationTap(TirePosition position) {
+    // Solo permitir colocación si hay una llanta seleccionada con servicio activo
+    if (!canPlaceTire || selectedTire == null || activeService == null) {
+      return;
+    }
+
+    // Solo permitir colocación en posiciones vacías
+    if (position.hasTire) {
+      ToastHelper.show_alert(context,
+          'Esta posición ya está ocupada. Selecciona una posición vacía.');
+      return;
+    }
+
+    // VALIDACIÓN: Los giros (SERVICE_TURN id: 18) deben realizarse en el mismo montaje
+    if (activeService!.id == 18) {
+      // SERVICE_TURN
+      if (selectedTire!.mounting != position.mounting) {
+        ToastHelper.show_alert(context,
+            'Los giros deben realizarse sobre el mismo montaje. Selecciona una posición en el mismo montaje.');
+        return;
+      }
+    }
+
+    setState(() {
+      // Encontrar el índice de la posición en la nueva configuración
+      final newConfigIndex =
+          newConfiguration.indexWhere((t) => t.position == position.position);
+
+      if (newConfigIndex != -1) {
+        // Encontrar el índice de la llanta en la configuración actual
+        final currentIndex =
+            currentConfiguration.indexWhere((t) => t.id == selectedTire!.id);
+
+        if (currentIndex != -1) {
+          // Crear el registro del movimiento ANTES de hacer los cambios
+          final movement = TireMovement(
+            tireId: selectedTire!.id!,
+            serialNumber: selectedTire!.serialNumber!,
+            sourcePosition: selectedTire!.position,
+            destinationPosition: position.position,
+            sourceMounting: selectedTire!.mounting!,
+            destinationMounting: position.mounting!,
+            service: activeService!,
+            sourceIndex: currentIndex,
+            destinationIndex: newConfigIndex,
+          );
+
+          // Agregar el movimiento al historial
+          movementHistory.add(movement);
+
+          // Colocar la llanta en la nueva posición
+          newConfiguration[newConfigIndex] =
+              newConfiguration[newConfigIndex].copyWith(
+            id: selectedTire!.id,
+            serialNumber: selectedTire!.serialNumber,
+          );
+
+          // Convertir la posición en vacía pero mantener la información de posición y mounting
+          currentConfiguration[currentIndex] =
+              currentConfiguration[currentIndex].copyWith(
+            isSelected: false,
+            destinationPosition:
+                position.position, // Usar la nueva posición como destino
+            clearId: true,
+            clearSerialNumber: true,
+          );
+
+          // Crear el objeto de movimiento
+          final movementData = {
+            "movements_tire": int.parse(selectedTire!.id!),
+            "type_service": activeService!.id,
+            "source_mounting": int.parse(selectedTire!.mounting!),
+            "destination_mounting": int.parse(position.mounting!),
+          };
+
+          print('Movimiento registrado: $movementData');
+          print('Movimientos en historial: ${movementHistory.length}');
+
+          // Limpiar selección
+          selectedTire = null;
+          tireWithActiveService = null;
+          activeService = null;
+          canPlaceTire = false;
+        }
+      }
+    });
   }
 
   @override
@@ -260,10 +415,6 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (selectedTire != null) ...[
-                        _buildSelectedTireInfo(),
-                        const SizedBox(height: 20),
-                      ],
                       Row(
                         children: [
                           Text(
@@ -284,14 +435,17 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
                         configuration: currentConfiguration,
                         isEmpty: false,
                         isSelectable: true,
+                        sectionType: 1, // 1 - Configuración Actual
                       ),
                       const SizedBox(height: 32),
                       _buildConfigurationSection(
-                        title: "Nueva Configuración",
-                        configuration: newConfiguration,
-                        isEmpty: true,
-                        isSelectable: false,
-                      ),
+                          title: "Nueva Configuración",
+                          configuration: newConfiguration,
+                          isEmpty: false,
+                          isSelectable:
+                              canPlaceTire, // Hacer seleccionable cuando se puede colocar
+                          sectionType: 2, // 2 - Nueva Configuración
+                          activeService: activeService),
                     ],
                   ),
                 ),
@@ -300,11 +454,7 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
             BottomButton(
               gap: 20,
               buttons: [
-                BottomButtonItem(
-                  text: "Deshacer",
-                  onPressed: () {},
-                  buttonType: 2,
-                ),
+                _buildUndoButton(),
                 BottomButtonItem(
                   text: "Finalizar",
                   onPressed: () {},
@@ -318,11 +468,57 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
     );
   }
 
+  /// Construye el botón de deshacer con el badge de contador de movimientos
+  BottomButtonItem _buildUndoButton() {
+    final bool hasMovements = movementHistory.isNotEmpty;
+    final int movementCount = movementHistory.length;
+
+    return BottomButtonItem(
+        text: "Deshacer", // Texto de respaldo
+        onPressed: hasMovements ? _undoLastMovement : null,
+        buttonType: 2,
+        disabled: !hasMovements,
+        customChild: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Deshacer",
+              style: TextStyle(
+                color: Apptheme.primary,
+                fontWeight: FontWeight.w900,
+                fontSize: 16,
+              ),
+            ),
+            SizedBox(
+              width: 8,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                color: Apptheme.primary,
+              ),
+              child: Text(
+                movementCount.toString(),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                ),
+              ),
+            )
+          ],
+        ));
+  }
+
   Widget _buildConfigurationSection({
     required String title,
     required List<TirePosition> configuration,
     required bool isEmpty,
+    required int sectionType,
     bool isSelectable = false,
+    ServiceData? activeService,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,94 +535,16 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
         TireGrid(
           configuration: configuration,
           isEmpty: isEmpty,
-          onTireSelect: isSelectable ? _toggleTireSelection : null,
+          sectionType: sectionType,
+          movements: sectionType == 2 ? movementHistory : [],
+          onTireSelect: isSelectable
+              ? (sectionType == 1
+                  ? _toggleTireSelection
+                  : _handleNewConfigurationTap)
+              : null,
+          activeService: activeService,
         ),
       ],
-    );
-  }
-
-  Widget _buildSelectedTireInfo() {
-    if (selectedTire == null) return Container();
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.tire_repair,
-                color: Apptheme.primary,
-                size: 24,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                "Información de Llanta Seleccionada",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Apptheme.textColorSecondary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          _buildInfoRow("Posición:", selectedTire!.id),
-          if (selectedTire!.hasTire) ...[
-            _buildInfoRow("Serie:", selectedTire!.serialNumber ?? "N/A"),
-            _buildInfoRow(
-                "Tipo:", selectedTire!.isSpare ? "Repuesto" : "Regular"),
-          ] else ...[
-            _buildInfoRow("Estado:", "Posición vacía"),
-            _buildInfoRow(
-                "Tipo:", selectedTire!.isSpare ? "Repuesto" : "Regular"),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Apptheme.textColorSecondary,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 14,
-                color: Apptheme.textColorPrimary,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
