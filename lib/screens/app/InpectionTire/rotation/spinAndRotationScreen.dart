@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
@@ -87,8 +89,13 @@ class TireMovement {
 class SpinandrotationParams {
   final List<MountingResult> results;
   final List<String>? turnRotationMountigs;
+  final Map<String, Object>? inspectionData;
 
-  SpinandrotationParams({required this.results, this.turnRotationMountigs});
+  SpinandrotationParams({
+    required this.results,
+    this.turnRotationMountigs,
+    this.inspectionData,
+  });
 }
 
 class SpinAndRotationScreen extends ConsumerStatefulWidget {
@@ -108,6 +115,7 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
   TirePosition? tireWithActiveService;
   ServiceData? activeService;
   bool canPlaceTire = false; // Para controlar cuando se puede colocar la llanta
+  bool activeFinishBtn = false;
 
   // Historial de movimientos para la funcionalidad de deshacer
   List<TireMovement> movementHistory = [];
@@ -301,8 +309,8 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
       activeService = null;
       canPlaceTire = false;
 
-      print(
-          'Movimiento deshecho: Llanta ${lastMovement.serialNumber} regresó a posición ${lastMovement.sourcePosition}');
+      // Actualizar estado del botón basado en si todas las llantas están colocadas
+      activeFinishBtn = checkAllTiresPlaced();
 
       // Mostrar mensaje de confirmación
       ToastHelper.show_success(context,
@@ -386,9 +394,7 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
             "destination_mounting": int.parse(position.mounting!),
           };
 
-          print('Movimiento registrado: $movementData');
-          print('Movimientos en historial: ${movementHistory.length}');
-
+          print(movementData);
           // Limpiar selección
           selectedTire = null;
           tireWithActiveService = null;
@@ -396,7 +402,80 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
           canPlaceTire = false;
         }
       }
+      activeFinishBtn = checkAllTiresPlaced();
     });
+  }
+
+  bool checkAllTiresPlaced() {
+    return newConfiguration.every((tire) => tire.id != null);
+  }
+
+  void _finishRotation() {
+    if (widget.data.inspectionData == null) {
+      ToastHelper.show_alert(context, "Error: No hay datos de inspección");
+      return;
+    }
+
+    // Crear una copia del inspectionData actual
+    Map<String, Object> updatedInspectionData =
+        Map<String, Object>.from(widget.data.inspectionData!);
+
+    if (updatedInspectionData.containsKey('inspections')) {
+      List<dynamic> inspections = List<dynamic>.from(
+          updatedInspectionData['inspections'] as List<dynamic>);
+
+      // Actualizar service_action para cada movimiento realizado
+      for (var movement in movementHistory) {
+        // Validación: Si es rotación (type_service = 14) en el mismo montaje, no agregar
+        if (movement.service.id == 14 &&
+            movement.sourceMounting == movement.destinationMounting) {
+          print(
+              'Rotación en el mismo montaje detectada - no se agrega service_action para mounting ${movement.sourceMounting}');
+          continue;
+        }
+
+        // Encontrar la inspección correspondiente al source_mounting (montaje de origen)
+        final inspectionIndex = inspections.indexWhere(
+          (inspection) =>
+              inspection['mounting'].toString() == movement.sourceMounting,
+        );
+
+        if (inspectionIndex != -1) {
+          Map<String, dynamic> inspection =
+              Map<String, dynamic>.from(inspections[inspectionIndex]);
+
+          // Crear el service_action con la estructura requerida
+          final serviceAction = {
+            "movements_tire": int.parse(movement.tireId),
+            "type_service": movement.service.id,
+            "source_mounting": int.parse(movement.sourceMounting),
+            "destination_mounting": int.parse(movement.destinationMounting),
+          };
+
+          // Agregar a service_action (crear lista si no existe)
+          if (!inspection.containsKey('service_action')) {
+            inspection['service_action'] = [];
+          }
+
+          List<dynamic> serviceActions =
+              List<dynamic>.from(inspection['service_action']);
+          serviceActions.add(serviceAction);
+          inspection['service_action'] = serviceActions;
+
+          // Actualizar la inspección en la lista
+          inspections[inspectionIndex] = inspection;
+
+          print(
+              'Service action agregado para mounting ${movement.sourceMounting}: $serviceAction');
+        }
+      }
+
+      // Actualizar el inspectionData
+      updatedInspectionData['inspections'] = inspections;
+      // Convertir a JSON para debug
+      String inspectionDataJson = jsonEncode(updatedInspectionData);
+      print('DEBUG - InspectionData JSON: $inspectionDataJson');
+    }
   }
 
   @override
@@ -457,8 +536,9 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
                 _buildUndoButton(),
                 BottomButtonItem(
                   text: "Finalizar",
-                  onPressed: () {},
+                  onPressed: activeFinishBtn ? _finishRotation : null,
                   buttonType: 1,
+                  disabled: !activeFinishBtn,
                 ),
               ],
             ),

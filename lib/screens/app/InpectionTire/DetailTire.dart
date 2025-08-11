@@ -424,6 +424,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                     extra: SpinandrotationParams(
                       results: mountingWithTires,
                       turnRotationMountigs: TurnRotationMountigs,
+                      inspectionData: inspectionData
                     ),
                   );
             } else {
