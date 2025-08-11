@@ -4,6 +4,7 @@ import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/screens/app/InpectionTire/TireProfundity.dart';
+import 'package:app_lorry/screens/app/InpectionTire/rotation/spinAndRotationScreen.dart';
 import 'package:app_lorry/services/InspectionService.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
@@ -443,8 +444,27 @@ class _DetailTireState extends ConsumerState<DetailTire> {
     final isLoading = ref.watch(loadingProviderProvider);
 
     return BottomButton(
+      // params: BottombuttonParams(
+      //   text: allTiresInspected ? "Finalizar Inspección" : "Iniciar Inspección",
+      //   onPressed: () {
+      //     if (allTiresInspected) {
+      //       // Finalizar inspección
+      //       _finishInspection(inspectionData);
+      //     } else {
+      //       // Iniciar inspección normal
+      //       ref.read(appRouterProvider).push(
+      //             '/TireProfundity',
+      //             extra: TireProfundityParams(
+      //                 data: mountingWithTires,
+      //                 vehicle: widget.data.vehicle.id ?? 0,
+      //                 mileage: widget.data.mileage),
+      //           );
+      //     }
+      //   },
+      //   isLoading: isLoading,
+      // ),
       params: BottombuttonParams(
-        text: allTiresInspected ? "Finalizar Inspección" : "Iniciar Inspección",
+        text: "Realizar Acciones",
         onPressed: () {
           if (allTiresInspected) {
             // Finalizar inspección
@@ -452,11 +472,10 @@ class _DetailTireState extends ConsumerState<DetailTire> {
           } else {
             // Iniciar inspección normal
             ref.read(appRouterProvider).push(
-                  '/TireProfundity',
-                  extra: TireProfundityParams(
-                      data: mountingWithTires,
-                      vehicle: widget.data.vehicle.id ?? 0,
-                      mileage: widget.data.mileage),
+                  '/rotation',
+                  extra: SpinandrotationParams(
+                    results: mountingWithTires,
+                  ),
                 );
           }
         },
