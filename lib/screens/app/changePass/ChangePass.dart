@@ -115,7 +115,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                   children: [
                     // Header con botón de atrás
                     Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.only(left: 16.0),
                       child: Row(
                         children: [
                           IconButton(
