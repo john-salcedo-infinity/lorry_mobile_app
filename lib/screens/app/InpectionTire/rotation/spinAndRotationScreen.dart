@@ -4,7 +4,9 @@ import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:app_lorry/models/Service_data.dart';
+import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
+import 'package:app_lorry/services/InspectionService.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/dialogs/service_selection_dialog.dart';
 import 'package:app_lorry/widgets/shared/Back.dart';
@@ -472,14 +474,85 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
 
       // Actualizar el inspectionData
       updatedInspectionData['inspections'] = inspections;
-      // Convertir a JSON para debug
-      String inspectionDataJson = jsonEncode(updatedInspectionData);
-      print('DEBUG - InspectionData JSON: $inspectionDataJson');
+
+      ConfirmationDialog.show(
+        context: context,
+        title: "¿Enviar servicios?",
+        message: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              "Se guardará",
+              style: TextStyle(color: Apptheme.textColorSecondary),
+            ),
+            const SizedBox(height: 8),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.3,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: movementHistory
+                      .where((movement) => !(movement.service.id == 14 &&
+                          movement.sourcePosition ==
+                              movement.destinationPosition))
+                      .map((movement) {
+                    String serviceTypeText = movement.service.id == 14
+                        ? "ROTACIÓN"
+                        : movement.service.id == 18
+                            ? "GIRO"
+                            : "ROTACIÓN Y GIRO";
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Text(
+                        "(1) $serviceTypeText DE LLANTA P${movement.sourcePosition}",
+                        style: TextStyle(
+                            color: Apptheme.textColorSecondary,
+                            fontWeight: FontWeight.w900),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
+        onAccept: () {
+          _finishInspection(updatedInspectionData);
+        },
+      );
+    }
+  }
+
+  void _finishInspection(Map<String, Object>? inspectionData) async {
+    try {
+      ref.read(loadingProviderProvider.notifier).changeLoading(true);
+      final response = await InspectionService.createInspection(
+          inspectionData as Map<String, Object>);
+
+      ref.read(loadingProviderProvider.notifier).changeLoading(false);
+
+      if (!mounted) return;
+
+      if (response.success == true) {
+        ref.read(appRouterProvider).go("/home");
+        ToastHelper.show_success(context, "Inspección enviada con éxito.");
+      } else {
+        ToastHelper.show_alert(context, "Error al enviar la inspección.");
+      }
+    } catch (e) {
+      ref.read(loadingProviderProvider.notifier).changeLoading(false);
+
+      if (!mounted) return;
+
+      ToastHelper.show_alert(context, "Error al finalizar la inspección: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(loadingProviderProvider);
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
       body: SafeArea(
@@ -539,6 +612,7 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
                   onPressed: activeFinishBtn ? _finishRotation : null,
                   buttonType: 1,
                   disabled: !activeFinishBtn,
+                  isLoading: isLoading,
                 ),
               ],
             ),
@@ -552,12 +626,13 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
   BottomButtonItem _buildUndoButton() {
     final bool hasMovements = movementHistory.isNotEmpty;
     final int movementCount = movementHistory.length;
+    final isLoading = ref.watch(loadingProviderProvider);
 
     return BottomButtonItem(
         text: "Deshacer", // Texto de respaldo
         onPressed: hasMovements ? _undoLastMovement : null,
         buttonType: 2,
-        disabled: !hasMovements,
+        disabled: !hasMovements || isLoading,
         customChild: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -629,10 +704,12 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
   }
 
   Widget _buildHeader() {
+    final isLoading = ref.watch(loadingProviderProvider);
     return Back(
       showHome: true,
       showDelete: true,
       showNotifications: true,
+      isLoading: isLoading,
       onDeletePressed: () {
         ConfirmationDialog.show(
           context: context,

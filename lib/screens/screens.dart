@@ -20,6 +20,5 @@ export './app/InpectionTire/observations/observation_sceen.dart';
 export './app/vehiclesData/InfoVehicles.dart';
 
 // Utility screens
-export './app/rotation/rotationScreen.dart';
 export './app/changePass/ChangePass.dart';
 export './app/test/testScreen.dart';

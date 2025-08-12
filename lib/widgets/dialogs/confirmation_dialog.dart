@@ -4,7 +4,7 @@ import 'package:app_lorry/config/app_theme.dart';
 
 class ConfirmationDialog extends StatelessWidget {
   final String title;
-  final String message;
+  final dynamic message; // Can be String or Widget
   final String cancelText;
   final String acceptText;
   final VoidCallback? onCancel;
@@ -18,7 +18,7 @@ class ConfirmationDialog extends StatelessWidget {
     this.acceptText = 'Aceptar',
     this.onCancel,
     this.onAccept,
-  });
+  }) : assert(message is String || message is Widget, 'message must be either String or Widget');
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +38,17 @@ class ConfirmationDialog extends StatelessWidget {
             ),
           ),
         ),
-        content: Text(
-          message,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Apptheme.textColorSecondary,
-            fontWeight: FontWeight.normal,
-          ),
-        ),
+        content: message is Widget 
+          ? message as Widget
+          : Text(
+              message as String,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Apptheme.textColorSecondary,
+                fontWeight: FontWeight.normal,
+              ),
+            ),
         actions: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -100,7 +102,6 @@ class ConfirmationDialog extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
           side: BorderSide(color: Apptheme.darkorange, width: 2),
-
         ),
         elevation: 0,
       ),
@@ -119,12 +120,13 @@ class ConfirmationDialog extends StatelessWidget {
   static Future<void> show({
     required BuildContext context,
     required String title,
-    required String message,
+    required dynamic message, // Can be String or Widget
     String cancelText = 'Cancelar',
     String acceptText = 'Aceptar',
     VoidCallback? onCancel,
     VoidCallback? onAccept,
   }) {
+    assert(message is String || message is Widget, 'message must be either String or Widget');
     return showDialog(
       context: context,
       barrierColor: Apptheme.secondary.withValues(alpha: 0.5),
