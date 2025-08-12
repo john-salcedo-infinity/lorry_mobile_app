@@ -53,6 +53,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   Set<int> inspectedTires = {};
 
   int _currentTireIndex = 0;
+  late PageController _pageController;
 
   @override
   void initState() {
@@ -65,8 +66,14 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     // Establecer el índice inicial (puede venir desde un botón específico)
     _currentTireIndex = data.startIndex ?? 0;
 
+    // Inicializar el PageController
+    _pageController = PageController(initialPage: _currentTireIndex);
+
     // Inicializar los datos de inspección con los valores originales
     _initializeInspectionData();
+
+    // Marcar la llanta inicial como inspeccionada
+    inspectedTires.add(_currentTireIndex);
   }
 
   void _initializeInspectionData() {
@@ -132,33 +139,10 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           (tire?.profInternalCurrent ?? 0.0),
     ];
 
-    return comparisons.any((isInvalid) => isInvalid);
-  }
+    // Verificar si todas las llantas han sido inspeccionadas
+    bool allTiresInspected = inspectedTires.length >= mountings.length;
 
-  void _onTireDataChanged(Map<String, dynamic> data) {
-    final currentData = inspectionData[_currentTireIndex] ?? {};
-
-    inspectionData[_currentTireIndex] = {
-      'mounting': data['mounting'] ?? currentData['mounting'],
-      'pressure': data['pressure'] ?? currentData['pressure'],
-      'prof_external': data['prof_external'] ?? currentData['prof_external'],
-      'prof_center': data['prof_center'] ?? currentData['prof_center'],
-      'prof_internal': data['prof_internal'] ?? currentData['prof_internal'],
-    };
-
-    // Solo triggerea un rebuild - btnDisabled se recalcula automáticamente
-    setState(() {});
-  }
-
-  // Método para agregar novedades al mounting actual
-  void _addNoveltiesToCurrentMounting(List<Map<String, dynamic>> novelties) {
-    noveltiesData[_currentTireIndex] = novelties;
-    setState(() {});
-  }
-
-  // Método para obtener las novedades del mounting actual
-  List<Map<String, dynamic>> _getCurrentMountingNovelties() {
-    return noveltiesData[_currentTireIndex] ?? [];
+    return comparisons.any((isInvalid) => isInvalid) || !allTiresInspected;
   }
 
   // Método para obtener los servicios del mounting actual
@@ -223,7 +207,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   @override
   Widget build(BuildContext context) {
-    final currentMounting = mountings[_currentTireIndex];
     final isLoading = ref.watch(loadingProviderProvider);
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
@@ -233,33 +216,63 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           children: [
             _buildHeader(),
             Expanded(
-              child: SingleChildScrollView(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildTitleWidget(currentMounting.position.toString()),
-                    const SizedBox(height: 25),
-                    TireInspectionForm(
-                      currentMounting: currentMounting,
-                      onDataChanged: _onTireDataChanged,
-                      existingNovelties: _getCurrentMountingNovelties(),
-                      onNoveltiesChanged: _addNoveltiesToCurrentMounting,
+              child: PageView.builder(
+                controller: _pageController,
+                scrollDirection: Axis.vertical,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentTireIndex = index;
+                    // Marcar la llanta como inspeccionada cuando el usuario navega a ella
+                    // Solo agregar si no está ya en el Set (evita duplicados automáticamente)
+                    inspectedTires.add(index);
+                  });
+                },
+                itemCount: mountings.length,
+                itemBuilder: (context, index) {
+                  final currentMounting = mountings[index];
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildTitleWidget(currentMounting.position.toString()),
+                        const SizedBox(height: 25),
+                        TireInspectionForm(
+                          currentMounting: currentMounting,
+                          onDataChanged: (data) {
+                            // Usar el índice específico de esta página
+                            final currentData = inspectionData[index] ?? {};
+                            inspectionData[index] = {
+                              'mounting': data['mounting'] ?? currentData['mounting'],
+                              'pressure': data['pressure'] ?? currentData['pressure'],
+                              'prof_external': data['prof_external'] ?? currentData['prof_external'],
+                              'prof_center': data['prof_center'] ?? currentData['prof_center'],
+                              'prof_internal': data['prof_internal'] ?? currentData['prof_internal'],
+                            };
+                            setState(() {});
+                          },
+                          existingNovelties: noveltiesData[index] ?? [],
+                          onNoveltiesChanged: (novelties) {
+                            noveltiesData[index] = novelties;
+                            setState(() {});
+                          },
+                          // Pasar los datos ya guardados para esta página específica
+                          initialInspectionData: inspectionData[index],
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
             _buildBottomButtons(
-              isLast: inspectedTires.length >= mountings.length - 1,
-              isFirst: inspectedTires.isEmpty,
+              isLast: _currentTireIndex >= mountings.length - 1,
+              isFirst: _currentTireIndex <= 0,
               isLoading: isLoading,
               onNext: _nextTire,
               onFinish: () => _onFinish(),
               onService: () => _onService(),
-              // proceedWithPlateInspection(context, ref, "DEFAULT_PLATE"),
             ),
             const SizedBox(height: 0),
           ],
@@ -369,11 +382,12 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           ),
         ),
         BottomButtonItem(
-          text: isLast ? "Finalizar Inspección" : "Siguiente Inspección",
-          onPressed: isLast ? onFinish : onNext,
+          text: 'Finalizar Inspección',
+          onPressed: onFinish,
+          disabled: !isLast || btnDisabled || isLoading,
           isLoading: isLoading,
           customChild: Text(
-            isLast ? "Finalizar Inspección" : "Siguiente Inspección",
+            'Finalizar Inspección',
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 16,
@@ -386,6 +400,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   @override
   void dispose() {
+    _pageController.dispose();
     _currentTireIndex = 0; // Reset
     super.dispose();
   }

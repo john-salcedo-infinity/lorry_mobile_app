@@ -236,8 +236,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
         BottomButtonItem(
           text: 'Enviar Servicios',
           buttonType: 1,
-          onPressed: _serviceItems.isNotEmpty ? _sendServices : null,
-          disabled: _serviceItems.isEmpty,
+          onPressed: _sendServices,
         ),
       ],
     );

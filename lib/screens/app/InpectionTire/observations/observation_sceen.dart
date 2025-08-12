@@ -123,12 +123,10 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
 
   // Método para remover una novedad
   void _removeNoveltyItem(int index) {
-    if (_noveltyItems.length > 1) {
-      setState(() {
-        _noveltyItems[index].dispose();
-        _noveltyItems.removeAt(index);
-      });
-    }
+    setState(() {
+      _noveltyItems[index].dispose();
+      _noveltyItems.removeAt(index);
+    });
 
     // Asegurar que siempre haya al menos una novedad
     if (_noveltyItems.isEmpty) {
@@ -290,20 +288,18 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                 ],
               ),
             ),
-            // Solo mostrar botón de eliminar si hay más de una novedad
-            if (_noveltyItems.length > 1)
-              TextButton(
-                onPressed: () => _removeNoveltyItem(index),
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                ),
-                child: Text("Eliminar",
-                    style: TextStyle(
-                      color: Apptheme.secondary,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14,
-                    )),
+            TextButton(
+              onPressed: () => _removeNoveltyItem(index),
+              style: TextButton.styleFrom(
+                padding: EdgeInsets.zero,
               ),
+              child: Text("Eliminar",
+                  style: TextStyle(
+                    color: Apptheme.secondary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 14,
+                  )),
+            ),
           ],
         ),
         Container(
