@@ -5,41 +5,71 @@ import 'package:toastification/toastification.dart';
 class ToastHelper {
   static void show_success(context, String message) {
     toastification.show(
-        backgroundColor: Apptheme.sucess_color_v2,
-        borderRadius: BorderRadius.circular(10),
-        context: context, // optional if you use ToastificationWrapper
-        title: Text(
-          message,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        foregroundColor: Apptheme.sucess_color,
-        showProgressBar: false,
-        icon: const Image(
-            image: AssetImage('assets/icons/Icon-verificazion.png')),
-        autoCloseDuration: const Duration(seconds: 3),
-        style: ToastificationStyle.flatColored,
-        borderSide: const BorderSide(color: Apptheme.sucess_color, width: 2.5));
+      context: context,
+      style: ToastificationStyle.fillColored,
+      primaryColor: Apptheme.toastSucessBackground,
+      backgroundColor: Apptheme.secondaryv3,
+      autoCloseDuration: const Duration(seconds: 5),
+      borderRadius: BorderRadius.circular(4),
+      alignment: Alignment.topRight,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      description: IntrinsicWidth(
+        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          const Icon(Icons.check_circle, color: Apptheme.secondary),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              message,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                color: Apptheme.secondaryv3,
+                fontWeight: FontWeight.w900,
+                fontFamily: Apptheme.textFamily,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ]),
+      ),
+      showProgressBar: true,
+      showIcon: false,
+      borderSide: const BorderSide(color: Apptheme.secondaryv3, width: 2),
+    );
   }
 
   static void show_alert(context, String message, {bool orange = false}) {
-    Color primary = Colors.white;
-    if (orange) {
-      primary = Apptheme.primary;
-    }
     toastification.show(
-        backgroundColor: primary,
-        borderRadius: BorderRadius.circular(10),
-        context: context, // optional if you use ToastificationWrapper
-        title: Text(
-          message,
-          style: const TextStyle(
-              fontWeight: FontWeight.bold, fontFamily: Apptheme.textFamily),
-        ),
-        foregroundColor: Apptheme.darkorange,
-        showProgressBar: false,
-        icon: const Image(image: AssetImage('assets/icons/Alert_Icon.png')),
-        autoCloseDuration: const Duration(seconds: 3),
-        style: ToastificationStyle.flatColored,
-        borderSide: const BorderSide(color: Apptheme.darkorange, width: 2.5));
+      context: context,
+      style: ToastificationStyle.fillColored,
+      primaryColor: Apptheme.lightOrange,
+      backgroundColor: Apptheme.toastAlertBorder,
+      autoCloseDuration: const Duration(seconds: 5),
+      borderRadius: BorderRadius.circular(4),
+      alignment: Alignment.topRight,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      description: IntrinsicWidth(
+        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          Icon(Icons.cancel, color: Apptheme.toastAlertBorder),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(
+              message,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                color: Apptheme.primary,
+                fontWeight: FontWeight.w900,
+                fontFamily: Apptheme.textFamily,
+                fontSize: 16,
+              ),
+            ),
+          ),
+        ]),
+      ),
+      showProgressBar: true,
+      showIcon: false,
+      borderSide: const BorderSide(color: Apptheme.toastAlertBorder, width: 2),
+    );
   }
 }

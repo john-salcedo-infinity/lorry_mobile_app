@@ -11,8 +11,6 @@ import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/dialogs/service_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 
 class ServiceItem {
   final TextEditingController costController;
@@ -59,7 +57,7 @@ class ServicesScreen extends ConsumerStatefulWidget {
 class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   late final MountingResult currentMounting;
 
-  List<ServiceItem> _serviceItems = [];
+  final List<ServiceItem> _serviceItems = [];
 
   @override
   void initState() {
@@ -196,37 +194,34 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
   Widget _buildServicesGrid() {
     final services = servicesConfiguration.physicalServices;
 
-    return Container(
-      child: Column(children: [
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            childAspectRatio: 10 / 9,
-            crossAxisSpacing: 20,
-          ),
-          itemCount: services.length,
-          itemBuilder: (context, index) {
-            final serviceConfig = services[index];
-            final serviceCount =
-                _getServiceCountForType(serviceConfig.service.id);
-            final isDisabled =
-                serviceConfig.service.id == SERVICE_ROTATE_TURN.id &&
-                    _isRotationTurnDisabled();
-
-            return ServiceButton(
-              serviceConfig: serviceConfig,
-              serviceCount: serviceCount,
-              isDisabled: isDisabled,
-              onTap: isDisabled
-                  ? null
-                  : () => _onServiceTap(serviceConfig.service),
-            );
-          },
+    return Column(children: [
+      GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 10 / 9,
+          crossAxisSpacing: 20,
         ),
-      ]),
-    );
+        itemCount: services.length,
+        itemBuilder: (context, index) {
+          final serviceConfig = services[index];
+          final serviceCount =
+              _getServiceCountForType(serviceConfig.service.id);
+          final isDisabled =
+              serviceConfig.service.id == SERVICE_ROTATE_TURN.id &&
+                  _isRotationTurnDisabled();
+
+          return ServiceButton(
+            serviceConfig: serviceConfig,
+            serviceCount: serviceCount,
+            isDisabled: isDisabled,
+            onTap:
+                isDisabled ? null : () => _onServiceTap(serviceConfig.service),
+          );
+        },
+      ),
+    ]);
   }
 
   Widget _buildBottomButtons() {

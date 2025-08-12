@@ -10,7 +10,6 @@ import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/config/app_theme.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'widgets/tire_inspection_form.dart';
 

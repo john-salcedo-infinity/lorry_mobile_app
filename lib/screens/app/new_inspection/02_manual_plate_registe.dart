@@ -96,7 +96,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       child: Row(
         children: [
           const SizedBox(width: 20),
-          const Image(image: AssetImage('assets/icons/Alert_Icon.png')),
+          const Icon(Icons.error, color: Apptheme.primary),
           const SizedBox(width: 10),
           Expanded(
             child: Text(

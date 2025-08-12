@@ -100,6 +100,6 @@ GoRouter appRouter(Ref ref) {
         return SpinAndRotationScreen(data: data);
       }),
     ),
-    GoRoute(path: "/test", builder: ((context, state) => const TestScreen()))
+    // GoRoute(path: "/test", builder: ((context, state) => const TestScreen()))
   ]);
 }

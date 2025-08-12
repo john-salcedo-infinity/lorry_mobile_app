@@ -2,32 +2,39 @@ import 'package:flutter/material.dart';
 
 class Apptheme {
   // #regions General settings
+  // Orange colors
   static const Color primary = Color.fromRGBO(242, 119, 53, 1);
-  static const Color backgroundColor = Color.fromRGBO(249, 249, 252, 1);
   static const Color darkorange = Color.fromRGBO(204, 71, 0, 1);
+  static const Color lightOrange = Color.fromRGBO(253, 235, 224, 1);
+  static const Color lightOrange2 = Color.fromRGBO(255, 224, 207, 1);
+  static const Color AlertOrange = Color.fromRGBO(242, 100, 26, 1);
+  static const Color lightAlertOrange = Color.fromRGBO(255, 224, 235, 1);
+  static const Color toastAlertBorder = Color.fromRGBO(255, 157, 105, 1);
+
+  // Green colors
   static const Color secondary = Color.fromRGBO(23, 100, 93, 1);
   static const Color secondaryv3 = Color.fromRGBO(50, 150, 108, 1);
   static const Color secondaryv4 = Color.fromRGBO(220, 230, 227, 1);
-  static const Color grayInput = Color.fromRGBO(73, 77, 76, 0.5);
   static const Color lightGreen = Color.fromRGBO(220, 230, 227, 1);
-  static const Color textColorSecondary = Color.fromRGBO(73, 77, 76, 1);
-  static const Color lightOrange = Color.fromRGBO(253, 235, 225, 1);
-  static const Color lightOrange2 = Color.fromRGBO(255, 224, 207, 1);
-
-  static const Color textColorPrimary = Color.fromRGBO(23, 100, 93, 1);
-  static const String textFamily = "Poppins";
-  static const TextStyle textPrimary = TextStyle(fontFamily: textFamily);
-
   static const Color sucess_color = Color.fromRGBO(50, 150, 108, 1);
   static const Color sucess_color_v2 = Color.fromRGBO(215, 250, 236, 1);
   static const Color tireBackground = Color.fromRGBO(220, 230, 227, 1);
+  static const Color textColorPrimary = Color.fromRGBO(23, 100, 93, 1);
+  static const Color toastSucessBackground = Color.fromRGBO(235, 255, 241, 1);
 
-  static const Color AlertOrange = Color.fromRGBO(242, 100, 26, 1);
-  static const Color lightAlertOrange = Color.fromRGBO(255, 224, 235, 1);
+  // Other colors
+  static const Color backgroundColor = Color.fromRGBO(249, 249, 252, 1);
+  static const Color grayInput = Color.fromRGBO(73, 77, 76, 0.5);
+  static const Color textColorSecondary = Color.fromRGBO(73, 77, 76, 1);
+
+  // Typography
+  static const String textFamily = "Poppins";
+  static const TextStyle textPrimary = TextStyle(fontFamily: textFamily);
 
   static ThemeData lightTheme = ThemeData.light().copyWith(
-    primaryColor: primary,
-  );
+      primaryColor: primary,
+      brightness: Brightness.light,
+      colorScheme: ColorScheme.fromSeed(seedColor: primary));
   // #endregion
 
   // #regions Variant color

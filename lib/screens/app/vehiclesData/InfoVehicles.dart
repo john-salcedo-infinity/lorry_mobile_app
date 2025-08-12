@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:app_lorry/config/app_theme.dart';
@@ -24,7 +23,6 @@ class _Constants {
   static const double inputFieldHeight = 46.0;
   static const double borderRadius = 8.0;
   static const double iconSize = 24.0;
-  static const double homeIconSize = 40.0;
   static const EdgeInsets containerPadding =
       EdgeInsets.symmetric(vertical: 30.0, horizontal: 16.0);
 }

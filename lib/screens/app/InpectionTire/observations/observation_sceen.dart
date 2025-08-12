@@ -5,12 +5,9 @@ import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:app_lorry/widgets/shared/select_novelty.dart';
-import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:app_lorry/widgets/shared/image_picker_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:go_router/go_router.dart';
 
 // Clase para manejar cada novedad individual
 class NoveltyItem {

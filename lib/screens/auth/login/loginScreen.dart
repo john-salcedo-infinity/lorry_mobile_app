@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:app_lorry/widgets/shared/ballBeatLoading.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/config/app_theme.dart';
@@ -171,11 +170,13 @@ class _FormLogin extends ConsumerWidget {
             500,
             50,
             !loading
-                ? const Text("Iniciar Sesión", style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w900,
-                    fontSize:16
-                ),)
+                ? const Text(
+                    "Iniciar Sesión",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16),
+                  )
                 : const SizedBox(
                     width: 50,
                     height: 20,
@@ -202,10 +203,12 @@ class _FormLogin extends ConsumerWidget {
           }
           final response = await Authservice.login(email, password);
 
+          ref.read(loadingProviderProvider.notifier).changeLoading(false);
+
+          if (!context.mounted) return;
+
           if (!response.success!) {
             ToastHelper.show_alert(context, "Credenciales incorrectas!!");
-            // ref.read(appRouterProvider).go('/home');
-            ref.read(loadingProviderProvider.notifier).changeLoading(false);
             return;
           } else {
             ToastHelper.show_success(context, "Bienvenido!!");
@@ -216,6 +219,9 @@ class _FormLogin extends ConsumerWidget {
             pref.saveKey("menu", jsonEncode(response.data!.menuAcces!));
             pref.saveKey("user", jsonEncode(response.data!.user!));
             await Future.delayed(Duration(seconds: 1));
+
+            if (!context.mounted) return;
+
             ref.read(appRouterProvider).go('/home');
             // ref.read(appRouterProvider).go('/rotationview');
           }

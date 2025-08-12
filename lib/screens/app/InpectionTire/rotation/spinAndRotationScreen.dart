@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
