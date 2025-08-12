@@ -142,7 +142,12 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Servicios a realizar', style: Apptheme.titleStyle),
+                      Text('Servicios a realizar',
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w900,
+                            color: Apptheme.textColorSecondary,
+                          )),
                       const SizedBox(height: 20),
                       _buildServicesGrid(),
                     ],
@@ -200,7 +205,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
         physics: const NeverScrollableScrollPhysics(),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 10 / 9,
+          childAspectRatio: 10 / 8.5,
           crossAxisSpacing: 20,
         ),
         itemCount: services.length,

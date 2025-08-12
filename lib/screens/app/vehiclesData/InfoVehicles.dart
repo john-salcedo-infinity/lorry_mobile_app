@@ -235,7 +235,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Container(
       width: _Constants.containerWidth,
       height: _Constants.alertContainerHeight,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: const EdgeInsets.all(26),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -252,9 +252,9 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             child: Text(
               "Para realizar una nueva inspección, primero debes actualizar el kilometraje",
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 14,
                 color: Apptheme.textColorSecondary,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w400,
               ),
             ),
           ),

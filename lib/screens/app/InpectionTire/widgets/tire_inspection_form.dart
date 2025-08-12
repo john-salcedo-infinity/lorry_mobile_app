@@ -168,8 +168,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      height: 565,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
         color: Apptheme.lightGreen,
         borderRadius: BorderRadius.circular(10),
@@ -181,14 +180,13 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             child: Text(
               "Serie LL-${widget.currentMounting.tire?.integrationCode ?? 'Sin Serie'}",
               style: const TextStyle(
-                fontFamily: 'Poppins',
                 fontSize: 22,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w900,
                 color: Apptheme.textColorPrimary,
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 18),
           TireDataTextField(
             label: "Presión llanta",
             controller: _pressureController,
@@ -196,7 +194,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             isPressure: true,
             lastValue: widget.currentMounting.tire?.pressure?.toDouble() ?? 0.0,
           ),
-          const SizedBox(height: 35),
+          const SizedBox(height: 38),
           TireDataTextField(
             label: "Profun. Externa",
             controller: _externalController,
@@ -205,7 +203,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
                 widget.currentMounting.tire?.profExternalCurrent?.toDouble() ??
                     0.0,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           TireDataTextField(
             label: "Profun. Interna",
             controller: _internalController,
@@ -214,7 +212,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
                 widget.currentMounting.tire?.profInternalCurrent?.toDouble() ??
                     0.0,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           TireDataTextField(
             label: "Profun. Central",
             controller: _centerController,
@@ -223,9 +221,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
                 widget.currentMounting.tire?.profCenterCurrent?.toDouble() ??
                     0.0,
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 32),
           _buildAddObservationButton(),
-          const SizedBox(height: 10),
         ],
       ),
     );

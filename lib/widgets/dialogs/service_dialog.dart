@@ -46,12 +46,11 @@ class _ServiceDialogState extends State<ServiceDialog> {
     return BackdropFilter(
       filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
       child: AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         backgroundColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-            horizontal: 32, vertical: 32), // Agregar más padding interno
         title: _buildHeader(),
         content: SizedBox(
+          width: 500,
           child: SingleChildScrollView(
             child: _buildForm(),
           ),
@@ -76,7 +75,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
           textAlign: TextAlign.center,
         ),
         if (widget.tireCode != null) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
@@ -109,7 +108,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCostField(),
-          const SizedBox(height: 10),
+          const SizedBox(height: 18),
           _buildProviderField(),
         ],
       ),
@@ -129,10 +128,10 @@ class _ServiceDialogState extends State<ServiceDialog> {
           ),
         ),
         SizedBox(
-          height: 8,
+          height: 6,
         ),
         SizedBox(
-          height: 40,
+          height: 42,
           child: TextField(
             controller: _costController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -205,7 +204,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
             color: Apptheme.textColorSecondary,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         SelectProvider(
           hintText: 'Selecciona un proveedor',
           showBorder: false,
@@ -234,9 +233,8 @@ class _ServiceDialogState extends State<ServiceDialog> {
 
   Widget _buildActions() {
     return CustomButton(
-      // double.infinity,
-      900000,
-      50,
+      double.infinity,
+      42,
       const Text(
         'Realizar Servicio',
         style: TextStyle(

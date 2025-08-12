@@ -160,7 +160,6 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.black,
-                                fontFamily: Apptheme.textFamily,
                               ),
                             ),
 
@@ -260,7 +259,6 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                                           fontSize: 16,
                                           fontWeight: FontWeight.bold,
                                           color: Colors.white,
-                                          fontFamily: Apptheme.textFamily,
                                         ),
                                       ),
                                 isLoading ? null : _resetPassword,

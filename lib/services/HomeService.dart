@@ -10,9 +10,7 @@ class Homeservice {
       ref, Map<String, String>? queryParams) async {
     Preferences preference = Preferences();
     await preference.init();
-    final Map<String, String> query = {
-      ...?queryParams
-    };
+    final Map<String, String> query = {...?queryParams};
     String token = preference.getValue("token");
     final resp = await MainService.get(
         '/inspection/vehicle-last-with-tire-inspections/', query,
@@ -26,7 +24,7 @@ class Homeservice {
           data: DataInspectionHistory(
               count: 0, next: null, previous: null, results: []));
     }
-    final Map<String, dynamic> data = json.decode(resp.body);
+    final Map<String, dynamic> data = json.decode(utf8.decode(resp.bodyBytes));
     final finals = InspectionHistory.fromJson(data);
 
     return finals;

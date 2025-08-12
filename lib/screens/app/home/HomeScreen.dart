@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:app_lorry/services/services.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/forms/customInput.dart';
+import 'package:app_lorry/widgets/shared/notification_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/helpers/helpers.dart';
@@ -50,9 +51,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     _scrollThrottle = Timer(const Duration(milliseconds: 100), () {
       // Verificar que el ScrollController esté adjunto a una vista de scroll
-      if (_scrollController.hasClients && 
+      if (_scrollController.hasClients &&
           _scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 200) {
+              _scrollController.position.maxScrollExtent - 200) {
         _loadMoreData();
       }
     });
@@ -145,10 +146,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
       ref.read(searchQueryProvider.notifier).state = value;
-      
+
       // Mostrar loading durante el proceso de búsqueda
       ref.read(loadinginspectionsProvider.notifier).changeloading(true);
-      
+
       _loadInitialData(); // Recargar con nuevo filtro
     });
   }
@@ -258,13 +259,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           scrolledUnderElevation: 0,
           elevation: 0,
           automaticallyImplyLeading: false,
-          title: Container(
-            margin: const EdgeInsets.only(top: 12),
-            child: SvgPicture.asset(
-              'assets/icons/logo_lorryv2.svg',
-              width: 125, // Ajusta el tamaño según sea necesario
-              height: 22,
-            ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                margin: const EdgeInsets.only(top: 12),
+                child: SvgPicture.asset(
+                  'assets/icons/logo_lorryv2.svg',
+                  width: 125, // Ajusta el tamaño según sea necesario
+                  height: 22,
+                ),
+              ),
+              NotificationButton()
+            ],
           )),
       body: SafeArea(
         child: Column(
@@ -281,7 +289,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 30),
                     const Text(
                       "ÚLTIMAS INSPECCIONES",
-                      style: Apptheme.subtitleStyle,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w900,
+                        color: Apptheme.textColorSecondary,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     Container(
@@ -291,6 +303,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       child: CustomInputField(
                         showBorder: false,
+                        height: 42,
                         hint: "Buscar por VHC asociada",
                         onChanged: _onSearchChanged,
                         showLabel: false,
@@ -312,9 +325,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 onNotification: (ScrollNotification notification) {
                   // Verificar que el ScrollController esté adjunto antes de procesar notificaciones
                   if (!_scrollController.hasClients) return false;
-                  
-                  // Detectar cambios en la dirección del scroll
-                  if (notification is ScrollUpdateNotification) {
+
+                  // OPTIMIZACIÓN: Solo procesar UserScrollNotification para mejor rendimiento
+                  if (notification is UserScrollNotification ||
+                      notification is ScrollUpdateNotification) {
                     final position = _scrollController.position;
                     final currentPosition = position.pixels;
 
@@ -323,23 +337,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       // Detectar si cambió de dirección hacia abajo después de haber ido hacia arriba
                       if (_lastScrollPosition < currentPosition &&
                           currentPosition > -30) {
-                        // Usuario cambió de dirección hacia abajo, marcar para cancelar refresh
-                        setState(() {
-                          _shouldCancelRefresh = true;
-                        });
+                        // OPTIMIZACIÓN: Solo actualizar estado si realmente cambió
+                        if (!_shouldCancelRefresh) {
+                          setState(() {
+                            _shouldCancelRefresh = true;
+                          });
+                        }
                       }
                       // Si está yendo más hacia arriba, permitir refresh
                       else if (_lastScrollPosition > currentPosition) {
-                        setState(() {
-                          _shouldCancelRefresh = false;
-                        });
+                        if (_shouldCancelRefresh) {
+                          setState(() {
+                            _shouldCancelRefresh = false;
+                          });
+                        }
                       }
                     }
                     // Reset cuando vuelve a posición normal
                     else if (currentPosition >= 0) {
-                      setState(() {
-                        _shouldCancelRefresh = false;
-                      });
+                      if (_shouldCancelRefresh) {
+                        setState(() {
+                          _shouldCancelRefresh = false;
+                        });
+                      }
                     }
 
                     _lastScrollPosition = currentPosition;
@@ -379,33 +399,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           : ListView.builder(
                               controller: _scrollController,
                               physics: const AlwaysScrollableScrollPhysics(),
-                              // Optimizaciones de rendimiento
-                              cacheExtent:
-                                  1000.0, // Cache más elementos fuera de pantalla
+
+                              // OPTIMIZACIONES DE RENDIMIENTO MEJORADAS
+                              cacheExtent: 500.0, // Reducido para menos memoria
                               addAutomaticKeepAlives:
                                   false, // Evita mantener widgets fuera de pantalla
                               addRepaintBoundaries: true, // Mejora el repaint
                               addSemanticIndexes:
                                   false, // Reduce cálculos innecesarios
+
+                              // OPTIMIZACIÓN CRÍTICA: Altura fija para mejor rendimiento
+                              // itemExtent: 190.0,
+
                               itemCount: inspectionsList.length +
                                   (isLoadingMore ? 1 : 0),
                               itemBuilder: (context, index) {
                                 if (index < inspectionsList.length) {
+                                  final inspection = inspectionsList[index];
+
+                                  // OPTIMIZACIÓN: Key más eficiente
+                                  final itemKey = ValueKey(
+                                      '${inspection.vehicle.licensePlate}_$index');
+
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 20),
                                     child: ItemHistorial(
-                                      key: ValueKey(
-                                          '${inspectionsList[index].vehicle.licensePlate}_${inspectionsList[index].inspection.lastInspectionDate.millisecondsSinceEpoch}'), // Key para optimizar rebuilds
-                                      historical: inspectionsList[index],
+                                      key: itemKey,
+                                      historical: inspection,
                                       isSelected: selectedIndex == index,
                                       onTap: () {
-                                        setState(() {
-                                          // Si ya está seleccionado, deseleccionar; si no, seleccionar
-                                          selectedIndex = selectedIndex == index
-                                              ? null
-                                              : index;
-                                        });
+                                        // OPTIMIZACIÓN: Solo llamar setState si realmente cambió
+                                        final newSelectedIndex =
+                                            selectedIndex == index
+                                                ? null
+                                                : index;
+                                        if (newSelectedIndex != selectedIndex) {
+                                          setState(() {
+                                            selectedIndex = newSelectedIndex;
+                                          });
+                                        }
                                       },
                                     ),
                                   );
@@ -417,7 +450,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         child: Apptheme.loadingIndicator()),
                                   );
                                 }
-                                return null;
+                                return const SizedBox
+                                    .shrink(); // Más eficiente que null
                               },
                             ),
                 ),
@@ -515,7 +549,11 @@ class _ProfileState extends State<_Profile> {
                     ? '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'
                         .trim()
                     : 'Usuario',
-                style: Apptheme.titleStylev2,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: Apptheme.textColorSecondary,
+                ),
               ),
               Text(
                 authUser.groups?.isNotEmpty == true
@@ -573,8 +611,8 @@ class HomeMenu extends ConsumerWidget {
 
     return PopupMenuButton<String>(
       color: Colors.white,
-      elevation: 8,
-      shadowColor: Colors.black.withValues(alpha: 0.1),
+      elevation: 1,
+      shadowColor: Colors.black.withValues(alpha: 0.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -597,29 +635,49 @@ class HomeMenu extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                  margin: const EdgeInsets.only(right: 8),
-                  child: const Text("Cambiar contraseña")),
+                margin: const EdgeInsets.only(right: 8),
+                child: const Text(
+                  "Cambiar contraseña",
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Apptheme.textColorSecondary,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
               SvgPicture.asset(
                 'assets/icons/Icono_changePass.svg',
-                width: 25, // Ajusta el tamaño según sea necesario
+                width: 25,
                 height: 25,
               ),
             ],
           ),
         ),
-        const PopupMenuDivider(height: 1),
+        const PopupMenuDivider(
+          height: 1,
+          thickness: .2,
+        ),
         PopupMenuItem<String>(
           value: 'logout',
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               Container(
-                margin: const EdgeInsets.only(right: 8),
-                child: const Text('Cerrar sesión'),
+                margin: EdgeInsets.only(right: 8),
+                child: const Text(
+                  'Cerrar sesión',
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Apptheme.textColorSecondary,
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
               ),
               SvgPicture.asset(
                 'assets/icons/Icono_cerrar_sesion.svg',
-                width: 25, // Ajusta el tamaño según sea necesario
+                width: 25,
                 height: 25,
               ),
             ],

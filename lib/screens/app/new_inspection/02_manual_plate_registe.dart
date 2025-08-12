@@ -20,9 +20,6 @@ class ManualPlateRegister extends ConsumerStatefulWidget {
 }
 
 class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
-  // static const double _containerWidth = 342.0;
-  // static const double _fieldWidth = 292.0;
-  // static const double _fieldHeight = 46.0;
   static const int _maxPlateLength = 6;
   static const String _plateHint = "WMB 268";
   static const String _alertMessage = "Digite manualmente la placa";
@@ -85,7 +82,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     return Container(
       width: double.infinity,
       height: 68,
-      padding: const EdgeInsets.only(top: 26, bottom: 22),
+      padding: const EdgeInsets.all(26),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -95,18 +92,14 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       ),
       child: Row(
         children: [
-          const SizedBox(width: 20),
-          const Icon(Icons.error, color: Apptheme.primary),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              _alertMessage,
-              softWrap: true,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Apptheme.textColorSecondary,
-                fontWeight: FontWeight.normal,
-              ),
+          const Icon(Icons.error, color: Apptheme.primary, size: 20),
+          const SizedBox(width: 5),
+          Text(
+            _alertMessage,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Apptheme.textColorSecondary,
+              fontWeight: FontWeight.normal,
             ),
           ),
         ],
@@ -146,36 +139,46 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          // Ícono del carro
           SvgPicture.asset(
             'assets/icons/Car_Icon.svg',
+            width: 24, // Ajusta el tamaño según necesites
+            height: 24,
           ),
-          Expanded(
-            child: TextField(
-              controller: _plateController,
-              maxLength: _maxPlateLength,
-              textCapitalization: TextCapitalization.characters,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Apptheme.textColorPrimary,
-              ),
-              onChanged: (value) {
-                final upperValue = value.toUpperCase();
-                if (value != upperValue) {
-                  _plateController.value = TextEditingValue(
-                    text: upperValue,
-                    selection:
-                        TextSelection.collapsed(offset: upperValue.length),
-                  );
-                }
-              },
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                counterText: "",
-                hintText: _plateHint,
-                hintStyle: const TextStyle(
+
+          // Input de la placa
+          Flexible(
+            child: IntrinsicWidth(
+              child: TextField(
+                controller: _plateController,
+                maxLength: _maxPlateLength,
+                textCapitalization: TextCapitalization.characters,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w900,
                   color: Apptheme.textColorPrimary,
+                ),
+                onChanged: (value) {
+                  final upperValue = value.toUpperCase();
+                  if (value != upperValue) {
+                    _plateController.value = TextEditingValue(
+                      text: upperValue,
+                      selection:
+                          TextSelection.collapsed(offset: upperValue.length),
+                    );
+                  }
+                },
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  counterText: "",
+                  hintText: _plateHint,
+                  hintStyle: const TextStyle(
+                    color: Apptheme.textColorPrimary,
+                  ),
+                  constraints: const BoxConstraints(
+                    minWidth: 120,
+                  ),
                 ),
               ),
             ),

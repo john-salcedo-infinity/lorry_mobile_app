@@ -231,24 +231,30 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                 itemBuilder: (context, index) {
                   final currentMounting = mountings[index];
                   return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 12),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildTitleWidget(currentMounting.position.toString()),
-                        const SizedBox(height: 25),
+                        const SizedBox(height: 18),
                         TireInspectionForm(
                           currentMounting: currentMounting,
                           onDataChanged: (data) {
                             // Usar el índice específico de esta página
                             final currentData = inspectionData[index] ?? {};
                             inspectionData[index] = {
-                              'mounting': data['mounting'] ?? currentData['mounting'],
-                              'pressure': data['pressure'] ?? currentData['pressure'],
-                              'prof_external': data['prof_external'] ?? currentData['prof_external'],
-                              'prof_center': data['prof_center'] ?? currentData['prof_center'],
-                              'prof_internal': data['prof_internal'] ?? currentData['prof_internal'],
+                              'mounting':
+                                  data['mounting'] ?? currentData['mounting'],
+                              'pressure':
+                                  data['pressure'] ?? currentData['pressure'],
+                              'prof_external': data['prof_external'] ??
+                                  currentData['prof_external'],
+                              'prof_center': data['prof_center'] ??
+                                  currentData['prof_center'],
+                              'prof_internal': data['prof_internal'] ??
+                                  currentData['prof_internal'],
                             };
                             setState(() {});
                           },
@@ -311,7 +317,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
             style: const TextStyle(
               fontSize: 22,
               color: Apptheme.textColorSecondary,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w900,
             ),
             children: [
               const TextSpan(text: "Inspección llanta "),
@@ -319,7 +325,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                 text: 'P$position',
                 style: const TextStyle(
                   color: Apptheme.textColorPrimary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
             ],

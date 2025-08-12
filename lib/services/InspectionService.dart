@@ -12,7 +12,8 @@ class InspectionService {
     String token = preferences.getValue("token");
 
     final resp = await MainService.post('/inspection/', data, token: token);
-    final Map<String, dynamic> responseData = json.decode(resp.body);
+    final Map<String, dynamic> responseData =
+        json.decode(utf8.decode(resp.bodyBytes));
     final inspectionResponse = InspectionResponse.fromJson(responseData);
     return inspectionResponse;
   }

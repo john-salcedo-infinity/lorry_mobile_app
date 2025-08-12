@@ -19,13 +19,13 @@ class Authservice {
     String token = preference.getValue("token");
 
     final resp = await MainService.delete('/logout/', token: token);
-    final Map<String, dynamic> data = json.decode(resp.body);
+    final Map<String, dynamic> data = json.decode(utf8.decode(resp.bodyBytes));
     final finals = AuthResponse.fromJson(data);
     return finals;
   }
 
   static Future<AuthResponse> changePassword(
-    String newPassword, String confirmPassword) async {
+      String newPassword, String confirmPassword) async {
     Preferences preference = Preferences();
     await preference.init();
     String token = preference.getValue("token");

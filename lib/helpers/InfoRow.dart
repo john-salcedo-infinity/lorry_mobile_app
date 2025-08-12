@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart'; // Importa Google Fonts
 import 'package:app_lorry/config/app_theme.dart';
 
 class InfoRow extends StatelessWidget {
@@ -39,7 +38,7 @@ class InfoRow extends StatelessWidget {
           alignment: Alignment.center, // Centrar contenido
           child: Text(
             value,
-            style: GoogleFonts.montserrat( // Fuente Montserrat para el valor
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700, // Bold (700)
               height: 1.0, // Line-height 100%

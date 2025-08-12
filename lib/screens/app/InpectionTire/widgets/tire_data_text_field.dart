@@ -71,12 +71,11 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
           widget.label,
           style: const TextStyle(
             fontSize: 16,
-            color: Color(0xFF494D4C),
-            fontFamily: 'Poppins',
-            fontWeight: FontWeight.w500,
+            color: Apptheme.textColorSecondary,
+            fontWeight: FontWeight.w400,
           ),
         ),
-        const SizedBox(height: 6),
+        const SizedBox(height: 2),
         TextField(
           focusNode: _focusNode,
           enabled: widget.isEditable,
@@ -92,7 +91,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
+              borderSide: BorderSide(color: Apptheme.lightGray, width: 2),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -105,7 +104,6 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
           ),
           style: TextStyle(
             fontSize: 16,
-            fontFamily: 'Poppins',
             fontWeight: FontWeight.w800,
             height: 1.2,
             letterSpacing: 0.5,

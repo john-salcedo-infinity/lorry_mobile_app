@@ -138,17 +138,16 @@ class _DetailTireState extends ConsumerState<DetailTire> {
   Widget _buildMileageInpection() {
     return Container(
       width: double.infinity,
-      height: 140,
-      padding: const EdgeInsets.symmetric(vertical: 26),
+      padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         children: [
-          Container(
+          SizedBox(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            // padding: const EdgeInsets.symmetric(horizontal: 20),
             child: const Text(
               "KILOMETRAJE DE LA INSPECCIÓN",
               style: TextStyle(
@@ -158,44 +157,43 @@ class _DetailTireState extends ConsumerState<DetailTire> {
               ),
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 4),
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              width: double.infinity,
-              height: 46,
-              decoration: BoxDecoration(
-                border: Border.all(color: Color(0xFFD1D5DB), width: 2),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/Icono_Velocimetro_Lorry.svg',
-                    width: 24,
-                    height: 24,
+            width: double.infinity,
+            height: 46,
+            decoration: BoxDecoration(
+              border: Border.all(color: Color(0xFFD1D5DB), width: 2),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  'assets/icons/Icono_Velocimetro_Lorry.svg',
+                  width: 24,
+                  height: 24,
+                  colorFilter:
+                      ColorFilter.mode(Color(0xFFB0BEC5), BlendMode.srcIn),
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  NumberFormat('#,###').format(widget.data.mileage.toInt()),
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFB0BEC5),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    NumberFormat('#,###').format(widget.data.mileage.toInt()),
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFB0BEC5),
-                    ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  "KM",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFFB0BEC5),
                   ),
-                  const SizedBox(width: 8),
-                  const Text(
-                    "KM",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFB0BEC5),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
@@ -286,8 +284,11 @@ class _DetailTireState extends ConsumerState<DetailTire> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTireRow("Serie", tire.tire?.integrationCode as String,
-                      "Diseño", tire.tire!.design?.name as String,
+                  _buildTireRow(
+                      "Serie",
+                      "LL-${tire.tire?.integrationCode}",
+                      "Diseño",
+                      tire.tire!.design?.name as String,
                       isInspected: isInspected),
                   const SizedBox(height: 8),
                   _buildTireRow(
@@ -363,9 +364,14 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(label,
-              style: const TextStyle(fontSize: 12, color: Apptheme.grayInput)),
-          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(
+                fontSize: 14,
+                color: Apptheme.textColorSecondary,
+                fontWeight: FontWeight.w400),
+          ),
+          const SizedBox(height: 4),
           buildTireInfo(value, isInspected: isInspected),
         ],
       ),
@@ -422,10 +428,9 @@ class _DetailTireState extends ConsumerState<DetailTire> {
               ref.read(appRouterProvider).push(
                     '/rotation',
                     extra: SpinandrotationParams(
-                      results: mountingWithTires,
-                      turnRotationMountigs: TurnRotationMountigs,
-                      inspectionData: inspectionData
-                    ),
+                        results: mountingWithTires,
+                        turnRotationMountigs: TurnRotationMountigs,
+                        inspectionData: inspectionData),
                   );
             } else {
               _finishInspection(inspectionData);
@@ -468,10 +473,8 @@ class _DetailTireState extends ConsumerState<DetailTire> {
 
   Widget buildTireInfo(String value, {bool isInspected = false}) {
     return Container(
-      width: 110, // Aumentamos el ancho
-      height: 38,
-      padding:
-          const EdgeInsets.symmetric(horizontal: 8), // Reducimos el padding
+      width: 110,
+      padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8),
@@ -481,9 +484,10 @@ class _DetailTireState extends ConsumerState<DetailTire> {
         child: Text(
           value,
           style: TextStyle(
-              fontSize: 14,
-              color: isInspected ? Apptheme.primary : Apptheme.textColorPrimary,
-              fontWeight: FontWeight.bold),
+            fontSize: 14,
+            color: isInspected ? Apptheme.primary : Apptheme.secondary,
+            fontWeight: FontWeight.bold,
+          ),
           overflow: TextOverflow
               .ellipsis, // Si el texto es muy largo, lo trunca con "..."
         ),

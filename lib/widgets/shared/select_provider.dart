@@ -62,7 +62,7 @@ class _SelectProviderState extends ConsumerState<SelectProvider> {
 
         return Container(
           width: double.infinity,
-          height: 40,
+          height: 42,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
             border: Border.all(

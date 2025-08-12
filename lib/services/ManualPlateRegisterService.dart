@@ -18,7 +18,8 @@ class ManualPlateRegisterService {
       token: token,
     );
 
-    final Map<String, dynamic> data = json.decode(response.body);
+    final Map<String, dynamic> data =
+        json.decode(utf8.decode(response.bodyBytes));
     // final Map<String, dynamic> data = json.decode(response);
     return ManualPlateRegisterResponse.fromJson(data);
   }

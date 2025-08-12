@@ -12,6 +12,7 @@ class CustomInputField extends ConsumerWidget {
   final Widget? suffixIcon;
   final bool showLabel;
   final bool showBorder;
+  final double? height;
 
   const CustomInputField({
     super.key,
@@ -24,6 +25,7 @@ class CustomInputField extends ConsumerWidget {
     this.suffixIcon,
     this.showLabel = true,
     this.showBorder = true,
+    this.height,
   });
 
   @override
@@ -33,48 +35,55 @@ class CustomInputField extends ConsumerWidget {
       children: [
         if (showLabel && label != null) ...[
           Text(
-        label!,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
-          fontFamily: Apptheme.textFamily,
-        ),
+            label!,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
           ),
           const SizedBox(height: 8),
         ],
-        TextFormField(
-          controller: controller,
-          obscureText: obscureText,
-          style: const TextStyle(fontSize: 15),
-          decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(
-          color: Apptheme.grayInput,
-          fontFamily: Apptheme.textFamily,
-        ),
-        fillColor: Colors.white,
-        filled: true,
-        suffixIcon: suffixIcon,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-        border: showBorder
-            ? OutlineInputBorder(
-                borderRadius: BorderRadius.circular(4),
-                borderSide: const BorderSide(color: Apptheme.grayInput),
-              )
-            : InputBorder.none,
-        focusedBorder: showBorder
-            ? OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: Apptheme.primary, width: 2),
-        ) : InputBorder.none,
-        enabledBorder: showBorder ? OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: const BorderSide(color: Apptheme.grayInput),
-        ) : InputBorder.none,
+        SizedBox(
+          height: height ?? 48, // Default height if not provided
+          child: TextFormField(
+            controller: controller,
+            obscureText: obscureText,
+            style: const TextStyle(fontSize: 15),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                color: Apptheme.grayInput,
+                height: height != null ? 1.2 : null,
+              ),
+              fillColor: Colors.white,
+              filled: true,
+              suffixIcon: suffixIcon,
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              border: showBorder
+                  ? OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(color: Apptheme.grayInput),
+                    )
+                  : InputBorder.none,
+              focusedBorder: showBorder
+                  ? OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide:
+                          const BorderSide(color: Apptheme.primary, width: 2),
+                    )
+                  : InputBorder.none,
+              enabledBorder: showBorder
+                  ? OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(color: Apptheme.grayInput),
+                    )
+                  : InputBorder.none,
+            ),
+            validator: validator,
+            onChanged: onChanged,
           ),
-          validator: validator,
-          onChanged: onChanged,
         ),
       ],
     );

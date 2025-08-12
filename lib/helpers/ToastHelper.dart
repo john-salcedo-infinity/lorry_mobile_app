@@ -25,7 +25,6 @@ class ToastHelper {
               style: const TextStyle(
                 color: Apptheme.secondaryv3,
                 fontWeight: FontWeight.w900,
-                fontFamily: Apptheme.textFamily,
                 fontSize: 16,
               ),
             ),
@@ -60,7 +59,6 @@ class ToastHelper {
               style: const TextStyle(
                 color: Apptheme.primary,
                 fontWeight: FontWeight.w900,
-                fontFamily: Apptheme.textFamily,
                 fontSize: 16,
               ),
             ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Apptheme {
   // #regions General settings
@@ -25,6 +26,7 @@ class Apptheme {
   // Other colors
   static const Color backgroundColor = Color.fromRGBO(249, 249, 252, 1);
   static const Color grayInput = Color.fromRGBO(73, 77, 76, 0.5);
+  static const Color lightGray = Color.fromRGBO(148, 148, 148, .5);
   static const Color textColorSecondary = Color.fromRGBO(73, 77, 76, 1);
 
   // Typography
@@ -32,9 +34,11 @@ class Apptheme {
   static const TextStyle textPrimary = TextStyle(fontFamily: textFamily);
 
   static ThemeData lightTheme = ThemeData.light().copyWith(
-      primaryColor: primary,
-      brightness: Brightness.light,
-      colorScheme: ColorScheme.fromSeed(seedColor: primary));
+    primaryColor: primary,
+    brightness: Brightness.light,
+    colorScheme: ColorScheme.fromSeed(seedColor: primary),
+    // textTheme: GoogleFonts.poppinsTextTheme(),
+  );
   // #endregion
 
   // #regions Variant color
@@ -44,34 +48,34 @@ class Apptheme {
 
   // #regions Text Style
   static const TextStyle titleStyle = TextStyle(
-      fontSize: 22,
-      color: Apptheme.textColorSecondary,
-      fontWeight: FontWeight.bold,
-      fontFamily: "Poppins");
+    fontSize: 22,
+    color: Apptheme.textColorSecondary,
+    fontWeight: FontWeight.bold,
+  );
 
   static const TextStyle titleStylev2 = TextStyle(
-      fontSize: 15,
-      color: Apptheme.textColorSecondary,
-      fontWeight: FontWeight.bold,
-      fontFamily: "Poppins");
+    fontSize: 15,
+    color: Apptheme.textColorSecondary,
+    fontWeight: FontWeight.bold,
+  );
 
   static const TextStyle subtitleStyle = TextStyle(
-      fontSize: 16,
-      color: Apptheme.textColorSecondary,
-      fontWeight: FontWeight.bold,
-      fontFamily: "Poppins");
+    fontSize: 16,
+    color: Apptheme.textColorSecondary,
+    fontWeight: FontWeight.bold,
+  );
 
   static const TextStyle subtitleStylev2 = TextStyle(
-      fontSize: 10,
-      color: Apptheme.textColorSecondary,
-      fontWeight: FontWeight.bold,
-      fontFamily: "Poppins");
+    fontSize: 10,
+    color: Apptheme.textColorSecondary,
+    fontWeight: FontWeight.bold,
+  );
 
   static const TextStyle textMuted = TextStyle(
-      fontSize: 11,
-      color: Colors.grey,
-      fontWeight: FontWeight.normal,
-      fontFamily: "Poppins");
+    fontSize: 11,
+    color: Colors.grey,
+    fontWeight: FontWeight.normal,
+  );
 
   // #endregions
 

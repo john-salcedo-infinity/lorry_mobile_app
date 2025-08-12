@@ -30,24 +30,18 @@ class PositionLabel extends StatelessWidget {
       // Si hay movimiento, mostrar ícono según el tipo de servicio
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          shape: BoxShape.circle
-        ),
+        decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
         child: _buildMovementIcon(),
       );
     }
 
     // Para otros sectionTypes, comportamiento normal
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Text(
-        'P$positionId',
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w900,
-          color: Apptheme.textColorPrimary,
-        ),
+    return Text(
+      'P$positionId',
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.w900,
+        color: Apptheme.textColorPrimary,
       ),
     );
   }

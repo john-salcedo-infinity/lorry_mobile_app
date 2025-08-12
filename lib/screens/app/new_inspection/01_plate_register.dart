@@ -354,12 +354,10 @@ class _HeaderView extends StatelessWidget {
                   "Toma una foto de la placa para identificar el vehículo asociado",
                   softWrap: true,
                   style: TextStyle(
-                    fontSize: 12,
-                    fontFamily: "Poppins",
-
-                    color:
-                        Apptheme.textColorSecondary, //  Usa el color de tu tema
-                    fontWeight: FontWeight.bold, //  Texto en negrita
+          fontSize: 12,
+          color:
+            Apptheme.textColorSecondary, //  Usa el color de tu tema
+          fontWeight: FontWeight.bold, //  Texto en negrita
                   ),
                 ),
               ),
