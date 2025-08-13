@@ -10,6 +10,7 @@ import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/providers/providers.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/widgets/widgets.dart';
+import 'package:go_router/go_router.dart';
 
 class ManualPlateRegister extends ConsumerStatefulWidget {
   const ManualPlateRegister({super.key});
@@ -64,6 +65,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       showHome: true,
       showNotifications: true,
       isLoading: isLoading,
+      onBackPressed: () => context.go("/home"),
     );
   }
 

@@ -292,6 +292,16 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       showHome: true,
       showDelete: true,
       showNotifications: true,
+      showHomeDialogConfirm: true,
+      onBackPressed: () {
+        ConfirmationDialog.show(
+          context: context,
+          title: "¿Estás seguro que deseas regresar?",
+          message:
+              "Todas las inspecciones registradas no podran ser resturadas",
+          onAccept: () => {context.pop()},
+        );
+      },
       onDeletePressed: () {
         ConfirmationDialog.show(
           context: context,

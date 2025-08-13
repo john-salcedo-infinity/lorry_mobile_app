@@ -1,9 +1,11 @@
+import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeButton extends StatelessWidget {
   final VoidCallback? onPressed;
+  final bool showDialogConfirm;
   final bool isEnabled;
   final double? width;
   final double? height;
@@ -11,6 +13,7 @@ class HomeButton extends StatelessWidget {
   const HomeButton({
     super.key,
     this.onPressed,
+    this.showDialogConfirm = false,
     this.isEnabled = true,
     this.width = 40,
     this.height = 40,
@@ -20,16 +23,26 @@ class HomeButton extends StatelessWidget {
     if (onPressed != null) {
       onPressed!();
     } else {
-      context.go('/home');
+      if (showDialogConfirm) {
+        ConfirmationDialog.show(
+          context: context,
+          title: "¿Está seguro que desea volver al inicio?",
+          message: "Todas las acciones realizadas no podran ser restauradas",
+          onAccept: () => context.go("/home"),
+        );
+      } else {
+        context.go('/home');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      onPressed: !isEnabled 
-          ? null  // Si isEnabled es false (loading), deshabilitar completamente
-          : () => _handleHome(context), // Si está habilitado, usar la lógica normal (custom o default)
+      onPressed: !isEnabled
+          ? null // Si isEnabled es false (loading), deshabilitar completamente
+          : () => _handleHome(
+              context), // Si está habilitado, usar la lógica normal (custom o default)
       icon: SvgPicture.asset(
         'assets/icons/Icono_Casa_Lorry.svg',
         width: width,

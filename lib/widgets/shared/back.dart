@@ -13,6 +13,7 @@ class Back extends StatelessWidget {
   final VoidCallback? onBackPressed;
   final VoidCallback? onHomePressed;
   final VoidCallback? onNotificationPressed;
+  final bool? showHomeDialogConfirm;
 
   const Back({
     super.key,
@@ -24,13 +25,14 @@ class Back extends StatelessWidget {
     this.onBackPressed,
     this.onHomePressed,
     this.onNotificationPressed,
+    this.showHomeDialogConfirm,
   });
 
   @override
   Widget build(BuildContext context) {
     // Detectar automáticamente si se puede navegar hacia atrás
     final canGoBack = Navigator.canPop(context);
-    
+
     return Container(
       margin: const EdgeInsets.only(top: 10, left: 14, right: 14),
       child: Row(
@@ -62,6 +64,7 @@ class Back extends StatelessWidget {
                 HomeButton(
                   onPressed: onHomePressed,
                   isEnabled: !isLoading,
+                  showDialogConfirm: showHomeDialogConfirm ?? false,
                 ),
             ],
           )

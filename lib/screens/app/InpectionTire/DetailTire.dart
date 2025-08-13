@@ -112,6 +112,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
     return Back(
       showDelete: true,
       showHome: true,
+      showHomeDialogConfirm: true,
       showNotifications: true,
       isLoading: isLoading,
       onDeletePressed: () {
@@ -284,11 +285,8 @@ class _DetailTireState extends ConsumerState<DetailTire> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTireRow(
-                      "Serie",
-                      "LL-${tire.tire?.integrationCode}",
-                      "Diseño",
-                      tire.tire!.design?.name as String,
+                  _buildTireRow("Serie", "LL-${tire.tire?.integrationCode}",
+                      "Diseño", tire.tire!.design?.name as String,
                       isInspected: isInspected),
                   const SizedBox(height: 8),
                   _buildTireRow(

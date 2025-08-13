@@ -1,7 +1,6 @@
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
-import 'package:app_lorry/providers/app/home/homeProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../../widgets/widgets.dart';

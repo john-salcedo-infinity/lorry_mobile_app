@@ -30,10 +30,6 @@ GoRouter appRouter(Ref ref) {
         return InspectionDetails(historical: data['historical']);
       },
     ),
-    // GoRoute(
-    //   path: '/rotationview',
-    //   builder: (context, state) => const RotationScreen(),
-    // ),
     GoRoute(
       path: '/Dashboard',
       builder: (context, state) => const Dashboard(),
@@ -52,10 +48,6 @@ GoRouter appRouter(Ref ref) {
       path: '/ManualPlateRegister',
       builder: (context, state) => ManualPlateRegister(),
     ),
-    // GoRoute(
-    //   path: '/NewPlateRegister',
-    //   builder: (context, state) => NewPlateRegister(),
-    // ),
     GoRoute(
       path: '/InfoVehicles',
       builder: (context, state) {
@@ -100,6 +92,5 @@ GoRouter appRouter(Ref ref) {
         return SpinAndRotationScreen(data: data);
       }),
     ),
-    // GoRoute(path: "/test", builder: ((context, state) => const TestScreen()))
   ]);
 }

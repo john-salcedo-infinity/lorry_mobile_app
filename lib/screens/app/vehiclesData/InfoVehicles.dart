@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:app_lorry/config/app_theme.dart';
@@ -119,10 +120,10 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
 
   // Widget Builders
   Widget _buildHeader() {
-    return const Back(
-      showHome: true,
-      showNotifications: true,
-    );
+    return Back(
+        showHome: true,
+        showNotifications: true,
+        onBackPressed: () => context.push("/ManualPlateRegister"));
   }
 
   Widget _buildPageTitle() {
