@@ -5,10 +5,8 @@ import 'dart:async';
 import 'package:app_lorry/services/services.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/forms/customInput.dart';
+import 'package:app_lorry/widgets/shared/custom_fab_location.dart';
 import 'package:app_lorry/widgets/shared/notification_button.dart';
-import 'package:app_lorry/widgets/shared/select_loading.dart';
-import 'package:app_lorry/widgets/shared/select_novelty.dart';
-import 'package:app_lorry/widgets/shared/select_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/helpers/helpers.dart';
@@ -32,6 +30,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Timer? _debounce;
   Timer? _scrollThrottle; // Throttle para el scroll
   final ScrollController _scrollController = ScrollController();
+  bool _showFab = false;
   bool _shouldCancelRefresh =
       false; // Bandera para cancelar refresh si cambió dirección
   double _lastScrollPosition = 0.0; // Última posición del scroll
@@ -43,7 +42,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-
     // Cargar datos iniciales
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialData();
@@ -54,6 +52,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Throttle para evitar llamadas excesivas durante scroll rápido
     if (_scrollThrottle?.isActive ?? false) return;
 
+    _showFabButton();
+
     _scrollThrottle = Timer(const Duration(milliseconds: 100), () {
       // Verificar que el ScrollController esté adjunto a una vista de scroll
       if (_scrollController.hasClients &&
@@ -62,6 +62,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _loadMoreData();
       }
     });
+  }
+
+  void _showFabButton() {
+    if (!_scrollController.hasClients) return;
+
+    final currentOffset = _scrollController.offset;
+
+    if (currentOffset > 600 && !_showFab) {
+      setState(() => _showFab = true);
+    } else if (currentOffset <= 600 && _showFab) {
+      setState(() => _showFab = false);
+    }
   }
 
   Future<void> _loadInitialData() async {
@@ -257,6 +269,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
+      floatingActionButton: _showFab
+          ? FloatingActionButton(
+              mini: false,
+              shape: CircleBorder(
+                side: BorderSide(color: Apptheme.textColorPrimary, width: 2),
+              ),
+              backgroundColor: Colors.white,
+              onPressed: () {
+                _scrollController.animateTo(
+                  0,
+                  duration: const Duration(milliseconds: 400),
+                  curve: Curves.easeOut,
+                );
+              },
+              elevation: 0,
+              child: Container(
+                margin: EdgeInsets.only(top: 4),
+                child: const Icon(
+                  Icons.keyboard_control_key_sharp,
+                  color: Apptheme.textColorPrimary,
+                  size: 30,
+                ),
+              ),
+            )
+          : null,
+      floatingActionButtonLocation:
+          CustomFABLocation(offsetX: 75, offsetY: 180),
       appBar: AppBar(
           backgroundColor: Apptheme.backgroundColor,
           surfaceTintColor: Colors.transparent,
