@@ -52,104 +52,116 @@ class _InspectionDetailsState extends State<InspectionDetails> {
       backgroundColor: Apptheme.backgroundColor,
       body: widget.historical != null
           ? SafeArea(
-              child: SingleChildScrollView(
-                child: Column(children: [
+              child: Column(
+                children: [
                   _DetailsAppBar(),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                    child: Column(children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 30, horizontal: 10),
-                            child: Text(
-                              "Datos de VHC",
-                              style: Apptheme.titleStyle,
-                            ),
-                          ),
-                          LicensePlate(
-                            licensePlate: licensePlate,
-                            fontSize: 22,
-                          )
-                        ],
-                      ),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
+                  Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _DetailsBadge(label: "Fecha", value: formattedDate),
-                            _DetailsBadge(
-                              label: "Hora",
-                              value: formattedTime,
-                            ),
-                            _DetailsBadge(
-                              label: "Tipo de vehículo",
-                              value: vehicle.typeVehicle?.name ?? 'N/A',
-                            ),
-                            _DetailsBadge(
-                              label: "Línea de trabajo",
-                              value: vehicle.workLine?.name ?? 'N/A',
-                            ),
-                            _DetailsBadge(
-                              label: "Cliente asociado al vehículo",
-                              value: vehicle.customer?.businessName ?? 'N/A',
-                            ),
-                            _DetailsBadge(
-                                label: "Número de llantas",
-                                value: totalTires.toString()),
-                            _DetailsBadge(
-                                label: "Inspector", value: inspectorName),
-                            SizedBox(height: 20),
-                            Column(
-                              children: [
-                                Text(
-                                  "Última medición kilometraje",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.w400,
-                                      fontSize: 16,
-                                      color: Apptheme.textColorSecondary),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(top: 20),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      SvgPicture.asset(
-                                        'assets/icons/Icono_Velocimetro_Lorry.svg',
-                                        width: 30,
-                                        height: 30,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Text(
-                                        "$lastMileage KM",
-                                        style: TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.bold,
-                                            color: Apptheme.textColorPrimary),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                              ],
-                            ),
+                            Text("Datos de VHC", style: Apptheme.titleStyle),
+                            LicensePlate(
+                              licensePlate: licensePlate,
+                              fontSize: 22,
+                            )
                           ],
                         ),
-                      )
-                    ]),
-                  ),
-                ]),
+                        SizedBox(height: 18),
+                        Container(
+                          height: MediaQuery.of(context).size.height * 0.75,
+                          padding: EdgeInsets.all(26),
+                          decoration: BoxDecoration(color: Colors.white),
+                          child: SingleChildScrollView(
+                            child: InspectionDetailsContent(
+                                formattedDate: formattedDate,
+                                formattedTime: formattedTime,
+                                vehicle: vehicle,
+                                totalTires: totalTires,
+                                inspectorName: inspectorName,
+                                lastMileage: lastMileage),
+                          ),
+                        )
+                      ],
+                    ),
+                  )
+                ],
               ),
             )
           : const Center(child: Text('No hay datos históricos disponibles')),
+    );
+  }
+}
+
+class InspectionDetailsContent extends StatelessWidget {
+  const InspectionDetailsContent({
+    super.key,
+    required this.formattedDate,
+    required this.formattedTime,
+    required this.vehicle,
+    required this.totalTires,
+    required this.inspectorName,
+    required this.lastMileage,
+  });
+
+  final String formattedDate;
+  final String formattedTime;
+  final Vehicle vehicle;
+  final String totalTires;
+  final String inspectorName;
+  final String lastMileage;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _DetailsBadge(label: "Fecha", value: formattedDate),
+        _DetailsBadge(label: "Hora", value: formattedTime),
+        _DetailsBadge(
+            label: "Tipo de vehículo",
+            value: vehicle.typeVehicle?.name ?? 'N/A'),
+        _DetailsBadge(
+            label: "Línea de trabajo", value: vehicle.workLine?.name ?? 'N/A'),
+        _DetailsBadge(
+            label: "Cliente asociado al vehiculo",
+            value: vehicle.customer?.businessName ?? 'N/A'),
+        _DetailsBadge(label: "Número de llantas", value: totalTires),
+        _DetailsBadge(label: "Nombre del inspector", value: inspectorName),
+        Column(
+          children: [
+            Text(
+              "Última medición kilometraje",
+              style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 16,
+                  color: Apptheme.textColorSecondary),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/icons/Icono_Velocimetro_Lorry.svg',
+                    width: 30,
+                    height: 30,
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    "$lastMileage KM",
+                    style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Apptheme.textColorPrimary),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -167,15 +179,17 @@ class _DetailsBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(
-          label,
-          style: TextStyle(
-              fontWeight: FontWeight.w400,
-              fontSize: 16,
-              color: Apptheme.textColorSecondary),
+        Container(
+          margin: EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            label,
+            style: TextStyle(
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+                color: Apptheme.textColorSecondary),
+          ),
         ),
         Container(
-          margin: const EdgeInsets.only(top: 10, bottom: 20),
           width: double.infinity,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(

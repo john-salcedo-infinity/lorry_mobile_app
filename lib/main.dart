@@ -8,18 +8,18 @@ import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Configurar orientación solo vertical
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  
+
   await initializeDateFormatting('es_ES', null);
-  
+
   // Solicitar permisos iniciales
   await PermissionHandler.requestInitialPermissions();
-  
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -32,6 +32,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Lorry app',
       debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: true,
       routerConfig: appRouter,
       theme: Apptheme.lightTheme,
     );
