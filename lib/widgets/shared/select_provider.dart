@@ -1,5 +1,6 @@
 import 'package:app_lorry/config/configs.dart';
 import 'package:app_lorry/providers/app/provider/providerProvider.dart';
+import 'package:app_lorry/widgets/shared/select_loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/models/tire/provider.dart' as ProviderModel;
@@ -18,7 +19,6 @@ class SelectProvider extends ConsumerStatefulWidget {
   final ValueChanged<ProviderSelection?>? onChanged;
   final String? hintText;
   final bool enabled;
-  final bool showBorder;
 
   const SelectProvider({
     super.key,
@@ -26,7 +26,6 @@ class SelectProvider extends ConsumerStatefulWidget {
     this.onChanged,
     this.hintText = 'Selecciona un proveedor',
     this.enabled = true,
-    this.showBorder = true,
   });
 
   @override
@@ -60,17 +59,12 @@ class _SelectProviderState extends ConsumerState<SelectProvider> {
         final List<ProviderModel.Provider> providers =
             providerResponse.data.results ?? [];
 
-        return Container(
-          width: double.infinity,
-          height: 42,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: _isDropdownOpen ? Colors.orange : Apptheme.grayInput,
-              width: 1,
-            ),
-            color: Apptheme.backgroundColor,
-          ),
+        if (_selectedValue != null &&
+            !providers.any((provider) => provider.id == _selectedValue)) {
+          _selectedValue = null;
+        }
+
+        return DropdownButtonHideUnderline(
           child: DropdownButtonFormField2<int>(
             value: _selectedValue,
             hint: Text(
@@ -84,68 +78,15 @@ class _SelectProviderState extends ConsumerState<SelectProvider> {
               ),
             ),
             isExpanded: true,
-            style: TextStyle(
-              color: widget.enabled
-                  ? Apptheme.textColorSecondary
-                  : Apptheme.grayInput,
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-            buttonStyleData: ButtonStyleData(
-              decoration: const BoxDecoration(
-                color: Colors.transparent,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 11),
-              height: 40,
-              width: double.infinity,
-            ),
-            dropdownStyleData: DropdownStyleData(
-              maxHeight: 600,
-              offset: const Offset(0, 0),
-              useSafeArea: true,
-              direction: DropdownDirection.textDirection,
-              decoration: BoxDecoration(
-                color: Apptheme.backgroundColor,
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: const Color.fromRGBO(148, 148, 148, 0.5),
-                  width: 1,
-                ),
-              ),
-              scrollbarTheme: ScrollbarThemeData(
-                thumbColor: WidgetStateProperty.all(Apptheme.secondaryv3),
-                trackColor: WidgetStateProperty.all(Apptheme.lightGreen),
-              ),
-            ),
-            iconStyleData: const IconStyleData(
-              icon: Icon(
-                Icons.keyboard_arrow_down,
-                color: Color.fromRGBO(148, 148, 148, 1),
-                size: 20,
-              ),
-              iconSize: 20,
-            ),
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              contentPadding: EdgeInsets.zero,
-              isDense: true,
-            ),
-            items:
-                providers.asMap().entries.map<DropdownMenuItem<int>>((entry) {
-              ProviderModel.Provider provider = entry.value;
-
+            items: providers.map<DropdownMenuItem<int>>((provider) {
               return DropdownMenuItem<int>(
                 value: provider.id,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: double.infinity,
-                      child: Text(
-                        provider.nameProvider ?? 'Sin nombre',
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  provider.nameProvider ?? 'Sin nombre',
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                  ),
                 ),
               );
             }).toList(),
@@ -183,10 +124,59 @@ class _SelectProviderState extends ConsumerState<SelectProvider> {
               }
               return null;
             },
+            buttonStyleData: ButtonStyleData(
+              height: 40,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+                border: Border.all(
+                  color: _isDropdownOpen
+                      ? Apptheme.selectActiveBorder
+                      : Apptheme.lightGray,
+                  width: 1,
+                ),
+                color: _isDropdownOpen
+                    ? Apptheme.selectActiveBackground
+                    : Apptheme.backgroundColor,
+              ),
+            ),
+            iconStyleData: IconStyleData(
+              icon: Icon(
+                !_isDropdownOpen
+                    ? Icons.keyboard_arrow_down
+                    : Icons.keyboard_arrow_up,
+                color: _isDropdownOpen
+                    ? Apptheme.selectActiveSelectChevron
+                    : Apptheme.grayInput,
+                size: 20,
+              ),
+            ),
+            decoration: const InputDecoration(
+              contentPadding: EdgeInsets.zero,
+              border: InputBorder.none,
+            ),
+            dropdownStyleData: DropdownStyleData(
+              maxHeight: 250,
+              elevation: 0,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(
+                  color: Apptheme.lightGray,
+                  width: 1,
+                ),
+                color: Colors.white,
+              ),
+              offset: Offset(0, -5),
+              scrollbarTheme: ScrollbarThemeData(
+                radius: const Radius.circular(40),
+                thickness: WidgetStateProperty.all<double>(4),
+              ),
+            ),
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const SelectLoading(),
       error: (error, stack) =>
           const Center(child: Text('Error al cargar datos')),
     );

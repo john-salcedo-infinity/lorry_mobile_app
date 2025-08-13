@@ -50,14 +50,19 @@ class _ServiceDialogState extends State<ServiceDialog> {
         backgroundColor: Colors.white,
         title: _buildHeader(),
         content: SizedBox(
-          width: 500,
-          child: SingleChildScrollView(
-            child: _buildForm(),
+          width: MediaQuery.of(context).size.width * 0.8, // Ancho máximo
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Crucial: solo ocupa el espacio necesario
+            children: [
+              _buildForm(),
+            ],
           ),
         ),
         actions: [
-          Expanded(child: _buildActions()),
+          _buildActions(),
         ],
+        // Esto permite que el diálogo se redimensione
+        insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
       ),
     );
   }
@@ -105,6 +110,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
     return Form(
       key: _formKey,
       child: Column(
+        mainAxisSize: MainAxisSize.min, // Solo ocupa el espacio necesario
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCostField(),
@@ -127,9 +133,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
             color: Apptheme.textColorSecondary,
           ),
         ),
-        SizedBox(
-          height: 6,
-        ),
+        const SizedBox(height: 6),
         SizedBox(
           height: 42,
           child: TextField(
@@ -149,7 +153,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
-                borderSide: BorderSide(color: Apptheme.grayInput, width: 1),
+                borderSide: BorderSide(color: Apptheme.lightGray, width: 1),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -207,7 +211,6 @@ class _ServiceDialogState extends State<ServiceDialog> {
         const SizedBox(height: 6),
         SelectProvider(
           hintText: 'Selecciona un proveedor',
-          showBorder: false,
           onChanged: (ProviderSelection? selection) {
             setState(() {
               _selectedProvider = selection;

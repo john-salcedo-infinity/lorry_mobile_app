@@ -94,9 +94,8 @@ class _ItemHistorialState extends ConsumerState<ItemHistorial> {
               child: Padding(
                 padding: const EdgeInsets.all(26),
                 child: Column(
-                  mainAxisSize: MainAxisSize.min, // OPTIMIZACIÓN: Tamaño mínimo
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Header row
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -117,7 +116,7 @@ class _ItemHistorialState extends ConsumerState<ItemHistorial> {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             const Text(
-                              "VCH ASOCIADO",
+                              "VHC ASOCIADO",
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,

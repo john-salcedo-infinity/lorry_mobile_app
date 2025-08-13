@@ -371,11 +371,11 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                     color: Apptheme.textColorSecondary),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Apptheme.grayInput, width: 1),
+                    borderSide: BorderSide(color: Apptheme.lightGray, width: 1),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide:
-                        BorderSide(color: Apptheme.AlertOrange, width: 1),
+                    borderSide: BorderSide(
+                        color: Apptheme.selectActiveBorder, width: 1),
                   ),
                   fillColor: Apptheme.backgroundColor,
                   filled: true,

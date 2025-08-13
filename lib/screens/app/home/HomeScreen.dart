@@ -1,9 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:app_lorry/services/services.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/forms/customInput.dart';
 import 'package:app_lorry/widgets/shared/notification_button.dart';
+import 'package:app_lorry/widgets/shared/select_loading.dart';
+import 'package:app_lorry/widgets/shared/select_novelty.dart';
+import 'package:app_lorry/widgets/shared/select_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/helpers/helpers.dart';
@@ -214,7 +219,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             response.data.next?.toString();
       }
     } catch (e) {
-      print('Error during refresh: $e');
       if (context.mounted) {
         ToastHelper.show_alert(context, "Error al actualizar las inspecciones");
       }

@@ -160,7 +160,8 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
                     child: Column(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 35, vertical: 20),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 35, vertical: 20),
                           decoration: BoxDecoration(
                               border: Border.all(
                                 color: Apptheme.secondary,
@@ -255,7 +256,7 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
               dashPattern: [7, 8],
               strokeWidth: 2,
               padding: const EdgeInsets.all(8),
-              color: Apptheme.grayInput,
+              color: Apptheme.lightGray,
             ),
             child: SizedBox(
               width: widget.width,

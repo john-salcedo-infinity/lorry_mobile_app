@@ -1,19 +1,57 @@
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/providers/app/home/homeProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../../widgets/widgets.dart';
 
-class InspectionDetails extends StatelessWidget {
+class InspectionDetails extends StatefulWidget {
   final HistoricalResult? historical;
   const InspectionDetails({super.key, this.historical});
+
+  @override
+  State<InspectionDetails> createState() => _InspectionDetailsState();
+}
+
+class _InspectionDetailsState extends State<InspectionDetails> {
+  late final Vehicle vehicle;
+  late final String formattedDate;
+  late final String formattedTime;
+  late final String formattedMileage;
+  late final String businessName;
+  late final String licensePlate;
+  late final String totalTires;
+  late final String inspectorName;
+  late final String lastMileage;
+
+  @override
+  void initState() {
+    super.initState();
+    final inspection = widget.historical!.inspection;
+    vehicle = widget.historical!.vehicle;
+
+    formattedDate = HelpersGeneral.formatDayDate(inspection.lastInspectionDate);
+    final hour = inspection.lastInspectionDate.hour.toString();
+    final minute =
+        inspection.lastInspectionDate.minute.toString().padLeft(2, '0');
+    final second =
+        inspection.lastInspectionDate.second.toString().padLeft(2, '0');
+    formattedTime = "$hour:$minute:$second";
+
+    formattedMileage = HelpersGeneral.numberFormat(inspection.mileage);
+    businessName = vehicle.customer?.businessName ?? '';
+    licensePlate = vehicle.licensePlate ?? '';
+    totalTires = "${inspection.totalTires}";
+    inspectorName = widget.historical!.createdBy.fullName;
+    lastMileage = HelpersGeneral.numberFormat(inspection.mileage);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
-      body: historical != null
+      body: widget.historical != null
           ? SafeArea(
               child: SingleChildScrollView(
                 child: Column(children: [
@@ -33,8 +71,7 @@ class InspectionDetails extends StatelessWidget {
                             ),
                           ),
                           LicensePlate(
-                            licensePlate:
-                                historical!.vehicle.licensePlate ?? 'N/A',
+                            licensePlate: licensePlate,
                             fontSize: 22,
                           )
                         ],
@@ -50,39 +87,28 @@ class InspectionDetails extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _DetailsBadge(
-                              label: "Fecha",
-                              value: HelpersGeneral.formatDayDate(
-                                  historical!.inspection.lastInspectionDate),
-                            ),
+                            _DetailsBadge(label: "Fecha", value: formattedDate),
                             _DetailsBadge(
                               label: "Hora",
-                              value:
-                                  "${historical!.inspection.lastInspectionDate.hour}:${historical!.inspection.lastInspectionDate.minute}:${historical!.inspection.lastInspectionDate.second}",
+                              value: formattedTime,
                             ),
                             _DetailsBadge(
                               label: "Tipo de vehículo",
-                              value: historical!.vehicle.typeVehicle?.name ??
-                                  'N/A',
+                              value: vehicle.typeVehicle?.name ?? 'N/A',
                             ),
                             _DetailsBadge(
                               label: "Línea de trabajo",
-                              value:
-                                  historical!.vehicle.workLine?.name ?? 'N/A',
+                              value: vehicle.workLine?.name ?? 'N/A',
                             ),
                             _DetailsBadge(
                               label: "Cliente asociado al vehículo",
-                              value:
-                                  historical!.vehicle.customer?.businessName ??
-                                      'N/A',
+                              value: vehicle.customer?.businessName ?? 'N/A',
                             ),
                             _DetailsBadge(
                                 label: "Número de llantas",
-                                value: historical!.inspection.totalTires
-                                    .toString()),
+                                value: totalTires.toString()),
                             _DetailsBadge(
-                                label: "Inspector",
-                                value: historical!.createdBy.fullName),
+                                label: "Inspector", value: inspectorName),
                             SizedBox(height: 20),
                             Column(
                               children: [
@@ -105,7 +131,7 @@ class InspectionDetails extends StatelessWidget {
                                       ),
                                       const SizedBox(width: 10),
                                       Text(
-                                        "${HelpersGeneral.numberFormat(historical!.inspection.mileage)} KM",
+                                        "$lastMileage KM",
                                         style: TextStyle(
                                             fontSize: 22,
                                             fontWeight: FontWeight.bold,

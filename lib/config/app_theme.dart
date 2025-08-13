@@ -11,6 +11,10 @@ class Apptheme {
   static const Color AlertOrange = Color.fromRGBO(242, 100, 26, 1);
   static const Color lightAlertOrange = Color.fromRGBO(255, 224, 235, 1);
   static const Color toastAlertBorder = Color.fromRGBO(255, 157, 105, 1);
+  static const Color selectActiveBorder = Color.fromRGBO(255, 190, 156, 1);
+  static const Color selectActiveBackground = Color.fromRGBO(255, 248, 245, 1);
+  static const Color selectActiveSelectChevron =
+      Color.fromRGBO(255, 174, 130, 1);
 
   // Green colors
   static const Color secondary = Color.fromRGBO(23, 100, 93, 1);
@@ -36,8 +40,7 @@ class Apptheme {
   static ThemeData lightTheme = ThemeData.light().copyWith(
     primaryColor: primary,
     brightness: Brightness.light,
-    colorScheme: ColorScheme.fromSeed(seedColor: primary),
-    // textTheme: GoogleFonts.poppinsTextTheme(),
+    colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
   );
   // #endregion
 
