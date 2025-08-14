@@ -258,6 +258,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       floatingActionButton: ScrollToTopFab(
         scrollController: _scrollController,
       ),
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
       floatingActionButtonLocation:
           CustomFABLocation(offsetX: 75, offsetY: 180),
       appBar: AppBar(

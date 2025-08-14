@@ -67,8 +67,8 @@ class _ScrollToTopFabState extends State<ScrollToTopFab> {
             ? () {
                 widget.scrollController.animateTo(
                   0,
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeOut,
+                  duration: const Duration(milliseconds: 1000),
+                  curve: Curves.easeInOutQuart,
                 );
               }
             : null,
