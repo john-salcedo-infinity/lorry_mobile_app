@@ -8,7 +8,7 @@ class ToastHelper {
       context: context,
       style: ToastificationStyle.fillColored,
       primaryColor: Apptheme.toastSucessBackground,
-      backgroundColor: Apptheme.secondaryv3,
+      backgroundColor: Apptheme.secondaryv2,
       autoCloseDuration: const Duration(seconds: 5),
       borderRadius: BorderRadius.circular(4),
       alignment: Alignment.topRight,
@@ -23,7 +23,7 @@ class ToastHelper {
               message,
               textAlign: TextAlign.right,
               style: const TextStyle(
-                color: Apptheme.secondaryv3,
+                color: Apptheme.secondaryv2,
                 fontWeight: FontWeight.w900,
                 fontSize: 16,
               ),
@@ -33,7 +33,7 @@ class ToastHelper {
       ),
       showProgressBar: true,
       showIcon: false,
-      borderSide: const BorderSide(color: Apptheme.secondaryv3, width: 2),
+      borderSide: const BorderSide(color: Apptheme.secondaryv2, width: 2),
     );
   }
 

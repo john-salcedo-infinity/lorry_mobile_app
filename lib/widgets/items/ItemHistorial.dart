@@ -204,7 +204,7 @@ class _ItemBadge extends StatelessWidget {
         Container(
           width: double.infinity,
           decoration: BoxDecoration(
-            color: Apptheme.secondaryv4,
+            color: Apptheme.secondaryv3,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Padding(

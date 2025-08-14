@@ -49,7 +49,13 @@ class _MainContent extends ConsumerWidget {
             Container(
               height: MediaQuery.of(context).size.height - screenHeight,
               width: double.infinity,
-              decoration: Apptheme.card_radius_only_top,
+              // decoration: Apptheme.card_radius_only_top,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(30.0),
+                ),
+              ),
               child: const _CardLogin(),
             ),
           ],

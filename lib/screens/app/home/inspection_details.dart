@@ -193,7 +193,7 @@ class _DetailsBadge extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Apptheme.secondaryv4,
+            color: Apptheme.secondaryv3,
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(

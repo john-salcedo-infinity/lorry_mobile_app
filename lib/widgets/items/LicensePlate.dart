@@ -16,7 +16,7 @@ class LicensePlate extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(5),
-        color: Apptheme.secondaryv3,
+        color: Apptheme.secondaryv2,
       ),
       padding: const EdgeInsets.all(5),
       alignment: Alignment.center,

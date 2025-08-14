@@ -268,7 +268,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
-                color: Apptheme.AlertOrange,
+                color: Apptheme.alertOrange,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(

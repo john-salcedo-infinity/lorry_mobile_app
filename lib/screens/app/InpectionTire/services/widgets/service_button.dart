@@ -55,7 +55,7 @@ class ServiceButton extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               decoration:  BoxDecoration(
-                color: Apptheme.lightOrange2,
+                color: Apptheme.lightOrange,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
