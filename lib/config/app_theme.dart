@@ -1,4 +1,6 @@
+import 'package:app_lorry/helpers/responsiveText.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Apptheme {
   // #regions General settings
@@ -24,6 +26,7 @@ class Apptheme {
 
   // Other colors
   static const Color backgroundColor = Color.fromRGBO(249, 249, 252, 1);
+  static const Color gray = Color.fromRGBO(112, 112, 112, 1);
   static const Color grayInput = Color.fromRGBO(73, 77, 76, 0.5);
   static const Color lightGray = Color.fromRGBO(148, 148, 148, .5);
   static const Color textColorSecondary = Color.fromRGBO(73, 77, 76, 1);
@@ -43,6 +46,117 @@ class Apptheme {
   // #endregions
 
   // #regions Text Style
+
+  static TextStyle h1Title(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 22),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h2Body(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 18),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h2Title(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 18),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h3Subtitle(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 16),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h4Body(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 14),
+      fontWeight: FontWeight.w400,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h4HighlightBody(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 14),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h5Body(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 12),
+      fontWeight: FontWeight.w400,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h5HighlightBody(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 12),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h6Title(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 10),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h1TitleDecorative(BuildContext context, {Color? color}) {
+    return GoogleFonts.redHatMono(
+      fontSize: ResponsiveText.fontSize(context, 22),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
+  static TextStyle h5TitleDecorative(BuildContext context, {Color? color}) {
+    return GoogleFonts.redHatMono(
+      fontSize: ResponsiveText.fontSize(context, 12),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+  // #endregions
+
+  // #regions Inputs Style
+  static InputDecoration inputDecorationPrimary(hint) {
+    return InputDecoration(
+      hintText: hint,
+      contentPadding: const EdgeInsets.all(10),
+      border: const OutlineInputBorder(
+        gapPadding: 0,
+        borderSide: BorderSide(color: Apptheme.grayInput),
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+      focusedBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+      enabledBorder: const OutlineInputBorder(
+        borderSide: BorderSide(color: Apptheme.grayInput),
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+      ),
+    );
+  }
+
   static const TextStyle titleStyle = TextStyle(
     fontSize: 22,
     color: Apptheme.textColorSecondary,
@@ -72,29 +186,6 @@ class Apptheme {
     color: Colors.grey,
     fontWeight: FontWeight.normal,
   );
-
-  // #endregions
-
-  // #regions Inputs Style
-  static InputDecoration inputDecorationPrimary(hint) {
-    return InputDecoration(
-      hintText: hint,
-      contentPadding: const EdgeInsets.all(10),
-      border: const OutlineInputBorder(
-        gapPadding: 0,
-        borderSide: BorderSide(color: Apptheme.grayInput),
-        borderRadius: BorderRadius.all(Radius.circular(4)),
-      ),
-      focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
-        borderRadius: BorderRadius.all(Radius.circular(4)),
-      ),
-      enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Apptheme.grayInput),
-        borderRadius: BorderRadius.all(Radius.circular(4)),
-      ),
-    );
-  }
 
   // #Loading color
   static CircularProgressIndicator loadingIndicator() {

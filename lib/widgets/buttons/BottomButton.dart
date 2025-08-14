@@ -86,21 +86,23 @@ class BottomButton extends StatelessWidget {
       ]),
       child: Padding(
         padding: padding ?? const EdgeInsets.all(20),
-        child: _buildButtonLayout(),
+        child: _buildButtonLayout(context),
       ),
     );
   }
 
-  Widget _buildButtonLayout() {
+  Widget _buildButtonLayout(BuildContext context) {
     // Compatibilidad hacia atrás
     if (params != null) {
-      return _buildSingleButton(BottomButtonItem(
-        text: params!.text,
-        onPressed: params!.onPressed,
-        isLoading: params!.isLoading,
-        disabled: params!.disabled,
-        buttonType: params!.buttonType,
-      ));
+      return _buildSingleButton(
+          context,
+          BottomButtonItem(
+            text: params!.text,
+            onPressed: params!.onPressed,
+            isLoading: params!.isLoading,
+            disabled: params!.disabled,
+            buttonType: params!.buttonType,
+          ));
     }
 
     if (buttons == null || buttons!.isEmpty) {
@@ -108,50 +110,53 @@ class BottomButton extends StatelessWidget {
     }
 
     if (buttons!.length == 1) {
-      return _buildSingleButton(buttons!.first);
+      return _buildSingleButton(context, buttons!.first);
     }
 
     switch (layout) {
       case BottomButtonLayout.row:
-        return _buildRowLayout();
+        return _buildRowLayout(context);
       case BottomButtonLayout.column:
-        return _buildColumnLayout();
+        return _buildColumnLayout(context);
       case BottomButtonLayout.wrap:
-        return _buildWrapLayout();
+        return _buildWrapLayout(context);
     }
   }
 
-  Widget _buildSingleButton(BottomButtonItem button) {
+  Widget _buildSingleButton(BuildContext context, BottomButtonItem button) {
     return CustomButton(
       button.width ?? double.infinity,
       button.height ?? 46,
-      button.customChild ??
-          (button.isLoading
+      button.customChild != null
+          ? button.customChild!
+          : (button.isLoading
               ? BallBeatLoading()
-              : Text(button.text,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                  ))),
+              : Text(
+                  button.text,
+                  style: Apptheme.h4HighlightBody(
+                    context,
+                    color: Apptheme.backgroundColor,
+                  ),
+                )),
       button.isLoading || button.disabled ? null : button.onPressed,
       type: button.buttonType ?? 1,
     );
   }
 
-  Widget _buildRowLayout() {
+  Widget _buildRowLayout(BuildContext context) {
     return Row(
       mainAxisAlignment: mainAxisAlignment,
       crossAxisAlignment: crossAxisAlignment,
       children: _buildButtonList(
         (index, button) => expandButtons
-            ? Expanded(child: _buildSingleButton(button))
-            : _buildSingleButton(button),
+            ? Expanded(child: _buildSingleButton(context, button))
+            : _buildSingleButton(context, button),
         Axis.horizontal,
       ),
     );
   }
 
-  Widget _buildColumnLayout() {
+  Widget _buildColumnLayout(BuildContext context) {
     return Column(
       mainAxisAlignment: mainAxisAlignment == MainAxisAlignment.spaceEvenly
           ? MainAxisAlignment.center
@@ -160,13 +165,13 @@ class BottomButton extends StatelessWidget {
           ? CrossAxisAlignment.stretch
           : crossAxisAlignment,
       children: _buildButtonList(
-        (index, button) => _buildSingleButton(button),
+        (index, button) => _buildSingleButton(context, button),
         Axis.vertical,
       ),
     );
   }
 
-  Widget _buildWrapLayout() {
+  Widget _buildWrapLayout(BuildContext context) {
     List<Widget> rows = [];
     List<BottomButtonItem> currentRow = [];
 
@@ -180,8 +185,8 @@ class BottomButton extends StatelessWidget {
             children: currentRow.asMap().entries.map((entry) {
               final button = entry.value;
               Widget buttonWidget = expandButtons
-                  ? Expanded(child: _buildSingleButton(button))
-                  : _buildSingleButton(button);
+                  ? Expanded(child: _buildSingleButton(context, button))
+                  : _buildSingleButton(context, button);
 
               if (entry.key < currentRow.length - 1) {
                 return Padding(

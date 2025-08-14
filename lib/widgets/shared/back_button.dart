@@ -14,8 +14,8 @@ class BackButton extends StatelessWidget {
     this.onPressed,
     this.isEnabled = true,
     this.text = 'Atrás',
-    this.iconWidth = 25,
-    this.iconHeight = 25,
+    this.iconWidth = 20,
+    this.iconHeight = 20,
   });
 
   void _handleBack(BuildContext context) {
@@ -40,9 +40,10 @@ class BackButton extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            onPressed: !isEnabled 
-                ? null  // Si isEnabled es false (loading), deshabilitar completamente
-                : () => _handleBack(context), // Si está habilitado, usar la lógica normal (custom o default)
+            onPressed: !isEnabled
+                ? null // Si isEnabled es false (loading), deshabilitar completamente
+                : () => _handleBack(
+                    context), // Si está habilitado, usar la lógica normal (custom o default)
             icon: Transform.rotate(
               angle: 3.14159,
               child: SvgPicture.asset(
@@ -54,12 +55,10 @@ class BackButton extends StatelessWidget {
           ),
           Text(
             text!,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: !isEnabled 
-                    ? Apptheme.textColorPrimary.withOpacity(0.5)
-                    : Apptheme.textColorPrimary,
-                fontSize: 16),
+            style: Apptheme.h5HighlightBody(context,
+                color: !isEnabled
+                    ? Apptheme.textColorPrimary.withValues(alpha: 0.5)
+                    : Apptheme.textColorPrimary),
           ),
         ],
       ),

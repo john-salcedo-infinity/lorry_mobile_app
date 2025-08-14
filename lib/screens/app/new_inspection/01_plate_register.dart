@@ -307,13 +307,9 @@ class _HeaderView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           "Registro de placa",
-          style: TextStyle(
-            fontSize: 23,
-            color: Color(0xFF494D4C), // Color personalizado
-            fontWeight: FontWeight.bold, // Texto en negrita
-          ),
+          style: Apptheme.h1Title(context, color: Apptheme.textColorSecondary),
         ),
 
         const SizedBox(height: 10),
@@ -354,10 +350,10 @@ class _HeaderView extends StatelessWidget {
                   "Toma una foto de la placa para identificar el vehículo asociado",
                   softWrap: true,
                   style: TextStyle(
-          fontSize: 12,
-          color:
-            Apptheme.textColorSecondary, //  Usa el color de tu tema
-          fontWeight: FontWeight.bold, //  Texto en negrita
+                    fontSize: 12,
+                    color:
+                        Apptheme.textColorSecondary, //  Usa el color de tu tema
+                    fontWeight: FontWeight.bold, //  Texto en negrita
                   ),
                 ),
               ),

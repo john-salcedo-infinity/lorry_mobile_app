@@ -52,8 +52,8 @@ class CustomInputField extends ConsumerWidget {
             style: const TextStyle(fontSize: 15),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: TextStyle(
-                color: Apptheme.grayInput,
+              hintStyle:
+                  Apptheme.h4Body(context, color: Apptheme.grayInput).copyWith(
                 height: height != null ? 1.2 : null,
               ),
               fillColor: Colors.white,

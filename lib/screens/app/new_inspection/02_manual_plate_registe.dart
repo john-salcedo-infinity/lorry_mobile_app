@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/ballBeatLoading.dart';
@@ -22,7 +24,7 @@ class ManualPlateRegister extends ConsumerStatefulWidget {
 
 class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   static const int _maxPlateLength = 6;
-  static const String _plateHint = "WMB 268";
+  static const String _plateHint = " ___ ___";
   static const String _alertMessage = "Digite manualmente la placa";
   static const String _screenTitle = "Registro de placa";
 
@@ -72,11 +74,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   Widget _buildTitle() {
     return Text(
       _screenTitle,
-      style: const TextStyle(
-        fontSize: 23,
-        color: Apptheme.textColorSecondary,
-        fontWeight: FontWeight.bold,
-      ),
+      style: Apptheme.h1Title(context, color: Apptheme.textColorSecondary),
     );
   }
 
@@ -98,11 +96,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
           const SizedBox(width: 5),
           Text(
             _alertMessage,
-            style: const TextStyle(
-              fontSize: 14,
-              color: Apptheme.textColorSecondary,
-              fontWeight: FontWeight.normal,
-            ),
+            style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
           ),
         ],
       ),
@@ -116,7 +110,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
         color: Colors.white,
       ),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 35),
+        padding: const EdgeInsets.all(22),
         child: Column(
           children: [
             _buildPlateInputField(),
@@ -128,13 +122,24 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     );
   }
 
+  late FocusNode _plateFocusNode;
+
+  @override
+  void initState() {
+    super.initState();
+    _plateFocusNode = FocusNode();
+    _plateFocusNode.addListener(() {
+      setState(() {});
+    });
+  }
+
   Widget _buildPlateInputField() {
     return Container(
       width: double.infinity,
       height: 46,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 2),
+        border: Border.all(color: Apptheme.lightGray, width: 1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
@@ -144,21 +149,27 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
           // Ícono del carro
           SvgPicture.asset(
             'assets/icons/Car_Icon.svg',
-            width: 24, // Ajusta el tamaño según necesites
+            width: 24,
             height: 24,
+            colorFilter: ColorFilter.mode(
+              _plateFocusNode.hasFocus
+                  ? Apptheme.secondary // Sin opacidad
+                  : Apptheme.secondary.withOpacity(0.5),
+              BlendMode.srcIn,
+            ),
           ),
 
           // Input de la placa
           Flexible(
             child: IntrinsicWidth(
               child: TextField(
+                focusNode: _plateFocusNode,
                 controller: _plateController,
                 maxLength: _maxPlateLength,
                 textCapitalization: TextCapitalization.characters,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
+                style: Apptheme.h1TitleDecorative(
+                  context,
                   color: Apptheme.textColorPrimary,
                 ),
                 onChanged: (value) {
@@ -175,8 +186,8 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
                   border: InputBorder.none,
                   counterText: "",
                   hintText: _plateHint,
-                  hintStyle: const TextStyle(
-                    color: Apptheme.textColorPrimary,
+                  hintStyle: TextStyle(
+                    color: Apptheme.textColorPrimary.withOpacity(0.5),
                   ),
                   constraints: const BoxConstraints(
                     minWidth: 120,
@@ -200,17 +211,19 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
           50,
           isLoading
               ? BallBeatLoading()
-              : const Text("Guardar",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                  )),
+              : Text(
+                  "Guardar",
+                  style: Apptheme.h4HighlightBody(
+                    context,
+                    color: Apptheme.backgroundColor,
+                  ),
+                ),
           isLoading ? null : () => _validateAndShowDialog(context)),
     );
   }
 
   /// Validates the plate input and shows the confirmation dialog
-  void _validateAndShowDialog(BuildContext context) {
+  Future<void> _validateAndShowDialog(BuildContext context) async {
     final plateText = _plateController.text.trim();
 
     if (plateText.isEmpty) {
@@ -218,21 +231,8 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       return;
     }
 
-    _showSaveConfirmationDialog(context, plateText);
-  }
-
-  /// Shows the confirmation dialog for plate inspection
-  void _showSaveConfirmationDialog(BuildContext context, String plate) {
-    ConfirmationDialog.show(
-      context: context,
-      title: "PLACA $plate",
-      message: "¿Deseas iniciar el proceso de inspección con este vehículo?",
-      cancelText: "Cancelar",
-      acceptText: "Aceptar",
-      onAccept: () async {
-        await _proceedWithPlateInspection(plate);
-      },
-    );
+    await _proceedWithPlateInspection(plateText);
+    // _showSaveConfirmationDialog(context, plateText);
   }
 
   /// Shows loading dialog only if not already shown
@@ -368,6 +368,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   @override
   void dispose() {
     _plateController.dispose();
+    _plateFocusNode.dispose();
 
     // Limpiar el estado del provider al salir de la pantalla
     super.dispose();

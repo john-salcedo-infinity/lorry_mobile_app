@@ -23,7 +23,7 @@ class _Constants {
   static const double inputFieldWidth = 292.0;
   static const double inputFieldHeight = 46.0;
   static const double borderRadius = 8.0;
-  static const double iconSize = 24.0;
+  static const double iconSize = 20;
   static const EdgeInsets containerPadding =
       EdgeInsets.symmetric(vertical: 30.0, horizontal: 16.0);
 }
@@ -130,13 +130,9 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
+        Text(
           "Datos de VHC",
-          style: TextStyle(
-            fontSize: 23,
-            color: Apptheme.textColorSecondary,
-            fontWeight: FontWeight.bold,
-          ),
+          style: Apptheme.h1Title(context, color: Apptheme.textColorSecondary),
         ),
         _buildLicensePlateContainer(),
       ],
@@ -146,11 +142,17 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
   Widget _buildLicensePlateContainer() {
     return LicensePlate(
       licensePlate: _mountingResult.vehicle?.licensePlate ?? 'N/A',
-      fontSize: 22,
+      fontSize: 18,
     );
   }
 
   Widget _buildVehicleInfoContainer() {
+    final String typeVehicle =
+        _mountingResult.vehicle?.typeVehicle?.name ?? 'N/A';
+    final String workLine = _mountingResult.vehicle?.workLine?.name ?? 'N/A';
+    final String customer =
+        _mountingResult.vehicle?.customer?.businessName ?? 'N/A';
+
     return Container(
       width: _Constants.containerWidth,
       padding: _Constants.containerPadding,
@@ -161,19 +163,15 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          InfoRow(
-              title: 'Tipo de vehículo',
-              value: _mountingResult.vehicle?.typeVehicle?.name ?? 'N/A'),
+          InfoRow(title: 'Tipo de vehículo', value: typeVehicle),
           const SizedBox(height: 12),
-          InfoRow(
-              title: 'Línea de trabajo',
-              value: _mountingResult.vehicle?.workLine?.name ?? 'N/A'),
+          InfoRow(title: 'Línea de trabajo', value: workLine),
           const SizedBox(height: 12),
           InfoRow(
             title: 'Cliente asociado al vehículo',
-            value: _mountingResult.vehicle?.customer?.businessName ?? 'N/A',
+            value: customer,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
           _buildMileageDisplay(),
         ],
       ),
@@ -184,13 +182,9 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          'Última medición Kilometraje',
-          style: TextStyle(
-            fontSize: 14,
-            color: Apptheme.textColorSecondary,
-          ),
-        ),
+        Text('Última medición Kilometraje',
+            style:
+                Apptheme.h5Body(context, color: Apptheme.textColorSecondary)),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -209,19 +203,13 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
                   TextSpan(
                     text:
                         '${NumberFormat('#,###').format((_mountingResult.vehicle!.mileage?.first.km) ?? 0.0)} ',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Apptheme.textColorPrimary,
-                    ),
+                    style: Apptheme.h5TitleDecorative(context,
+                        color: Apptheme.textColorPrimary),
                   ),
-                  const TextSpan(
+                  TextSpan(
                     text: 'KM',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Apptheme.textColorPrimary,
-                    ),
+                    style: Apptheme.h5TitleDecorative(context,
+                        color: Apptheme.textColorPrimary),
                   ),
                 ],
               ),
@@ -236,7 +224,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Container(
       width: _Constants.containerWidth,
       height: _Constants.alertContainerHeight,
-      padding: const EdgeInsets.all(26),
+      padding: const EdgeInsets.all(24),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -252,11 +240,8 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
           Expanded(
             child: Text(
               "Para realizar una nueva inspección, primero debes actualizar el kilometraje",
-              style: TextStyle(
-                fontSize: 14,
-                color: Apptheme.textColorSecondary,
-                fontWeight: FontWeight.w400,
-              ),
+              style:
+                  Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
             ),
           ),
         ],
@@ -291,7 +276,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
       width: _Constants.inputFieldWidth,
       height: _Constants.inputFieldHeight,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey, width: 2),
+        border: Border.all(color: Apptheme.lightGray, width: 1),
         borderRadius: BorderRadius.circular(4),
       ),
       child: Row(
@@ -299,8 +284,8 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
         children: [
           SvgPicture.asset(
             'assets/icons/Icono_Velocimetro_Lorry.svg',
-            width: _Constants.iconSize,
-            height: _Constants.iconSize,
+            width: 24,
+            height: 24,
             colorFilter:
                 ColorFilter.mode(Apptheme.textColorPrimary, BlendMode.srcIn),
           ),
@@ -314,11 +299,10 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
                 ThousandsSeparatorInputFormatter(),
               ],
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 22,
+              style: Apptheme.h1TitleDecorative(context,
+                      color: Apptheme.textColorPrimary)
+                  .copyWith(
                 height: 0.2,
-                fontWeight: FontWeight.bold,
-                color: Apptheme.textColorPrimary,
               ),
               decoration: const InputDecoration(
                 border: InputBorder.none,
@@ -329,11 +313,10 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             ),
           ),
           const SizedBox(width: 3),
-          const Text(
+          Text(
             "KM",
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
+            style: Apptheme.h1Title(
+              context,
               color: Apptheme.textColorPrimary,
             ),
           ),

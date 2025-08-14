@@ -3,7 +3,7 @@ class Constants {
   // static String baseUrl = 'http://192.168.222.91:8000';
   // static String baseUrl = 'http://192.168.1.10:8000';
   // static String baseUrl = 'http://10.0.2.2:8000';
-  static String baseUrl = 'http://192.168.62.17:8000';
+  static String baseUrl = 'http://192.168.62.175:8000';
 
   // static String baseUrl = 'http://192.168.62.84:8000';
 }

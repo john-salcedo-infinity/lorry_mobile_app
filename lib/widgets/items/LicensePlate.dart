@@ -29,8 +29,12 @@ class LicensePlate extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(15, 4, 15, 4),
           child: Text(
             licensePlate,
-            style: TextStyle(
-                fontSize: fontSize.toDouble(), color: Colors.white, fontWeight: FontWeight.bold),
+            style: Apptheme.h5TitleDecorative(
+              context,
+              color: Apptheme.backgroundColor,
+            ).copyWith(
+              fontSize: fontSize.toDouble(),
+            ),
           ),
         ),
       ),

@@ -62,7 +62,13 @@ class _InspectionDetailsState extends State<InspectionDetails> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Datos de VHC", style: Apptheme.titleStyle),
+                            Text(
+                              "Datos de VHC",
+                              style: Apptheme.h1Title(
+                                context,
+                                color: Apptheme.textColorSecondary,
+                              ),
+                            ),
                             LicensePlate(
                               licensePlate: licensePlate,
                               fontSize: 22,
@@ -118,44 +124,49 @@ class InspectionDetailsContent extends StatelessWidget {
     return Column(
       children: [
         _DetailsBadge(label: "Fecha", value: formattedDate),
+        SizedBox(height: 22),
         _DetailsBadge(label: "Hora", value: formattedTime),
+        SizedBox(height: 22),
         _DetailsBadge(
             label: "Tipo de vehículo",
             value: vehicle.typeVehicle?.name ?? 'N/A'),
+        SizedBox(height: 22),
         _DetailsBadge(
             label: "Línea de trabajo", value: vehicle.workLine?.name ?? 'N/A'),
+        SizedBox(height: 22),
         _DetailsBadge(
             label: "Cliente asociado al vehiculo",
             value: vehicle.customer?.businessName ?? 'N/A'),
+        SizedBox(height: 22),
         _DetailsBadge(label: "Número de llantas", value: totalTires),
+        SizedBox(height: 22),
         _DetailsBadge(label: "Nombre del inspector", value: inspectorName),
+        SizedBox(height: 22),
         Column(
           children: [
             Text(
               "Última medición kilometraje",
-              style: TextStyle(
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: Apptheme.textColorSecondary),
+              style:
+                  Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
             ),
             Container(
-              margin: EdgeInsets.only(top: 20),
+              margin: EdgeInsets.only(top: 4),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SvgPicture.asset(
                     'assets/icons/Icono_Velocimetro_Lorry.svg',
-                    width: 30,
-                    height: 30,
+                    width: 20,
+                    height: 20,
                   ),
                   const SizedBox(width: 10),
                   Text(
                     "$lastMileage KM",
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Apptheme.textColorPrimary),
-                  ),
+                    style: Apptheme.h1TitleDecorative(
+                      context,
+                      color: Apptheme.secondary,
+                    ),
+                  )
                 ],
               ),
             ),
@@ -179,17 +190,12 @@ class _DetailsBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          margin: EdgeInsets.symmetric(vertical: 12),
-          child: Text(
-            label,
-            style: TextStyle(
-                fontWeight: FontWeight.w400,
-                fontSize: 16,
-                color: Apptheme.textColorSecondary),
-          ),
+        Text(
+          label,
+          style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
         ),
         Container(
+          margin: EdgeInsets.symmetric(vertical: 4),
           width: double.infinity,
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -199,8 +205,7 @@ class _DetailsBadge extends StatelessWidget {
           child: Text(
             textAlign: TextAlign.center,
             value,
-            style: TextStyle(
-                color: Apptheme.textColorPrimary, fontWeight: FontWeight.bold),
+            style: Apptheme.h5HighlightBody(context, color: Apptheme.secondary),
           ),
         )
       ],

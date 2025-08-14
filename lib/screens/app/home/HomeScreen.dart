@@ -295,11 +295,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     const _Profile(),
                     const SizedBox(height: 30),
-                    const Text(
+                    Text(
                       "ÚLTIMAS INSPECCIONES",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
+                      style: Apptheme.h4HighlightBody(
+                        context,
                         color: Apptheme.textColorSecondary,
                       ),
                     ),
@@ -535,14 +534,9 @@ class _ProfileState extends State<_Profile> {
               backgroundImage:
                   authUser.image != null ? NetworkImage(authUser.image!) : null,
               child: authUser.image == null
-                  ? Text(
-                      _getInitials(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    )
+                  ? Text(_getInitials(),
+                      style: Apptheme.h4HighlightBody(context,
+                          color: Apptheme.backgroundColor))
                   : null,
             ),
           ),
@@ -551,23 +545,19 @@ class _ProfileState extends State<_Profile> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'
-                        .trim()
-                        .isNotEmpty
-                    ? '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'
-                        .trim()
-                    : 'Usuario',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: Apptheme.textColorSecondary,
-                ),
-              ),
+                  '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'
+                          .trim()
+                          .isNotEmpty
+                      ? '${authUser.persons?.name ?? ''} ${authUser.persons?.lastName ?? ''}'
+                          .trim()
+                      : 'Usuario',
+                  style:
+                      Apptheme.h4HighlightBody(context, color: Apptheme.gray)),
               Text(
                 authUser.groups?.isNotEmpty == true
                     ? authUser.groups![0].name ?? ''
                     : '',
-                style: Apptheme.textMuted,
+                style: Apptheme.h5Body(context, color: Apptheme.lightGray),
               ),
             ],
           ),
@@ -644,14 +634,11 @@ class HomeMenu extends ConsumerWidget {
             children: [
               Container(
                 margin: const EdgeInsets.only(right: 8),
-                child: const Text(
+                child: Text(
                   "Cambiar contraseña",
                   textAlign: TextAlign.end,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Apptheme.textColorSecondary,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: Apptheme.h5Body(context,
+                      color: Apptheme.textColorSecondary),
                 ),
               ),
               SvgPicture.asset(
@@ -673,14 +660,11 @@ class HomeMenu extends ConsumerWidget {
             children: [
               Container(
                 margin: EdgeInsets.only(right: 8),
-                child: const Text(
+                child: Text(
                   'Cerrar sesión',
                   textAlign: TextAlign.end,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Apptheme.textColorSecondary,
-                    fontWeight: FontWeight.w400,
-                  ),
+                  style: Apptheme.h5Body(context,
+                      color: Apptheme.textColorSecondary),
                 ),
               ),
               SvgPicture.asset(
