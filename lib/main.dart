@@ -32,7 +32,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Lorry app',
       debugShowCheckedModeBanner: false,
-      showPerformanceOverlay: true,
+      // showPerformanceOverlay: true,
       routerConfig: appRouter,
       theme: Apptheme.lightTheme,
     );

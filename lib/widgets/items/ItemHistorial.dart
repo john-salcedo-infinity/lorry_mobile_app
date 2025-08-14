@@ -102,11 +102,16 @@ class _ItemHistorialState extends ConsumerState<ItemHistorial> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(formattedDate, style: Apptheme.titleStyle),
+                            Text(formattedDate,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w900,
+                                  color: Apptheme.textColorSecondary,
+                                )),
                             const SizedBox(height: 4),
                             Text(formattedTime,
                                 style: TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w900,
                                   color: Apptheme.textColorSecondary,
                                 )),

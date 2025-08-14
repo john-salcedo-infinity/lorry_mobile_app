@@ -27,12 +27,16 @@ class _ServiceDialogState extends State<ServiceDialog> {
   ProviderSelection? _selectedProvider;
   String? _costError;
   String? _providerError;
+  bool _isProcessing = false;
+
+  // Cache del formateador para evitar recrearlo
+  late final _CurrencyInputFormatter _currencyFormatter;
 
   @override
   void initState() {
     super.initState();
-    // Inicializar con un campo vacío para que sea editable
     _costController.text = '';
+    _currencyFormatter = _CurrencyInputFormatter();
   }
 
   @override
@@ -43,66 +47,88 @@ class _ServiceDialogState extends State<ServiceDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        backgroundColor: Colors.white,
-        title: _buildHeader(),
-        content: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.8, // Ancho máximo
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // Crucial: solo ocupa el espacio necesario
-            children: [
-              _buildForm(),
-            ],
-          ),
+    return Dialog(
+      // Reemplazar BackdropFilter por Dialog simple
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          // Sombra estática en lugar de BackdropFilter
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 10,
+              spreadRadius: 2,
+            ),
+          ],
         ),
-        actions: [
-          _buildActions(),
-        ],
-        // Esto permite que el diálogo se redimensione
-        insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildHeader(),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: _buildForm(),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: _buildActions(),
+            ),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildHeader() {
-    return Column(
-      children: [
-        Text(
-          widget.service.name,
-          style: const TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.w900,
-            color: Apptheme.textColorPrimary,
-          ),
-          textAlign: TextAlign.center,
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(8),
+          topRight: Radius.circular(8),
         ),
-        if (widget.tireCode != null) ...[
-          const SizedBox(height: 4),
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              style: const TextStyle(
-                fontSize: 14,
-                color: Apptheme.textColorSecondary,
-                fontWeight: FontWeight.normal,
-              ),
-              children: [
-                const TextSpan(text: 'se realizará en la llanta '),
-                TextSpan(
-                  text: "LL-${widget.tireCode!}",
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    color: Apptheme.textColorPrimary,
-                  ),
-                ),
-              ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            widget.service.name,
+            style: const TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.w900,
+              color: Apptheme.textColorPrimary,
             ),
+            textAlign: TextAlign.center,
           ),
+          if (widget.tireCode != null) ...[
+            const SizedBox(height: 4),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                style: const TextStyle(
+                  fontSize: 14,
+                  color: Apptheme.textColorSecondary,
+                  fontWeight: FontWeight.normal,
+                ),
+                children: [
+                  const TextSpan(text: 'se realizará en la llanta '),
+                  TextSpan(
+                    text: "LL-${widget.tireCode!}",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      color: Apptheme.textColorPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 
@@ -110,7 +136,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
     return Form(
       key: _formKey,
       child: Column(
-        mainAxisSize: MainAxisSize.min, // Solo ocupa el espacio necesario
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCostField(),
@@ -141,33 +167,35 @@ class _ServiceDialogState extends State<ServiceDialog> {
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'[0-9,.]')),
-              _CurrencyInputFormatter(),
+              _currencyFormatter, // Usar el formateador cacheado
             ],
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               filled: true,
               fillColor: Apptheme.backgroundColor,
-              border: OutlineInputBorder(
+              border: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
                 borderSide:
                     BorderSide(color: Apptheme.backgroundColor, width: 1),
               ),
-              enabledBorder: OutlineInputBorder(
+              enabledBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
                 borderSide: BorderSide(color: Apptheme.lightGray, width: 1),
               ),
-              focusedBorder: OutlineInputBorder(
+              focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
                 borderSide: BorderSide(color: Apptheme.primary, width: 1),
               ),
-              errorBorder: OutlineInputBorder(
+              errorBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
                 borderSide: BorderSide(color: Colors.red, width: 1),
               ),
               hintText: '000.00',
-              hintStyle: TextStyle(
+              hintStyle: const TextStyle(
                 height: 1.2,
                 color: Apptheme.grayInput,
               ),
+              // Mostrar error en la decoración en lugar de widget separado
+              errorText: _costError,
             ),
             style: const TextStyle(
               fontSize: 14,
@@ -182,16 +210,6 @@ class _ServiceDialogState extends State<ServiceDialog> {
             },
           ),
         ),
-        if (_costError != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            _costError!,
-            style: const TextStyle(
-              color: Colors.red,
-              fontSize: 12,
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -212,12 +230,15 @@ class _ServiceDialogState extends State<ServiceDialog> {
         SelectProvider(
           hintText: 'Selecciona un proveedor',
           onChanged: (ProviderSelection? selection) {
-            setState(() {
-              _selectedProvider = selection;
-              if (_providerError != null) {
-                _providerError = null;
-              }
-            });
+            if (mounted) {
+              // Verificar si el widget está montado
+              setState(() {
+                _selectedProvider = selection;
+                if (_providerError != null) {
+                  _providerError = null;
+                }
+              });
+            }
           },
         ),
         if (_providerError != null) ...[
@@ -238,78 +259,115 @@ class _ServiceDialogState extends State<ServiceDialog> {
     return CustomButton(
       double.infinity,
       42,
-      const Text(
-        'Realizar Servicio',
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      () => _onRealizeService(),
+      _isProcessing
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            )
+          : const Text(
+              'Realizar Servicio',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+      _isProcessing ? null : () => _onRealizeService(),
       type: 1,
     );
   }
 
-  void _onRealizeService() {
-    // Limpiar errores previos
+  void _onRealizeService() async {
+    if (_isProcessing) return;
+
     setState(() {
+      _isProcessing = true;
       _costError = null;
       _providerError = null;
     });
 
-    bool hasErrors = false;
+    // Mover validaciones a un Future para no bloquear UI
+    final validation = await _validateForm();
 
-    // Validar costo
-    if (_costController.text.isEmpty) {
-      setState(() {
-        _costError = 'Por favor ingresa el costo';
-      });
-      hasErrors = true;
-    } else {
-      final cleanValue =
-          _costController.text.replaceAll(',', '').replaceAll('.', '').trim();
-      final cost = double.tryParse(cleanValue);
-      if (cost == null || cost < 0) {
-        setState(() {
-          _costError = 'Por favor ingresa un costo válido';
-        });
-        hasErrors = true;
-      }
-    }
+    if (!mounted) return;
 
-    // Validar proveedor
-    if (_selectedProvider == null) {
+    if (validation['hasErrors']) {
       setState(() {
-        _providerError = 'Por favor selecciona un proveedor';
+        _costError = validation['costError'];
+        _providerError = validation['providerError'];
+        _isProcessing = false;
       });
-      hasErrors = true;
+      return;
     }
 
     // Si no hay errores, procesar el formulario
-    if (!hasErrors) {
-      final cleanValue =
-          _costController.text.replaceAll(',', '').replaceAll('.', '').trim();
-      final cost = double.tryParse(cleanValue) ?? 0.0;
+    final result = {
+      'type_service': widget.service.id,
+      'provider': _selectedProvider?.id ?? 0,
+      'cost_service': validation['cost'],
+    };
 
-      // Cerrar el dialog y retornar los datos del servicio
-      Navigator.of(context).pop({
-        'type_service': widget.service.id,
-        'provider': _selectedProvider?.id ?? 0,
-        'cost_service': cost,
-      });
+    if (mounted) {
+      Navigator.of(context).pop(result);
     }
+  }
+
+  Future<Map<String, dynamic>> _validateForm() async {
+    // Ejecutar validaciones en un compute o Future para no bloquear UI
+    return await Future.microtask(() {
+      String? costError;
+      String? providerError;
+      double cost = 0.0;
+
+      // Validar costo
+      if (_costController.text.isEmpty) {
+        costError = 'Por favor ingresa el costo';
+      } else {
+        final cleanValue =
+            _costController.text.replaceAll(',', '').replaceAll('.', '').trim();
+        final parsedCost = double.tryParse(cleanValue);
+        if (parsedCost == null || parsedCost < 0) {
+          costError = 'Por favor ingresa un costo válido';
+        } else {
+          cost = parsedCost;
+        }
+      }
+
+      // Validar proveedor
+      if (_selectedProvider == null) {
+        providerError = 'Por favor selecciona un proveedor';
+      }
+
+      return {
+        'hasErrors': costError != null || providerError != null,
+        'costError': costError,
+        'providerError': providerError,
+        'cost': cost,
+      };
+    });
   }
 }
 
-// Formateador personalizado para currency
+// Formateador optimizado
 class _CurrencyInputFormatter extends TextInputFormatter {
+  // Cache del formatter para evitar recrearlo
+  static final _formatter = NumberFormat('#,###', 'es_CO');
+
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
     TextEditingValue newValue,
   ) {
     if (newValue.selection.baseOffset == 0) {
+      return newValue;
+    }
+
+    // Optimización: si el texto no cambió, no reformatear
+    if (newValue.text == oldValue.text) {
       return newValue;
     }
 
@@ -324,10 +382,14 @@ class _CurrencyInputFormatter extends TextInputFormatter {
       );
     }
 
+    // Limitar la longitud para evitar números demasiado grandes
+    if (newText.length > 10) {
+      newText = newText.substring(0, 10);
+    }
+
     // Formatear con puntos como separadores de miles (formato colombiano)
     final int value = int.tryParse(newText) ?? 0;
-    final formatter = NumberFormat('#,###', 'es_CO');
-    final formattedText = formatter.format(value).replaceAll(',', '.');
+    final formattedText = _formatter.format(value).replaceAll(',', '.');
 
     return TextEditingValue(
       text: formattedText,

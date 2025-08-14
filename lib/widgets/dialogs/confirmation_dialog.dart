@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:app_lorry/config/app_theme.dart';
 
@@ -18,27 +17,26 @@ class ConfirmationDialog extends StatelessWidget {
     this.acceptText = 'Aceptar',
     this.onCancel,
     this.onAccept,
-  }) : assert(message is String || message is Widget, 'message must be either String or Widget');
+  }) : assert(message is String || message is Widget,
+            'message must be either String or Widget');
 
   @override
   Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-      child: AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        backgroundColor: Colors.white,
-        title: Center(
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: Apptheme.textColorPrimary,
-            ),
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      backgroundColor: Colors.white,
+      title: Center(
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w900,
+            color: Apptheme.textColorPrimary,
           ),
         ),
-        content: message is Widget 
+      ),
+      content: message is Widget
           ? message as Widget
           : Text(
               message as String,
@@ -49,17 +47,16 @@ class ConfirmationDialog extends StatelessWidget {
                 fontWeight: FontWeight.normal,
               ),
             ),
-        actions: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Expanded(child: _buildCancelButton(context)),
-              const SizedBox(width: 16),
-              Expanded(child: _buildAcceptButton(context)),
-            ],
-          ),
-        ],
-      ),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Expanded(child: _buildCancelButton(context)),
+            const SizedBox(width: 16),
+            Expanded(child: _buildAcceptButton(context)),
+          ],
+        ),
+      ],
     );
   }
 
@@ -126,7 +123,8 @@ class ConfirmationDialog extends StatelessWidget {
     VoidCallback? onCancel,
     VoidCallback? onAccept,
   }) {
-    assert(message is String || message is Widget, 'message must be either String or Widget');
+    assert(message is String || message is Widget,
+        'message must be either String or Widget');
     return showDialog(
       context: context,
       barrierColor: Apptheme.secondary.withValues(alpha: 0.5),
