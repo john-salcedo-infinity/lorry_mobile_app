@@ -12,6 +12,7 @@ class BottomButtonItem {
   final Widget? customChild;
   final double? width;
   final double? height;
+  final Color? textColor;
 
   BottomButtonItem({
     required this.text,
@@ -22,6 +23,7 @@ class BottomButtonItem {
     this.customChild,
     this.width,
     this.height,
+    this.textColor = Apptheme.backgroundColor,
   });
 }
 
@@ -32,6 +34,7 @@ class BottombuttonParams {
   final bool isLoading;
   final bool disabled;
   final int? buttonType;
+  final Color? textColor;
 
   BottombuttonParams({
     required this.text,
@@ -39,6 +42,7 @@ class BottombuttonParams {
     this.isLoading = false,
     this.buttonType,
     this.disabled = false,
+    this.textColor,
   });
 }
 
@@ -95,14 +99,15 @@ class BottomButton extends StatelessWidget {
     // Compatibilidad hacia atrás
     if (params != null) {
       return _buildSingleButton(
-          context,
-          BottomButtonItem(
+        context,
+        BottomButtonItem(
             text: params!.text,
             onPressed: params!.onPressed,
             isLoading: params!.isLoading,
             disabled: params!.disabled,
             buttonType: params!.buttonType,
-          ));
+            textColor: params!.textColor),
+      );
     }
 
     if (buttons == null || buttons!.isEmpty) {
@@ -135,7 +140,7 @@ class BottomButton extends StatelessWidget {
                   button.text,
                   style: Apptheme.h4HighlightBody(
                     context,
-                    color: Apptheme.backgroundColor,
+                    color: button.textColor ?? Apptheme.backgroundColor,
                   ),
                 )),
       button.isLoading || button.disabled ? null : button.onPressed,

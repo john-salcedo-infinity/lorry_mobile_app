@@ -69,12 +69,11 @@ class _SelectProviderState extends ConsumerState<SelectProvider> {
             value: _selectedValue,
             hint: Text(
               widget.hintText ?? 'Selecciona un proveedor',
-              style: TextStyle(
+              style: Apptheme.h4Medium(
+                context,
                 color: widget.enabled
                     ? Apptheme.textColorSecondary
                     : Apptheme.grayInput,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
               ),
             ),
             isExpanded: true,
@@ -84,8 +83,11 @@ class _SelectProviderState extends ConsumerState<SelectProvider> {
                 child: Text(
                   provider.nameProvider ?? 'Sin nombre',
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: Apptheme.h4Medium(
+                    context,
+                    color: widget.enabled
+                        ? Apptheme.textColorSecondary
+                        : Apptheme.grayInput,
                   ),
                 ),
               );

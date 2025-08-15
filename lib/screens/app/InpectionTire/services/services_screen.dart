@@ -142,13 +142,14 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Servicios a realizar',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w900,
-                            color: Apptheme.textColorSecondary,
-                          )),
-                      const SizedBox(height: 20),
+                      Text(
+                        'Servicios a realizar',
+                        style: Apptheme.h1Title(
+                          context,
+                          color: Apptheme.textColorSecondary,
+                        ),
+                      ),
+                      const SizedBox(height: 18),
                       _buildServicesGrid(),
                     ],
                   ),
@@ -237,6 +238,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
           text: 'Reiniciar',
           buttonType: 2,
           onPressed: _resetAllServices,
+          textColor: Apptheme.darkorange,
         ),
         BottomButtonItem(
           text: 'Enviar Servicios',

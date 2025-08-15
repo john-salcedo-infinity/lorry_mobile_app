@@ -26,25 +26,21 @@ class ConfirmationDialog extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       backgroundColor: Colors.white,
       title: Center(
-        child: Text(
-          title,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w900,
-            color: Apptheme.textColorPrimary,
-          ),
-        ),
+        child: Text(title,
+            textAlign: TextAlign.center,
+            style: Apptheme.h1Title(
+              context,
+              color: Apptheme.secondary,
+            )),
       ),
       content: message is Widget
           ? message as Widget
           : Text(
               message as String,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 14,
+              style: Apptheme.h5Body(
+                context,
                 color: Apptheme.textColorSecondary,
-                fontWeight: FontWeight.normal,
               ),
             ),
       actions: [
@@ -77,11 +73,7 @@ class ConfirmationDialog extends StatelessWidget {
       ),
       child: Text(
         cancelText,
-        style: const TextStyle(
-          color: Apptheme.primary,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
+        style: Apptheme.h4HighlightBody(context, color: Apptheme.primary),
       ),
     );
   }
@@ -104,10 +96,9 @@ class ConfirmationDialog extends StatelessWidget {
       ),
       child: Text(
         acceptText,
-        style: const TextStyle(
+        style: Apptheme.h4HighlightBody(
+          context,
           color: Colors.white,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );

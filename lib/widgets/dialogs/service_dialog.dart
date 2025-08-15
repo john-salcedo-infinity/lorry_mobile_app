@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:app_lorry/config/configs.dart';
 import 'package:app_lorry/models/Service_data.dart';
 import 'package:app_lorry/widgets/buttons/CustomButton.dart';
@@ -85,7 +87,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
   Widget _buildHeader() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 0),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
@@ -97,11 +99,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
         children: [
           Text(
             widget.service.name,
-            style: const TextStyle(
-              fontSize: 25,
-              fontWeight: FontWeight.w900,
-              color: Apptheme.textColorPrimary,
-            ),
+            style: Apptheme.h1Title(context, color: Apptheme.textColorPrimary),
             textAlign: TextAlign.center,
           ),
           if (widget.tireCode != null) ...[
@@ -109,17 +107,14 @@ class _ServiceDialogState extends State<ServiceDialog> {
             RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Apptheme.textColorSecondary,
-                  fontWeight: FontWeight.normal,
-                ),
+                style: Apptheme.h5Body(context,
+                    color: Apptheme.textColorSecondary),
                 children: [
                   const TextSpan(text: 'se realizará en la llanta '),
                   TextSpan(
                     text: "LL-${widget.tireCode!}",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w800,
+                    style: Apptheme.h5Body(
+                      context,
                       color: Apptheme.textColorPrimary,
                     ),
                   ),
@@ -151,13 +146,10 @@ class _ServiceDialogState extends State<ServiceDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'COSTO',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w900,
-            color: Apptheme.textColorSecondary,
-          ),
+          style: Apptheme.h5HighlightBody(context,
+              color: Apptheme.textColorSecondary),
         ),
         const SizedBox(height: 6),
         SizedBox(
@@ -183,22 +175,25 @@ class _ServiceDialogState extends State<ServiceDialog> {
               ),
               focusedBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
-                borderSide: BorderSide(color: Apptheme.primary, width: 1),
+                borderSide:
+                    BorderSide(color: Apptheme.selectActiveBorder, width: 1),
               ),
               errorBorder: const OutlineInputBorder(
                 borderRadius: BorderRadius.all(Radius.circular(4)),
                 borderSide: BorderSide(color: Colors.red, width: 1),
               ),
               hintText: '000.00',
-              hintStyle: const TextStyle(
+              hintStyle: Apptheme.h4Medium(
+                context,
+                color: Apptheme.textColorSecondary,
+              ).copyWith(
                 height: 1.2,
-                color: Apptheme.grayInput,
               ),
               // Mostrar error en la decoración en lugar de widget separado
               errorText: _costError,
             ),
-            style: const TextStyle(
-              fontSize: 14,
+            style: Apptheme.h4Medium(
+              context,
               color: Apptheme.textColorSecondary,
             ),
             onChanged: (value) {
@@ -218,11 +213,10 @@ class _ServiceDialogState extends State<ServiceDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'PROVEEDOR',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
+          style: Apptheme.h5HighlightBody(
+            context,
             color: Apptheme.textColorSecondary,
           ),
         ),

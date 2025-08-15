@@ -17,6 +17,7 @@ class Apptheme {
 
   // Green colors
   static const Color secondary = Color.fromRGBO(23, 100, 93, 1);
+  static const Color darkSecondary = Color.fromRGBO(16, 61, 66, 1);
   static const Color secondaryv2 = Color.fromRGBO(50, 150, 108, 1);
   static const Color secondaryv3 = Color.fromRGBO(220, 230, 227, 1);
   static const Color lightGreen = Color.fromRGBO(220, 230, 227, 1);
@@ -87,6 +88,14 @@ class Apptheme {
     );
   }
 
+  static TextStyle h4Medium(BuildContext context, {Color? color}) {
+    return TextStyle(
+      fontSize: ResponsiveText.fontSize(context, 14),
+      fontWeight: FontWeight.w500,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
   static TextStyle h4HighlightBody(BuildContext context, {Color? color}) {
     return TextStyle(
       fontSize: ResponsiveText.fontSize(context, 14),
@@ -127,6 +136,14 @@ class Apptheme {
     );
   }
 
+  static TextStyle h4TitleDecorative(BuildContext context, {Color? color}) {
+    return GoogleFonts.redHatMono(
+      fontSize: ResponsiveText.fontSize(context, 14),
+      fontWeight: FontWeight.w700,
+      color: color ?? Apptheme.textColorPrimary,
+    );
+  }
+
   static TextStyle h5TitleDecorative(BuildContext context, {Color? color}) {
     return GoogleFonts.redHatMono(
       fontSize: ResponsiveText.fontSize(context, 12),
@@ -156,36 +173,6 @@ class Apptheme {
       ),
     );
   }
-
-  static const TextStyle titleStyle = TextStyle(
-    fontSize: 22,
-    color: Apptheme.textColorSecondary,
-    fontWeight: FontWeight.bold,
-  );
-
-  static const TextStyle titleStylev2 = TextStyle(
-    fontSize: 15,
-    color: Apptheme.textColorSecondary,
-    fontWeight: FontWeight.bold,
-  );
-
-  static const TextStyle subtitleStyle = TextStyle(
-    fontSize: 16,
-    color: Apptheme.textColorSecondary,
-    fontWeight: FontWeight.bold,
-  );
-
-  static const TextStyle subtitleStylev2 = TextStyle(
-    fontSize: 10,
-    color: Apptheme.textColorSecondary,
-    fontWeight: FontWeight.bold,
-  );
-
-  static const TextStyle textMuted = TextStyle(
-    fontSize: 11,
-    color: Colors.grey,
-    fontWeight: FontWeight.normal,
-  );
 
   // #Loading color
   static CircularProgressIndicator loadingIndicator() {

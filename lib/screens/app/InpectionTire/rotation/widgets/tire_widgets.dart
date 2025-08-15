@@ -100,17 +100,14 @@ class TireWidget extends StatelessWidget {
   }
 
   /// Define el contenido del widget basado en sectionType y estado
-  Widget _getTireContent() {
+  Widget _getTireContent(BuildContext context) {
     if (sectionType == 1) {
       // Configuración Actual
       if (isEmpty) {
         return Text(
           'P${tire.destinationPosition ?? tire.position}',
-          style: TextStyle(
-            color: Apptheme.secondary,
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
-          ),
+          style: Apptheme.h5TitleDecorative(context,
+              color: Apptheme.textColorPrimary),
         );
       } else if (tire.hasTire) {
         // Tiene llanta: mostrar imagen de llanta
@@ -123,20 +120,18 @@ class TireWidget extends StatelessWidget {
         // Posición vacía con destinationPosition: mostrar la posición de destino
         return Text(
           'P${tire.destinationPosition}',
-          style: TextStyle(
-            color: Apptheme.secondary,
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
+          style: Apptheme.h5TitleDecorative(
+            context,
+            color: Apptheme.textColorPrimary,
           ),
         );
       } else {
         // Posición vacía: mostrar solo la posición actual
         return Text(
           'P${tire.position}',
-          style: TextStyle(
+          style: Apptheme.h5TitleDecorative(
+            context,
             color: Apptheme.textColorPrimary,
-            fontSize: 16,
-            fontWeight: FontWeight.w900,
           ),
         );
       }
@@ -145,20 +140,27 @@ class TireWidget extends StatelessWidget {
       if (isEmpty) {
         return Text(
           'P${tire.position}',
-          style: TextStyle(
+          style: Apptheme.h5TitleDecorative(
+            context,
             color: Apptheme.primary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
           ),
         );
       } else if (!tire.hasTire) {
         // Posición vacía: mostrar posición
         return Text(
           'P${tire.position}',
-          style: TextStyle(
+          style: Apptheme.h5TitleDecorative(
+            context,
             color: Apptheme.primary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          ),
+        );
+      } else if (!tire.hasTire) {
+        // Posición vacía: mostrar posición
+        return Text(
+          'P${tire.position}',
+          style: Apptheme.h5TitleDecorative(
+            context,
+            color: Apptheme.primary,
           ),
         );
       } else {
@@ -191,7 +193,7 @@ class TireWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _getTireContent(),
+            _getTireContent(context),
           ],
         ),
       );
@@ -213,7 +215,7 @@ class TireWidget extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _getTireContent(),
+            _getTireContent(context),
           ],
         ),
       );
@@ -318,7 +320,7 @@ class SpareWidget extends StatelessWidget {
   }
 
   /// Define el contenido del widget basado en sectionType y estado para SpareWidget
-  Widget _getSpareContent() {
+  Widget _getSpareContent(BuildContext context) {
     if (sectionType == 1) {
       // Configuración Actual
       if (isEmpty) {
@@ -344,10 +346,9 @@ class SpareWidget extends StatelessWidget {
         // Posición vacía con destinationPosition: mostrar la posición de destino
         return Text(
           'P${tire.destinationPosition}',
-          style: TextStyle(
-            color: Apptheme.secondary,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          style: Apptheme.h5TitleDecorative(
+            context,
+            color: Apptheme.textColorPrimary,
           ),
         );
       } else {
@@ -417,7 +418,7 @@ class SpareWidget extends StatelessWidget {
           children: [
             Positioned.fill(
               child: Center(
-                child: _getSpareContent(),
+                child: _getSpareContent(context),
               ),
             ),
           ],
@@ -441,7 +442,7 @@ class SpareWidget extends StatelessWidget {
           children: [
             Positioned.fill(
               child: Center(
-                child: _getSpareContent(),
+                child: _getSpareContent(context),
               ),
             ),
           ],

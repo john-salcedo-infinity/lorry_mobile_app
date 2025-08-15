@@ -481,7 +481,10 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
           children: [
             Text(
               "Se guardará",
-              style: TextStyle(color: Apptheme.textColorSecondary),
+              style: Apptheme.h5Body(
+                context,
+                color: Apptheme.textColorSecondary,
+              ),
             ),
             const SizedBox(height: 8),
             ConstrainedBox(
@@ -505,9 +508,10 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 2),
                       child: Text(
                         "(1) $serviceTypeText DE LLANTA P${movement.sourcePosition}",
-                        style: TextStyle(
-                            color: Apptheme.textColorSecondary,
-                            fontWeight: FontWeight.w900),
+                        style: Apptheme.h4HighlightBody(
+                          context,
+                          color: Apptheme.textColorSecondary,
+                        ),
                       ),
                     );
                   }).toList(),
@@ -569,9 +573,8 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
                         children: [
                           Text(
                             "Rotar & Girar",
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
+                            style: Apptheme.h1Title(
+                              context,
                               color: Apptheme.textColorSecondary,
                             ),
                           ),
@@ -637,28 +640,23 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
           children: [
             Text(
               "Deshacer",
-              style: TextStyle(
-                color: Apptheme.primary,
-                fontWeight: FontWeight.w900,
-                fontSize: 16,
+              style: Apptheme.h4HighlightBody(
+                context,
+                color: Apptheme.darkorange,
               ),
             ),
             SizedBox(
               width: 8,
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4),
                 color: Apptheme.primary,
               ),
               child: Text(
                 movementCount.toString(),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 14,
-                ),
+                style: Apptheme.h5HighlightBody(context, color: Colors.white),
               ),
             )
           ],
@@ -678,9 +676,8 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
       children: [
         Text(
           title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          style: Apptheme.h4HighlightBody(
+            context,
             color: Apptheme.textColorSecondary,
           ),
         ),

@@ -38,11 +38,8 @@ class PositionLabel extends StatelessWidget {
     // Para otros sectionTypes, comportamiento normal
     return Text(
       'P$positionId',
-      style: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w900,
-        color: Apptheme.textColorPrimary,
-      ),
+      style:
+          Apptheme.h5TitleDecorative(context, color: Apptheme.textColorPrimary),
     );
   }
 

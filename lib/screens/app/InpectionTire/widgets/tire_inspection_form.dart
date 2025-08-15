@@ -107,7 +107,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
 
         _pressureController.text = savedData != null &&
                 savedData['pressure'] != null &&
-                savedData['pressure'] != 0.0
+                savedData['pressure'] != 0
             ? savedData['pressure'].toString()
             : (widget.currentMounting.tire?.pressure?.toString() ??
                 widget.currentMounting.tire?.design?.dimension?.pressure
@@ -147,7 +147,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   void _notifyDataChanged() {
     final data = {
       'mounting': widget.currentMounting.id,
-      'pressure': double.tryParse(_pressureController.text) ?? 0.0,
+      'pressure': int.tryParse(_pressureController.text) ?? 0,
       'prof_external': double.tryParse(_externalController.text) ?? 0.0,
       'prof_center': double.tryParse(_centerController.text) ?? 0.0,
       'prof_internal': double.tryParse(_internalController.text) ?? 0.0,
@@ -179,11 +179,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
           Center(
             child: Text(
               "Serie LL-${widget.currentMounting.tire?.integrationCode ?? 'Sin Serie'}",
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w900,
-                color: Apptheme.textColorPrimary,
-              ),
+              style:
+                  Apptheme.h1Title(context, color: Apptheme.textColorPrimary),
             ),
           ),
           const SizedBox(height: 18),
@@ -192,7 +189,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             controller: _pressureController,
             isEditable: true,
             isPressure: true,
-            lastValue: widget.currentMounting.tire?.pressure?.toDouble() ?? 0.0,
+            lastValue: widget.currentMounting.tire?.pressure?.toInt() ?? 0,
           ),
           const SizedBox(height: 38),
           TireDataTextField(
@@ -258,9 +255,9 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             widget.existingNovelties.isNotEmpty
                 ? "Editar Novedades"
                 : "Reportar Novedad",
-            style: const TextStyle(
-              fontWeight: FontWeight.w900,
-              fontSize: 16,
+            style: Apptheme.h4HighlightBody(
+              context,
+              color: Apptheme.textColorPrimary,
             ),
           ),
           if (widget.existingNovelties.isNotEmpty) ...[

@@ -34,10 +34,11 @@ class ServiceButton extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 serviceConfig.text,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: isDisabled ? Colors.grey : null,
+                style: Apptheme.h4HighlightBody(
+                  context,
+                  color: isDisabled
+                      ? Apptheme.textColorSecondary
+                      : Apptheme.textColorPrimary,
                 ),
                 textAlign: TextAlign.center,
                 maxLines: 2,
@@ -54,7 +55,7 @@ class ServiceButton extends StatelessWidget {
             right: -8,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration:  BoxDecoration(
+              decoration: BoxDecoration(
                 color: Apptheme.lightOrange,
                 borderRadius: BorderRadius.circular(4),
               ),

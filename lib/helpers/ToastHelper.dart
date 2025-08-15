@@ -22,10 +22,9 @@ class ToastHelper {
             child: Text(
               message,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: Apptheme.h4HighlightBody(
+                context,
                 color: Apptheme.secondaryv2,
-                fontWeight: FontWeight.w900,
-                fontSize: 16,
               ),
             ),
           ),
@@ -56,10 +55,9 @@ class ToastHelper {
             child: Text(
               message,
               textAlign: TextAlign.right,
-              style: const TextStyle(
+              style: Apptheme.h4HighlightBody(
+                context,
                 color: Apptheme.primary,
-                fontWeight: FontWeight.w900,
-                fontSize: 16,
               ),
             ),
           ),

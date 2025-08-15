@@ -117,24 +117,23 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
           insetPadding: const EdgeInsets.all(5),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           backgroundColor: Colors.white,
-          title: const Center(
+          title: Center(
             child: Column(
               children: [
                 Text(
                   "Agregar imágenes",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
+                  style: Apptheme.h1Title(
+                    context,
                     color: Apptheme.textColorPrimary,
                   ),
                 ),
+                SizedBox(height: 4),
                 Text(
                   "Puedes adjuntar hasta 1 fotografía",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.normal,
+                  style: Apptheme.h5Body(
+                    context,
                     color: Apptheme.textColorSecondary,
                   ),
                 ),
@@ -176,11 +175,10 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
                                 height: 40,
                               ),
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 'Tomar foto',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900,
+                                style: Apptheme.h4HighlightBody(
+                                  context,
                                   color: Apptheme.textColorPrimary,
                                 ),
                               ),
@@ -214,11 +212,10 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
                                 height: 40,
                               ),
                               const SizedBox(height: 8),
-                              const Text(
+                              Text(
                                 'Subir foto',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900,
+                                style: Apptheme.h4HighlightBody(
+                                  context,
                                   color: Apptheme.textColorPrimary,
                                 ),
                               ),

@@ -68,12 +68,11 @@ class _SelectNoveltyState extends ConsumerState<SelectNovelty> {
             value: _selectedValue,
             hint: Text(
               widget.hintText ?? 'Selecciona una novedad',
-              style: TextStyle(
+              style: Apptheme.h4Medium(
+                context,
                 color: widget.enabled
                     ? Apptheme.textColorSecondary
                     : Apptheme.grayInput,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
               ),
             ),
             isExpanded: true,
@@ -83,8 +82,9 @@ class _SelectNoveltyState extends ConsumerState<SelectNovelty> {
                 child: Text(
                   novelty.name ?? 'Sin nombre',
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: Apptheme.h4Medium(
+                    context,
+                    color: Apptheme.textColorSecondary,
                   ),
                 ),
               );

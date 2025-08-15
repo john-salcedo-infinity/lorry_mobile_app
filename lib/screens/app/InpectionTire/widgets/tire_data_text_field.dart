@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class TireDataTextField extends StatefulWidget {
   final String label;
-  final double lastValue;
+  final num lastValue;
   final TextEditingController? controller;
   final dynamic rawValue;
   final bool isEditable;
@@ -62,18 +62,18 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
     final double value = double.tryParse(_controller.text) ?? 0;
 
     final colors = _getColorsForValue(
-        value, widget.isPressure ?? false, widget.lastValue, _hasFocus);
+      value,
+      widget.isPressure ?? false,
+      widget.lastValue.toDouble(),
+      _hasFocus,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Apptheme.textColorSecondary,
-            fontWeight: FontWeight.w400,
-          ),
+          style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
         ),
         const SizedBox(height: 2),
         TextField(
@@ -91,22 +91,20 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Apptheme.lightGray, width: 2),
+              borderSide: BorderSide(color: Apptheme.lightGray, width: 1),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Apptheme.textColorPrimary, width: 2),
+              borderSide:
+                  BorderSide(color: Apptheme.textColorPrimary, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 16,
             ),
           ),
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            height: 1.2,
-            letterSpacing: 0.5,
+          style: Apptheme.h4TitleDecorative(
+            context,
             color: Apptheme.textColorPrimary,
           ),
           textAlign: TextAlign.center,

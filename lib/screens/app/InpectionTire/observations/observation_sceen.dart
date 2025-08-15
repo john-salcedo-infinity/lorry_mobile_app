@@ -163,15 +163,19 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                 children: [
                   RichText(
                     text: TextSpan(
-                      style: Apptheme.titleStyle,
+                      style: Apptheme.h1Title(
+                        context,
+                        color: Apptheme.textColorSecondary,
+                      ),
                       children: [
                         const TextSpan(text: 'Novedad - '),
                         TextSpan(
-                          text:
-                              'LL-${currentMounting.tire?.integrationCode ?? ''}',
-                          style:
-                              const TextStyle(color: Apptheme.textColorPrimary),
-                        ),
+                            text:
+                                'LL-${currentMounting.tire?.integrationCode ?? ''}',
+                            style: Apptheme.h1Title(
+                              context,
+                              color: Apptheme.textColorPrimary,
+                            )),
                       ],
                     ),
                   ),
@@ -270,19 +274,17 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
           children: [
             RichText(
               text: TextSpan(
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
+                style: Apptheme.h4HighlightBody(
+                  context,
                   color: Apptheme.textColorSecondary,
                 ),
                 children: [
                   const TextSpan(text: 'NOVEDAD  '),
                   TextSpan(
                     text: '#${index + 1}',
-                    style: TextStyle(
-                      color: Apptheme.secondary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
+                    style: Apptheme.h4HighlightBody(
+                      context,
+                      color: Apptheme.textColorPrimary,
                     ),
                   ),
                 ],
@@ -294,10 +296,9 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                 padding: EdgeInsets.zero,
               ),
               child: Text("Eliminar",
-                  style: TextStyle(
-                    color: Apptheme.secondary,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 14,
+                  style: Apptheme.h4HighlightBody(
+                    context,
+                    color: Apptheme.textColorPrimary,
                   )),
             ),
           ],
@@ -329,11 +330,8 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
 
               Text(
                 'TIPO DE NOVEDAD',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  color: Apptheme.textColorSecondary,
-                ),
+                style: Apptheme.h5HighlightBody(context,
+                    color: Apptheme.textColorSecondary),
               ),
               const SizedBox(height: 8),
 
@@ -355,9 +353,8 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
               const SizedBox(height: 16),
               Text(
                 'OBSERVACIÓN',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
+                style: Apptheme.h5HighlightBody(
+                  context,
                   color: Apptheme.textColorSecondary,
                 ),
               ),
@@ -366,9 +363,10 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
                 controller: noveltyItem.descriptionController,
                 minLines: 4,
                 maxLines: 4,
-                style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Apptheme.textColorSecondary),
+                style: Apptheme.h4Medium(
+                  context,
+                  color: Apptheme.textColorSecondary,
+                ),
                 decoration: InputDecoration(
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Apptheme.lightGray, width: 1),

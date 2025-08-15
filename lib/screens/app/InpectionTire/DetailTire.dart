@@ -67,14 +67,9 @@ class _DetailTireState extends ConsumerState<DetailTire> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Llantas de VHC",
-                    style: TextStyle(
-                      fontSize: 23,
-                      color: Apptheme.textColorSecondary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text("Llantas de VHC",
+                      style: Apptheme.h1Title(context,
+                          color: Apptheme.textColorSecondary)),
                   const SizedBox(height: 20),
 
                   // Kilometraje de la inspección
@@ -149,12 +144,11 @@ class _DetailTireState extends ConsumerState<DetailTire> {
           SizedBox(
             width: double.infinity,
             // padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: const Text(
+            child: Text(
               "KILOMETRAJE DE LA INSPECCIÓN",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF494D4C),
+              style: Apptheme.h5HighlightBody(
+                context,
+                color: Apptheme.textColorSecondary,
               ),
             ),
           ),
@@ -179,18 +173,16 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                 const SizedBox(width: 8),
                 Text(
                   NumberFormat('#,###').format(widget.data.mileage.toInt()),
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                  style: Apptheme.h1TitleDecorative(
+                    context,
                     color: Color(0xFFB0BEC5),
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   "KM",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                  style: Apptheme.h1Title(
+                    context,
                     color: Color(0xFFB0BEC5),
                   ),
                 ),
@@ -213,8 +205,13 @@ class _DetailTireState extends ConsumerState<DetailTire> {
           inspections.any((inspection) => inspection['mounting'] == tire.id);
     }
 
+    late String serie = "LL-${tire.tire?.integrationCode ?? 'LL-?'}";
+    late String design = tire.tire?.design?.name ?? '-';
+    late String dimension = tire.tire?.design?.dimension?.dimension ?? '-';
+    late String band = tire.tire?.band?.name ?? '-';
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         border: Border.all(
           color: isInspected ? Apptheme.primary : Colors.transparent,
@@ -257,9 +254,8 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                 bottom: 10,
                 child: Text(
                   'P${tire.position?.toString() ?? '?'}',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
+                  style: Apptheme.h1TitleDecorative(
+                    context,
                     color: isInspected
                         ? Apptheme.primary
                         : Apptheme.textColorPrimary,
@@ -285,15 +281,19 @@ class _DetailTireState extends ConsumerState<DetailTire> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTireRow("Serie", "LL-${tire.tire?.integrationCode}",
-                      "Diseño", tire.tire!.design?.name as String,
-                      isInspected: isInspected),
+                  _buildTireRow(
+                    "Serie",
+                    serie,
+                    "Diseño",
+                    design,
+                    isInspected: isInspected,
+                  ),
                   const SizedBox(height: 8),
                   _buildTireRow(
-                    "Marca",
-                    tire.tire?.design?.brand?.name ?? '-',
+                    "Dimensión",
+                    dimension,
                     "Banda",
-                    tire.tire?.band?.name ?? '-',
+                    band,
                     isInspected: isInspected,
                   ),
                   const SizedBox(height: 15),
@@ -301,11 +301,17 @@ class _DetailTireState extends ConsumerState<DetailTire> {
                     double.infinity,
                     46,
                     isInspected
-                        ? Text("Inspeccionado")
+                        ? Text("Inspeccionado",
+                            style: Apptheme.h4HighlightBody(
+                              context,
+                              color: Apptheme.primary,
+                            ))
                         : Text(
                             "Inspeccionar",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w900, fontSize: 16),
+                            style: Apptheme.h4HighlightBody(
+                              context,
+                              color: Apptheme.secondary,
+                            ),
                           ),
                     isInspected
                         ? null
@@ -364,12 +370,9 @@ class _DetailTireState extends ConsumerState<DetailTire> {
         children: [
           Text(
             label,
-            style: const TextStyle(
-                fontSize: 14,
-                color: Apptheme.textColorSecondary,
-                fontWeight: FontWeight.w400),
+            style: Apptheme.h4Body(context, color: Apptheme.textColorSecondary),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 2),
           buildTireInfo(value, isInspected: isInspected),
         ],
       ),
@@ -481,10 +484,9 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       child: Center(
         child: Text(
           value,
-          style: TextStyle(
-            fontSize: 14,
+          style: Apptheme.h5HighlightBody(
+            context,
             color: isInspected ? Apptheme.primary : Apptheme.secondary,
-            fontWeight: FontWeight.bold,
           ),
           overflow: TextOverflow
               .ellipsis, // Si el texto es muy largo, lo trunca con "..."

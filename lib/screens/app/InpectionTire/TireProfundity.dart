@@ -324,18 +324,15 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       children: [
         RichText(
           text: TextSpan(
-            style: const TextStyle(
-              fontSize: 22,
-              color: Apptheme.textColorSecondary,
-              fontWeight: FontWeight.w900,
-            ),
+            style:
+                Apptheme.h1Title(context, color: Apptheme.textColorSecondary),
             children: [
               const TextSpan(text: "Inspección llanta "),
               TextSpan(
                 text: 'P$position',
-                style: const TextStyle(
-                  color: Apptheme.textColorPrimary,
-                  fontWeight: FontWeight.w900,
+                style: Apptheme.h1TitleDecorative(
+                  context,
+                  color: Apptheme.secondary,
                 ),
               ),
             ],
@@ -365,11 +362,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           customChild: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
+              Text(
                 "Servicios",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+                style: Apptheme.h4HighlightBody(
+                  context,
+                  color: Apptheme.alertOrange,
                 ),
               ),
               if (_getCurrentMountingServices().isNotEmpty) ...[
@@ -404,9 +401,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           isLoading: isLoading,
           customChild: Text(
             'Finalizar Inspección',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+            style: Apptheme.h4HighlightBody(
+              context,
+              color: Apptheme.backgroundColor,
             ),
           ),
         ),
