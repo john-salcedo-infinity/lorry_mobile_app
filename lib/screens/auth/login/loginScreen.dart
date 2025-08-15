@@ -169,8 +169,29 @@ class _FormLogin extends ConsumerWidget {
                 .changeKey("password", value),
           ),
         ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              margin: EdgeInsets.only(
+                top: 10,
+              ),
+              child: TextButton(
+                  onPressed: () {
+                    ref.read(appRouterProvider).push('/forgotPassword');
+                  },
+                  child: Text(
+                    "¿Olvidaste tu contraseña?",
+                    style: Apptheme.h4HighlightBody(
+                      context,
+                      color: Apptheme.textColorPrimary,
+                    ),
+                  )),
+            )
+          ],
+        ),
         const SizedBox(
-          height: 30,
+          height: 10,
         ),
         CustomButton(
             500,

@@ -7,6 +7,7 @@ class CustomInputField extends ConsumerWidget {
   final String hint;
   final TextEditingController? controller;
   final bool obscureText;
+  final TextInputType? keyboardType;
   final String? Function(String?)? validator;
   final ValueChanged<String>? onChanged;
   final Widget? suffixIcon;
@@ -25,6 +26,7 @@ class CustomInputField extends ConsumerWidget {
     this.suffixIcon,
     this.showLabel = true,
     this.showBorder = true,
+    this.keyboardType,
     this.height,
   });
 
@@ -36,10 +38,9 @@ class CustomInputField extends ConsumerWidget {
         if (showLabel && label != null) ...[
           Text(
             label!,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
+            style: Apptheme.h4HighlightBody(
+              context,
+              color: Apptheme.textColorSecondary,
             ),
           ),
           const SizedBox(height: 8),
@@ -47,6 +48,7 @@ class CustomInputField extends ConsumerWidget {
         SizedBox(
           height: height ?? 48, // Default height if not provided
           child: TextFormField(
+            keyboardType: keyboardType ?? TextInputType.text,
             controller: controller,
             obscureText: obscureText,
             style: const TextStyle(fontSize: 15),

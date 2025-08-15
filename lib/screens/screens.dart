@@ -1,6 +1,7 @@
 // Authentication screens
 export './auth/landing/landingScreen.dart';
 export './auth/login/loginScreen.dart';
+export './auth/forgotPass/forgotPassScreen.dart';
 
 // Dashboard and main app screens
 export './app/dashboard/Dashboard.dart';

@@ -24,6 +24,19 @@ class Authservice {
     return finals;
   }
 
+  static Future<AuthResponse> forgotPassword(String email) async {
+    final Map<String, String> emailData = {'email': email};
+    final resp = await MainService.post('/forgot_password/', emailData);
+
+    final Map<String, dynamic> data = json.decode(
+      utf8.decode(
+        resp.bodyBytes,
+      ),
+    );
+    final finals = AuthResponse.fromJson(data);
+    return finals;
+  }
+
   static Future<AuthResponse> changePassword(
       String newPassword, String confirmPassword) async {
     Preferences preference = Preferences();

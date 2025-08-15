@@ -19,6 +19,9 @@ GoRouter appRouter(Ref ref) {
       path: '/login',
       builder: (context, state) => const LoginScreen(),
     ),
+    GoRoute(path: '/forgotPassword',
+      builder: (context, state) => const Forgotpassscreen(),
+    ),
     GoRoute(
       path: '/home',
       builder: (context, state) => const HomeScreen(),
