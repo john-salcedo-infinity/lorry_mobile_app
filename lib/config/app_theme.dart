@@ -160,15 +160,15 @@ class Apptheme {
       contentPadding: const EdgeInsets.all(10),
       border: const OutlineInputBorder(
         gapPadding: 0,
-        borderSide: BorderSide(color: Apptheme.grayInput),
+        borderSide: BorderSide(color: Apptheme.lightGray),
         borderRadius: BorderRadius.all(Radius.circular(4)),
       ),
       focusedBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Apptheme.grayInput, width: 2),
+        borderSide: BorderSide(color: Apptheme.lightGray, width: 2),
         borderRadius: BorderRadius.all(Radius.circular(4)),
       ),
       enabledBorder: const OutlineInputBorder(
-        borderSide: BorderSide(color: Apptheme.grayInput),
+        borderSide: BorderSide(color: Apptheme.lightGray),
         borderRadius: BorderRadius.all(Radius.circular(4)),
       ),
     );

@@ -112,15 +112,15 @@ class _FormLogin extends ConsumerWidget {
           width: double.infinity,
           height: 40,
         ),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
               "CORREO",
-              style: TextStyle(
-                  color: Apptheme.textColorSecondary,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15),
+              style: Apptheme.h5HighlightBody(
+                context,
+                color: Apptheme.textColorSecondary,
+              ),
             )
           ],
         ),
@@ -142,15 +142,15 @@ class _FormLogin extends ConsumerWidget {
         const SizedBox(
           height: 30,
         ),
-        const Row(
+        Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
               "CONTRASEÑA",
-              style: TextStyle(
-                  color: Apptheme.textColorSecondary,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 15),
+              style: Apptheme.h5HighlightBody(
+                context,
+                color: Apptheme.textColorSecondary,
+              ),
             )
           ],
         ),
@@ -176,12 +176,12 @@ class _FormLogin extends ConsumerWidget {
             500,
             50,
             !loading
-                ? const Text(
+                ? Text(
                     "Iniciar Sesión",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        fontSize: 16),
+                    style: Apptheme.h4HighlightBody(
+                      context,
+                      color: Apptheme.backgroundColor,
+                    ),
                   )
                 : const SizedBox(
                     width: 50,
