@@ -68,4 +68,54 @@ class ToastHelper {
       borderSide: const BorderSide(color: Apptheme.toastAlertBorder, width: 2),
     );
   }
+
+  static void show_validation_alert(context, dynamic message, {dynamic title}) {
+    toastification.show(
+      context: context,
+      style: ToastificationStyle.flat,
+      primaryColor: Colors.white,
+      backgroundColor: Colors.white,
+      autoCloseDuration: const Duration(seconds: 5),
+      borderRadius: BorderRadius.circular(4),
+      alignment: Alignment.topRight,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      title: title != null
+          ? Row(
+              children: [
+                const Icon(Icons.error, color: Apptheme.primary),
+                const SizedBox(width: 8),
+                // Verificar si title es Widget o String
+                title is Widget
+                    ? title
+                    : Text(
+                        title.toString(),
+                        style: Apptheme.h4HighlightBody(
+                          context,
+                          color: Apptheme.primary,
+                        ),
+                      ),
+              ],
+            )
+          : null,
+      description: IntrinsicWidth(
+        child: Container(
+          margin: EdgeInsets.only(left: 30),
+          child: message is Widget
+              ? message // Si es Widget, usarlo directamente
+              : Text(
+                  // Si es String, crear Text widget
+                  message.toString(),
+                  style: Apptheme.h4Body(
+                    context,
+                    color: Colors.black,
+                  ),
+                ),
+        ),
+      ),
+      showProgressBar: false,
+      showIcon: false,
+      borderSide: const BorderSide(color: Colors.transparent),
+    );
+  }
 }

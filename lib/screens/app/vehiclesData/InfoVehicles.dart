@@ -373,12 +373,39 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     final cleanedInput =
         _mileageController.text.replaceAll(RegExp(r'[.,]'), '');
     final inputMileage = int.tryParse(cleanedInput) ?? 0;
+    final minMileage =
+        (_mountingResult.vehicle!.mileage?.first.km as num?) ?? 0.0;
+    final isValid = inputMileage >= minMileage;
 
     setState(() {
-      _isButtonEnabled.value = inputMileage >=
-          ((_mountingResult.vehicle!.mileage?.first.km as num?) ?? 0.0);
+      _isButtonEnabled.value = isValid;
       _currentMileage = inputMileage.toDouble();
     });
+
+    if (!isValid && cleanedInput.isNotEmpty) {
+      ValidationToastHelper.showValidationToast(
+        context: context,
+        title: RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(
+                text: "Alerta ",
+                style: Apptheme.h4HighlightBody(context, color: Colors.black),
+              ),
+              TextSpan(
+                text: "kilometraje",
+                style:
+                    Apptheme.h4HighlightBody(context, color: Apptheme.primary),
+              ),
+            ],
+          ),
+        ),
+        message: "La cifra no puede ser menor a la de la inspección anterior",
+      );
+    } else if (isValid) {
+      // Cancelar toast pendiente si ahora es válido
+      ValidationToastHelper.cancelPendingToasts();
+    }
   }
 
   @override
