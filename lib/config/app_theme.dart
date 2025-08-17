@@ -31,6 +31,13 @@ class Apptheme {
   static const Color grayInput = Color.fromRGBO(73, 77, 76, 0.5);
   static const Color lightGray = Color.fromRGBO(148, 148, 148, .5);
   static const Color textColorSecondary = Color.fromRGBO(73, 77, 76, 1);
+  static const Color alarmYellow = Color.fromRGBO(230, 189, 28, 1);
+
+  // Alerts Backgrounds
+  static const Color highAlertBackground = Color.fromRGBO(255, 242, 235, 1);
+  static const Color mediumAlertBackground = Color.fromRGBO(255, 252, 235, 1);
+  static const Color lowAlertBackground = Color.fromRGBO(235, 255, 241, 1);
+
   // Typography
   static const String textFamily = "Poppins";
   static const TextStyle textPrimary = TextStyle(fontFamily: textFamily);

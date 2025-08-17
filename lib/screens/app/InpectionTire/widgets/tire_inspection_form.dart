@@ -1,3 +1,4 @@
+import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/screens/app/InpectionTire/observations/observation_sceen.dart';
 import 'package:flutter/material.dart';
@@ -164,6 +165,33 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
     super.dispose();
   }
 
+  void _handleTireAlert(
+      String fieldName, double currentValue, double lastValue) {
+    // --- Validación presión ---
+
+    if (fieldName == "Presión llanta" && currentValue < 30) {
+      ValidationToastHelper.showValidationToast(
+        context: context,
+        title: "Alerta Presión",
+        message:
+            "La presión de la llanta es menor a 30 PSI. Se recomienda realizar servicio o corregir datos.",
+      );
+    }
+
+    // --- Validación profundidad ---
+    if (fieldName.startsWith("Profun.")) {
+      final desgaste = lastValue - currentValue;
+      if (desgaste > 2) {
+        ValidationToastHelper.showValidationToast(
+          context: context,
+          title: "Alerta Profundidad",
+          message:
+              "La $fieldName disminuyó más de 2mm. Se recomienda realizar servicio o corregir datos.",
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -190,6 +218,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             isEditable: true,
             isPressure: true,
             lastValue: widget.currentMounting.tire?.pressure?.toInt() ?? 0,
+            onValueChanged: _handleTireAlert,
           ),
           const SizedBox(height: 38),
           TireDataTextField(
@@ -199,6 +228,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             lastValue:
                 widget.currentMounting.tire?.profExternalCurrent?.toDouble() ??
                     0.0,
+            onValueChanged: _handleTireAlert,
           ),
           const SizedBox(height: 12),
           TireDataTextField(
@@ -208,6 +238,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             lastValue:
                 widget.currentMounting.tire?.profInternalCurrent?.toDouble() ??
                     0.0,
+            onValueChanged: _handleTireAlert,
           ),
           const SizedBox(height: 12),
           TireDataTextField(
@@ -217,6 +248,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             lastValue:
                 widget.currentMounting.tire?.profCenterCurrent?.toDouble() ??
                     0.0,
+            onValueChanged: _handleTireAlert,
           ),
           const SizedBox(height: 32),
           _buildAddObservationButton(),
