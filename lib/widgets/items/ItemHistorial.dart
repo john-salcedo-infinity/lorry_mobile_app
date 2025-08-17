@@ -138,7 +138,7 @@ class _ItemHistorialState extends ConsumerState<ItemHistorial> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Expanded(
-                            flex: 3,
+                            flex: 2,
                             child: _ItemBadge(
                               title: "CLIENTE",
                               values: businessName,
@@ -154,7 +154,7 @@ class _ItemHistorialState extends ConsumerState<ItemHistorial> {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            flex: 2,
+                            flex: 1,
                             child: _ItemBadge(
                               title: "LLANTAS",
                               values: totalTires,
