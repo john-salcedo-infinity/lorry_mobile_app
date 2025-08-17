@@ -220,17 +220,23 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
         );
       },
       onBackPressed: () {
-        ConfirmationDialog.show(
-          context: context,
-          title: "Salir de Novedades",
-          message:
-              "¿Estás seguro que deseas salir de las novedades? No podrás deshacer esta acción",
-          cancelText: "Cancelar",
-          acceptText: "Aceptar",
-          onAccept: () {
-            Navigator.pop(context);
-          },
-        );
+        // Muestra un diálogo de confirmación solo si hay novedades
+        if (_noveltyItems.isNotEmpty &&
+            _noveltyItems.any((item) => item.conceptNovelty != null)) {
+          ConfirmationDialog.show(
+            context: context,
+            title: "Salir de Novedades",
+            message:
+                "¿Estás seguro que deseas salir de las novedades? No podrás deshacer esta acción",
+            cancelText: "Cancelar",
+            acceptText: "Aceptar",
+            onAccept: () {
+              Navigator.pop(context);
+            },
+          );
+        } else {
+          Navigator.pop(context);
+        }
       },
     );
   }

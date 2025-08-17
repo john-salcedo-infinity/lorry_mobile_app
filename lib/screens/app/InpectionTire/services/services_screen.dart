@@ -165,36 +165,41 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
 
   Widget _buildHeader() {
     return Back(
-      showHome: true,
-      showDelete: true,
-      showNotifications: true,
-      onDeletePressed: () {
-        ConfirmationDialog.show(
-          context: context,
-          title: "Eliminar Inspección",
-          message:
-              "¿Estás seguro que deseas eliminar la inspección? No podrás deshacer esta acción",
-          cancelText: "Cancelar",
-          acceptText: "Aceptar",
-          onAccept: () {
-            ref.read(appRouterProvider).pushReplacement('/ManualPlateRegister');
-          },
-        );
-      },
-      onBackPressed: () {
-        ConfirmationDialog.show(
-          context: context,
-          title: "Salir de Servicios",
-          message:
-              "¿Estás seguro que deseas salir de los Servicios? No podrás deshacer esta acción",
-          cancelText: "Cancelar",
-          acceptText: "Aceptar",
-          onAccept: () {
+        showHome: true,
+        showDelete: true,
+        showNotifications: true,
+        onDeletePressed: () {
+          ConfirmationDialog.show(
+            context: context,
+            title: "Eliminar Inspección",
+            message:
+                "¿Estás seguro que deseas eliminar la inspección? No podrás deshacer esta acción",
+            cancelText: "Cancelar",
+            acceptText: "Aceptar",
+            onAccept: () {
+              ref
+                  .read(appRouterProvider)
+                  .pushReplacement('/ManualPlateRegister');
+            },
+          );
+        },
+        onBackPressed: () {
+          if (_serviceItems.isNotEmpty) {
+            ConfirmationDialog.show(
+              context: context,
+              title: "Salir de Servicios",
+              message:
+                  "¿Estás seguro que deseas salir de los Servicios? No podrás deshacer esta acción",
+              cancelText: "Cancelar",
+              acceptText: "Aceptar",
+              onAccept: () {
+                Navigator.pop(context);
+              },
+            );
+          } else {
             Navigator.pop(context);
-          },
-        );
-      },
-    );
+          }
+        });
   }
 
   Widget _buildServicesGrid() {
