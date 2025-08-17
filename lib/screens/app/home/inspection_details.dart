@@ -60,7 +60,7 @@ class _InspectionDetailsState extends State<InspectionDetails> {
                     padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       children: [
-                        SizedBox(height: 24),
+                        SizedBox(height: 12),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -87,7 +87,7 @@ class _InspectionDetailsState extends State<InspectionDetails> {
                       child: Container(
                         width: double.infinity,
                         padding: EdgeInsets.all(26),
-                        decoration: BoxDecoration(color: Colors.white),
+                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
                         child: SingleChildScrollView(
                           child: InspectionDetailsContent(
                             formattedDate: formattedDate,

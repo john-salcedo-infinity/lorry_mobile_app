@@ -18,15 +18,14 @@ class LicensePlate extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         color: Apptheme.secondaryv2,
       ),
-      padding: const EdgeInsets.all(5),
+      padding: const EdgeInsets.all(3.4),
       alignment: Alignment.center,
       child: Container(
         decoration: BoxDecoration(
             borderRadius: const BorderRadius.all(Radius.circular(5)),
             border: Border.all(color: Colors.white)),
-        alignment: Alignment.center,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(15, 4, 15, 4),
+          padding: const EdgeInsets.symmetric(horizontal: 10.36, vertical: 3.3),
           child: Text(
             licensePlate,
             style: Apptheme.h5TitleDecorative(

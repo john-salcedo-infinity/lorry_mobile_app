@@ -99,24 +99,31 @@ class _ItemHistorialState extends ConsumerState<ItemHistorial> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              formattedDate,
-                              style: Apptheme.h2Title(context,
-                                  color: Apptheme.textColorSecondary),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              formattedTime,
-                              style: Apptheme.h3Subtitle(context,
-                                  color: Apptheme.textColorSecondary),
-                            ),
-                          ],
+                        Flexible(
+                          flex: 2,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                formattedDate,
+                                overflow: TextOverflow.ellipsis,
+                                style: Apptheme.h2Title(
+                                  context,
+                                  color: Apptheme.textColorSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                formattedTime,
+                                overflow: TextOverflow.ellipsis, // Añadido
+                                style: Apptheme.h3Subtitle(context,
+                                    color: Apptheme.textColorSecondary),
+                              ),
+                            ],
+                          ),
                         ),
+                        SizedBox(width: 20),
                         Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Text(
                               "VHC ASOCIADO",
@@ -128,11 +135,10 @@ class _ItemHistorialState extends ConsumerState<ItemHistorial> {
                             const SizedBox(height: 4),
                             LicensePlate(licensePlate: licensePlate),
                           ],
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 26),
-                    // Badges row
                     IntrinsicHeight(
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -192,6 +198,7 @@ class _ItemBadge extends StatelessWidget {
         Text(
           title,
           style: Apptheme.h6Title(context, color: Apptheme.textColorSecondary),
+          overflow: TextOverflow.ellipsis, // AÑADIDO: Protección para títulos
         ),
         const SizedBox(height: 7),
         Container(
@@ -206,8 +213,7 @@ class _ItemBadge extends StatelessWidget {
               values,
               textAlign: TextAlign.center,
               maxLines: 1,
-              overflow:
-                  TextOverflow.ellipsis, // OPTIMIZACIÓN: Manejo de overflow
+              overflow: TextOverflow.ellipsis,
               style:
                   Apptheme.h5HighlightBody(context, color: Apptheme.secondary),
             ),
