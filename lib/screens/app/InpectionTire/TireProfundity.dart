@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
@@ -93,6 +94,47 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       noveltiesData[i] = [];
       servicesData[i] = [];
     }
+  }
+
+  // Método para validar errores de profundidad en una llanta específica
+  Map<String, dynamic> _validateTireProfundity(int tireIndex) {
+    final currentData = inspectionData[tireIndex];
+    final tire = mountings[tireIndex].tire;
+
+    if (currentData == null || tire == null) {
+      return {'hasErrors': false, 'errors': []};
+    }
+
+    List<String> errors = [];
+
+    // Validar profundidad externa
+    final currentExternal = currentData["prof_external"] as double? ?? 0.0;
+    final originalExternal = tire.profExternalCurrent ?? 0.0;
+    if (currentExternal > originalExternal) {
+      errors.add(
+          'Profundidad externa: $currentExternal > $originalExternal (original)');
+    }
+
+    // Validar profundidad central
+    final currentCenter = currentData["prof_center"] as double? ?? 0.0;
+    final originalCenter = tire.profCenterCurrent ?? 0.0;
+    if (currentCenter > originalCenter) {
+      errors.add(
+          'Profundidad central: $currentCenter > $originalCenter (original)');
+    }
+
+    // Validar profundidad interna
+    final currentInternal = currentData["prof_internal"] as double? ?? 0.0;
+    final originalInternal = tire.profInternalCurrent ?? 0.0;
+    if (currentInternal > originalInternal) {
+      errors.add(
+          'Profundidad interna: $currentInternal > $originalInternal (original)');
+    }
+
+    return {
+      'hasErrors': errors.isNotEmpty,
+      'errors': errors,
+    };
   }
 
   void _nextTire() {
@@ -219,54 +261,66 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               child: PageView.builder(
                 controller: _pageController,
                 scrollDirection: Axis.vertical,
+                physics:
+                    const NeverScrollableScrollPhysics(), // Desactivar scroll nativo
                 onPageChanged: (index) {
                   setState(() {
                     _currentTireIndex = index;
-                    // Marcar la llanta como inspeccionada cuando el usuario navega a ella
-                    // Solo agregar si no está ya en el Set (evita duplicados automáticamente)
                     inspectedTires.add(index);
                   });
                 },
                 itemCount: mountings.length,
                 itemBuilder: (context, index) {
                   final currentMounting = mountings[index];
-                  return SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildTitleWidget(currentMounting.position.toString()),
-                        const SizedBox(height: 18),
-                        TireInspectionForm(
-                          currentMounting: currentMounting,
-                          onDataChanged: (data) {
-                            // Usar el índice específico de esta página
-                            final currentData = inspectionData[index] ?? {};
-                            inspectionData[index] = {
-                              'mounting':
-                                  data['mounting'] ?? currentData['mounting'],
-                              'pressure':
-                                  data['pressure'] ?? currentData['pressure'],
-                              'prof_external': data['prof_external'] ??
-                                  currentData['prof_external'],
-                              'prof_center': data['prof_center'] ??
-                                  currentData['prof_center'],
-                              'prof_internal': data['prof_internal'] ??
-                                  currentData['prof_internal'],
-                            };
-                            setState(() {});
-                          },
-                          existingNovelties: noveltiesData[index] ?? [],
-                          onNoveltiesChanged: (novelties) {
-                            noveltiesData[index] = novelties;
-                            setState(() {});
-                          },
-                          // Pasar los datos ya guardados para esta página específica
-                          initialInspectionData: inspectionData[index],
-                        ),
-                      ],
+                  return GestureDetector(
+                    onPanUpdate: (details) {
+                      // Detectar swipe hacia arriba (scroll hacia la siguiente página)
+                      if (details.delta.dy < -5) {
+                        _handleScrollAttempt(isScrollingDown: true);
+                      }
+                      // Detectar swipe hacia abajo (scroll hacia la página anterior)
+                      else if (details.delta.dy > 5) {
+                        _handleScrollAttempt(isScrollingDown: false);
+                      }
+                    },
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildTitleWidget(
+                              currentMounting.position.toString()),
+                          const SizedBox(height: 18),
+                          TireInspectionForm(
+                            currentMounting: currentMounting,
+                            onDataChanged: (data) {
+                              // Usar el índice específico de esta página
+                              final currentData = inspectionData[index] ?? {};
+                              inspectionData[index] = {
+                                'mounting':
+                                    data['mounting'] ?? currentData['mounting'],
+                                'pressure':
+                                    data['pressure'] ?? currentData['pressure'],
+                                'prof_external': data['prof_external'] ??
+                                    currentData['prof_external'],
+                                'prof_center': data['prof_center'] ??
+                                    currentData['prof_center'],
+                                'prof_internal': data['prof_internal'] ??
+                                    currentData['prof_internal'],
+                              };
+                              setState(() {});
+                            },
+                            existingNovelties: noveltiesData[index] ?? [],
+                            onNoveltiesChanged: (novelties) {
+                              noveltiesData[index] = novelties;
+                              setState(() {});
+                            },
+                            initialInspectionData: inspectionData[index],
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -285,6 +339,40 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         ),
       ),
     );
+  }
+
+  void _handleScrollAttempt({required bool isScrollingDown}) {
+    if (isScrollingDown) {
+      // Intentando ir a la siguiente página
+      if (_currentTireIndex < mountings.length - 1) {
+        // Validar errores en la página actual
+        final validation = _validateTireProfundity(_currentTireIndex);
+
+        if (validation['hasErrors']) {
+          ValidationToastHelper.showValidationToast(
+            context: context,
+            title: "Errores encontrados en la Inspección",
+            message:
+                "La llanta ${mountings[_currentTireIndex].position} tiene errores: ${validation['errors'].join(', ')}",
+          );
+          return; // Bloquear el scroll
+        }
+
+        // Si no hay errores, permitir el scroll
+        _pageController.nextPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    } else {
+      // Intentando ir a la página anterior
+      if (_currentTireIndex > 0) {
+        _pageController.previousPage(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    }
   }
 
   Widget _buildHeader() {

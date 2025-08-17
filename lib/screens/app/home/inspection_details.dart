@@ -47,6 +47,7 @@ class _InspectionDetailsState extends State<InspectionDetails> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Apptheme.backgroundColor,
@@ -54,11 +55,12 @@ class _InspectionDetailsState extends State<InspectionDetails> {
           ? SafeArea(
               child: Column(
                 children: [
-                  _DetailsAppBar(),
+                  _DetailsAppBar(), 
                   Padding(
-                    padding: EdgeInsets.all(24),
+                    padding: EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
                       children: [
+                        SizedBox(height: 24),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -76,23 +78,30 @@ class _InspectionDetailsState extends State<InspectionDetails> {
                           ],
                         ),
                         SizedBox(height: 18),
-                        Container(
-                          height: MediaQuery.of(context).size.height * 0.75,
-                          padding: EdgeInsets.all(26),
-                          decoration: BoxDecoration(color: Colors.white),
-                          child: SingleChildScrollView(
-                            child: InspectionDetailsContent(
-                                formattedDate: formattedDate,
-                                formattedTime: formattedTime,
-                                vehicle: vehicle,
-                                totalTires: totalTires,
-                                inspectorName: inspectorName,
-                                lastMileage: lastMileage),
-                          ),
-                        )
                       ],
                     ),
-                  )
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24),
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(26),
+                        decoration: BoxDecoration(color: Colors.white),
+                        child: SingleChildScrollView(
+                          child: InspectionDetailsContent(
+                            formattedDate: formattedDate,
+                            formattedTime: formattedTime,
+                            vehicle: vehicle,
+                            totalTires: totalTires,
+                            inspectorName: inspectorName,
+                            lastMileage: lastMileage,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 24), // Espacio inferior opcional
                 ],
               ),
             )

@@ -30,7 +30,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final appRouter = ref.watch(appRouterProvider);
     return MaterialApp.router(
-      title: 'Lorry app',
+      title: 'Lorry',
       debugShowCheckedModeBanner: false,
       // showPerformanceOverlay: true,
       routerConfig: appRouter,
