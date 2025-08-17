@@ -82,9 +82,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       final mounting = mountings[i];
       inspectionData[i] = {
         'mounting': mounting.id,
-        'pressure': mounting.tire?.pressure ??
-            mounting.tire?.design?.dimension?.pressure ??
-            0.0,
+        'pressure': mounting.tire?.pressure?.toInt() ??
+            mounting.tire?.design?.dimension?.pressure?.toInt() ??
+            0,
         'prof_external': mounting.tire?.profExternalCurrent ?? 0.0,
         'prof_center': mounting.tire?.profCenterCurrent ?? 0.0,
         'prof_internal': mounting.tire?.profInternalCurrent ?? 0.0,
