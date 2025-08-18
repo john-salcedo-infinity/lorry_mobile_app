@@ -206,6 +206,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
       showHome: true,
       showDelete: true,
       showNotifications: true,
+      interceptSystemBack: true,
       onDeletePressed: () {
         ConfirmationDialog.show(
           context: context,

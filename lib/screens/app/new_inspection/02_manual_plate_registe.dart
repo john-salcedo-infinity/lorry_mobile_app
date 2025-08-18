@@ -67,6 +67,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       showHome: true,
       showNotifications: true,
       isLoading: isLoading,
+      interceptSystemBack: true,
       onBackPressed: () => context.go("/home"),
     );
   }

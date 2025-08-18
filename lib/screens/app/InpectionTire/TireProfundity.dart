@@ -381,6 +381,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       showDelete: true,
       showNotifications: true,
       showHomeDialogConfirm: true,
+      interceptSystemBack: true,
       onBackPressed: () {
         ConfirmationDialog.show(
           context: context,

@@ -123,6 +123,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Back(
         showHome: true,
         showNotifications: true,
+        interceptSystemBack: true,
         onBackPressed: () => context.push("/ManualPlateRegister"));
   }
 

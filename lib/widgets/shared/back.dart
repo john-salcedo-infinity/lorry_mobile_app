@@ -14,6 +14,7 @@ class Back extends StatelessWidget {
   final VoidCallback? onHomePressed;
   final VoidCallback? onNotificationPressed;
   final bool? showHomeDialogConfirm;
+  final bool interceptSystemBack; // Nueva propiedad
 
   const Back({
     super.key,
@@ -26,14 +27,26 @@ class Back extends StatelessWidget {
     this.onHomePressed,
     this.onNotificationPressed,
     this.showHomeDialogConfirm,
+    this.interceptSystemBack = false,
   });
+
+  // Maneja tanto el tap del botón como el gesto del sistema
+  void _handleBackAction(BuildContext context) {
+    if (onBackPressed != null) {
+      onBackPressed!();
+    } else {
+      // Comportamiento por defecto
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // Detectar automáticamente si se puede navegar hacia atrás
     final canGoBack = Navigator.canPop(context);
 
-    return Container(
+    Widget backWidget = Container(
       margin: const EdgeInsets.only(top: 10, left: 14, right: 14),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -42,11 +55,11 @@ class Back extends StatelessWidget {
           // Botón de atrás (solo si se puede navegar hacia atrás)
           if (canGoBack)
             custom.BackButton(
-              onPressed: onBackPressed,
+              onPressed: () => _handleBackAction(context),
               isEnabled: !isLoading,
             )
           else
-            const SizedBox(width: 48), // Espacio vacío para mantener el layout
+            const SizedBox(width: 48),
           // Iconos adicionales
           Row(
             children: [
@@ -71,5 +84,20 @@ class Back extends StatelessWidget {
         ],
       ),
     );
+
+    // Si necesitamos interceptar el gesto del sistema, envolvemos con PopScope
+    if (interceptSystemBack && onBackPressed != null) {
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop && !isLoading) {
+            _handleBackAction(context);
+          }
+        },
+        child: backWidget,
+      );
+    }
+
+    return backWidget;
   }
 }

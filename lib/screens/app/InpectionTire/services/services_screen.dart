@@ -168,6 +168,7 @@ class _ServicesScreenState extends ConsumerState<ServicesScreen> {
         showHome: true,
         showDelete: true,
         showNotifications: true,
+        interceptSystemBack: true,
         onDeletePressed: () {
           ConfirmationDialog.show(
             context: context,
