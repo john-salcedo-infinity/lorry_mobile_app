@@ -60,23 +60,26 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
   Future<void> _pickImage(ImageSource source) async {
     try {
       // Verificar permisos antes de tomar/seleccionar imagen
-      final hasPermission = await _checkPermissions(source);
+      bool hasPermission = await _checkPermissions(source);
+
       if (!hasPermission) {
         if (mounted) {
-          ToastHelper.show_alert(
-              context,
-              source == ImageSource.camera
-                  ? 'Permisos de cámara requeridos'
-                  : 'Permisos de galería requeridos');
-
-          // pedir los permisos
-          await PermissionHandler.requestInitialPermissions();
-          // Volver a intentar la selección de imagen
-          _pickImage(source);
+          ToastHelper.show_alert(context,
+              "Se requieren permisos de acceso a la cámara o almacenamiento");
         }
-        return;
+        if (source == ImageSource.camera) {
+          hasPermission = await PermissionHandler.requestCameraPermission();
+        } else {
+          hasPermission = await PermissionHandler.requestStoragePermission();
+        }
+
+        if (!hasPermission) {
+          // Si no otorgó permisos, simplemente no hacer nada
+          return;
+        }
       }
 
+      // Si llegamos aquí, tenemos permisos - proceder con la selección
       final XFile? pickedFile = await _picker.pickImage(
         source: source,
         maxWidth: 1920,

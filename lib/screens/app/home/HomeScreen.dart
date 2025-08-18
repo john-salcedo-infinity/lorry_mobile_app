@@ -259,8 +259,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         scrollController: _scrollController,
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
-      floatingActionButtonLocation:
-          CustomFABLocation(offsetX: 75, offsetY: 180),
+      floatingActionButtonLocation: CustomFABLocation(
+        offsetX: MediaQuery.of(context).size.width * (0.16),
+        offsetY: MediaQuery.of(context).size.height * 0.2,
+      ),
       appBar: AppBar(
           backgroundColor: Apptheme.backgroundColor,
           surfaceTintColor: Colors.transparent,

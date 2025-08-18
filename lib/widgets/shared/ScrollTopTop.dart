@@ -58,7 +58,7 @@ class _ScrollToTopFabState extends State<ScrollToTopFab> {
       scale: _showFab ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 200),
       child: FloatingActionButton(
-        mini: false,
+        mini: true,
         shape: CircleBorder(
           side: BorderSide(color: Apptheme.textColorPrimary, width: 2),
         ),

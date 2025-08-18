@@ -137,7 +137,6 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   Widget _buildPlateInputField() {
     return Container(
       width: double.infinity,
-      height: 46,
       padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: BoxDecoration(
         border: Border.all(color: Apptheme.lightGray, width: 1),
@@ -172,6 +171,8 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
                 style: Apptheme.h1TitleDecorative(
                   context,
                   color: Apptheme.textColorPrimary,
+                ).copyWith(
+                  height: 1,
                 ),
                 onChanged: (value) {
                   final upperValue = value.toUpperCase();
