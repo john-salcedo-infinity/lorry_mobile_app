@@ -260,8 +260,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.noAnimation,
       floatingActionButtonLocation: CustomFABLocation(
-        offsetX: MediaQuery.of(context).size.width * (0.16),
-        offsetY: MediaQuery.of(context).size.height * 0.2,
+        offsetX: 60, // Valor fijo en píxeles para X
+        offsetY: 200, // Valor fijo en píxeles para Y
       ),
       appBar: AppBar(
           backgroundColor: Apptheme.backgroundColor,

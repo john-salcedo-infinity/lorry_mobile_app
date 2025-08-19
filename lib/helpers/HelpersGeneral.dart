@@ -22,7 +22,7 @@ class HelpersGeneral {
 
   static String formatDayDate(DateTime date) {
     // Formatea la fecha al estilo "Día, d Mes yyyy"
-    final DateFormat formatter = DateFormat('EEEE, d MMM yyyy', 'es_ES');
+    final DateFormat formatter = DateFormat('EEE, d MMM yyyy', 'es_ES');
 
     // Inicializa los datos de formato para el idioma español
     String formattedDate = formatter.format(date);
