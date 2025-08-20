@@ -345,7 +345,6 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
   /// Handles exceptions during the inspection process
   void _handleException(dynamic error) {
     // Log del error completo para debugging
-    print('Error completo: $error');
 
     String errorMessage = "Error al consultar la placa";
 

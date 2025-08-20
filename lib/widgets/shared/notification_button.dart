@@ -21,7 +21,6 @@ class NotificationButton extends StatelessWidget {
     } else {
       // TODO: Implementar navegación por defecto a notificaciones
       // context.go('/notifications');
-      print('Navegando a notificaciones...');
     }
   }
 

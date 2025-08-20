@@ -270,62 +270,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                 },
                 itemCount: mountings.length,
                 itemBuilder: (context, index) {
-                  final currentMounting = mountings[index];
-                  return NotificationListener<ScrollNotification>(
-                    onNotification: (scrollInfo) {
-                      // Solo procesar si es un OverscrollNotification (cuando se intenta hacer scroll más allá del límite)
-                      if (scrollInfo is OverscrollNotification) {
-                        // Scroll hacia abajo (intentando ir a la siguiente página)
-                        if (scrollInfo.overscroll > 0) {
-                          _handleScrollAttempt(isScrollingDown: true);
-                        }
-                        // Scroll hacia arriba (intentando ir a la página anterior)
-                        else if (scrollInfo.overscroll < 0) {
-                          _handleScrollAttempt(isScrollingDown: false);
-                        }
-                        return true; // Consumir la notificación
-                      }
-                      return false;
-                    },
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 12),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildTitleWidget(
-                              currentMounting.position.toString()),
-                          const SizedBox(height: 18),
-                          TireInspectionForm(
-                            currentMounting: currentMounting,
-                            onDataChanged: (data) {
-                              final currentData = inspectionData[index] ?? {};
-                              inspectionData[index] = {
-                                'mounting':
-                                    data['mounting'] ?? currentData['mounting'],
-                                'pressure':
-                                    data['pressure'] ?? currentData['pressure'],
-                                'prof_external': data['prof_external'] ??
-                                    currentData['prof_external'],
-                                'prof_center': data['prof_center'] ??
-                                    currentData['prof_center'],
-                                'prof_internal': data['prof_internal'] ??
-                                    currentData['prof_internal'],
-                              };
-                              setState(() {});
-                            },
-                            existingNovelties: noveltiesData[index] ?? [],
-                            onNoveltiesChanged: (novelties) {
-                              noveltiesData[index] = novelties;
-                              setState(() {});
-                            },
-                            initialInspectionData: inspectionData[index],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+                  return _buildHybridPageContent(index);
                 },
               ),
             ),
@@ -341,6 +286,106 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           ],
         ),
       ),
+    );
+  }
+
+  // SOLUCIÓN HÍBRIDA - Combina lo mejor de ambos mundos
+  Widget _buildHybridPageContent(int index) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          onPanUpdate: (details) {
+            // Detectar swipes independientemente del scroll
+            if (details.delta.dy < -8) {
+              _handleScrollAttempt(isScrollingDown: true);
+            } else if (details.delta.dy > 8) {
+              _handleScrollAttempt(isScrollingDown: false);
+            }
+          },
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (scrollInfo) {
+              // Solo manejar scroll notifications si realmente hay scroll
+              if (scrollInfo is ScrollStartNotification) {
+                return false;
+              }
+              
+              if (scrollInfo is ScrollUpdateNotification) {
+                // Durante el scroll activo, desactivar temporalmente los gestures
+                return false;
+              }
+              
+              if (scrollInfo is ScrollEndNotification) {
+                // Verificar si hay scroll disponible
+                if (scrollInfo.metrics.maxScrollExtent <= 0) {
+                  // No hay scroll real - los gestures ya manejaron esto
+                  return false;
+                }
+                
+                // Hay scroll real - verificar si llegamos a los límites
+                if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 5) {
+                  Future.delayed(const Duration(milliseconds: 100), () {
+                    _handleScrollAttempt(isScrollingDown: true);
+                  });
+                } else if (scrollInfo.metrics.pixels <= scrollInfo.metrics.minScrollExtent + 5) {
+                  Future.delayed(const Duration(milliseconds: 100), () {
+                    _handleScrollAttempt(isScrollingDown: false);
+                  });
+                }
+                return true;
+              }
+              
+              if (scrollInfo is OverscrollNotification) {
+                // Overscroll - cambiar página inmediatamente
+                if (scrollInfo.overscroll > 0) {
+                  _handleScrollAttempt(isScrollingDown: true);
+                } else if (scrollInfo.overscroll < 0) {
+                  _handleScrollAttempt(isScrollingDown: false);
+                }
+                return true;
+              }
+              
+              return false;
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              child: _buildContent(index),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildContent(int index) {
+    final currentMounting = mountings[index];
+    
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildTitleWidget(currentMounting.position.toString()),
+        const SizedBox(height: 18),
+        TireInspectionForm(
+          currentMounting: currentMounting,
+          onDataChanged: (data) {
+            final currentData = inspectionData[index] ?? {};
+            inspectionData[index] = {
+              'mounting': data['mounting'] ?? currentData['mounting'],
+              'pressure': data['pressure'] ?? currentData['pressure'],
+              'prof_external': data['prof_external'] ?? currentData['prof_external'],
+              'prof_center': data['prof_center'] ?? currentData['prof_center'],
+              'prof_internal': data['prof_internal'] ?? currentData['prof_internal'],
+            };
+            setState(() {});
+          },
+          existingNovelties: noveltiesData[index] ?? [],
+          onNoveltiesChanged: (novelties) {
+            noveltiesData[index] = novelties;
+            setState(() {});
+          },
+          initialInspectionData: inspectionData[index],
+        ),
+      ],
     );
   }
 

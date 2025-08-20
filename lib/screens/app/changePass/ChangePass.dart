@@ -86,8 +86,6 @@ class _ChangePassState extends ConsumerState<ChangePass> {
           context,
           'Error de conexión. Inténtalo de nuevo.',
         );
-
-        print('Error al cambiar contraseña: $e');
       }
     }
   }

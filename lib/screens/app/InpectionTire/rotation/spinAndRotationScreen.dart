@@ -241,8 +241,6 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
           isSelected: true,
         );
         selectedTire = currentConfiguration[currentIndex];
-        print(
-            'Llanta seleccionada en configuración actual: ${selectedTire!.id}, isSelected: ${selectedTire!.isSelected}');
 
         // Si la llanta tiene número de serie, mostrar el diálogo de selección de servicio
         if (selectedTire!.hasTire && selectedTire!.serialNumber != null) {
@@ -387,14 +385,14 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
           );
 
           // Crear el objeto de movimiento
-          final movementData = {
-            "movements_tire": int.parse(selectedTire!.id!),
-            "type_service": activeService!.id,
-            "source_mounting": int.parse(selectedTire!.mounting!),
-            "destination_mounting": int.parse(position.mounting!),
-          };
+          // final movementData = {
+          //   "movements_tire": int.parse(selectedTire!.id!),
+          //   "type_service": activeService!.id,
+          //   "source_mounting": int.parse(selectedTire!.mounting!),
+          //   "destination_mounting": int.parse(position.mounting!),
+          // };
 
-          print(movementData);
+          // print(movementData);
           // Limpiar selección
           selectedTire = null;
           tireWithActiveService = null;
@@ -429,8 +427,6 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
         // Validación: Si es rotación (type_service = 14) en el mismo montaje, no agregar
         if (movement.service.id == 14 &&
             movement.sourceMounting == movement.destinationMounting) {
-          print(
-              'Rotación en el mismo montaje detectada - no se agrega service_action para mounting ${movement.sourceMounting}');
           continue;
         }
 

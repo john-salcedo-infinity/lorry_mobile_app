@@ -16,7 +16,6 @@ class HelpersGeneral {
     await preference.init();
     String user = preference.getValue("user");
     User datafinalstring = User.fromJson(jsonDecode(user));
-    print("buscando user");
     return datafinalstring;
   }
 

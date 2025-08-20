@@ -19,7 +19,7 @@ class DeleteButton extends StatelessWidget {
     if (onPressed != null) {
       onPressed!();
     } else {
-      print('Acción de eliminar no definida');
+      // TODO: ACCIÓN DE ELIMINAR
     }
   }
 

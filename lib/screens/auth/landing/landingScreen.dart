@@ -72,20 +72,21 @@ class _backgroundState extends State<_background> {
   @override
   void initState() {
     super.initState();
-    _printHolaAfterDelay(context);
+    _navigateAfterDelay(context);
   }
 
-  void _printHolaAfterDelay(BuildContext context) async {
+  void _navigateAfterDelay(BuildContext context) async {
     await Future.delayed(Duration(seconds: 2));
     Preferences pref = Preferences();
     await pref.init();
     String token = pref.getValue("token");
     if (token == "") {
+      if(!mounted) return;
       context.go("/login");
     } else {
+      if(!mounted) return;
       context.go("/home");
     }
-    print("Hola");
   }
 
   @override
