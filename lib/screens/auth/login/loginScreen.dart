@@ -35,7 +35,7 @@ class LoginScreen extends ConsumerWidget {
 class _MainContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    double screenHeight = MediaQuery.of(context).size.height * 0.38;
+    double screenHeight = MediaQuery.of(context).size.height * 0.33;
     return SafeArea(
       bottom: false,
       child: SingleChildScrollView(

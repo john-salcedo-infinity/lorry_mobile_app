@@ -261,8 +261,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               child: PageView.builder(
                 controller: _pageController,
                 scrollDirection: Axis.vertical,
-                physics:
-                    const NeverScrollableScrollPhysics(), // Desactivar scroll nativo
+                physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (index) {
                   setState(() {
                     _currentTireIndex = index;
@@ -272,16 +271,21 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                 itemCount: mountings.length,
                 itemBuilder: (context, index) {
                   final currentMounting = mountings[index];
-                  return GestureDetector(
-                    onPanUpdate: (details) {
-                      // Detectar swipe hacia arriba (scroll hacia la siguiente página)
-                      if (details.delta.dy < -5) {
-                        _handleScrollAttempt(isScrollingDown: true);
+                  return NotificationListener<ScrollNotification>(
+                    onNotification: (scrollInfo) {
+                      // Solo procesar si es un OverscrollNotification (cuando se intenta hacer scroll más allá del límite)
+                      if (scrollInfo is OverscrollNotification) {
+                        // Scroll hacia abajo (intentando ir a la siguiente página)
+                        if (scrollInfo.overscroll > 0) {
+                          _handleScrollAttempt(isScrollingDown: true);
+                        }
+                        // Scroll hacia arriba (intentando ir a la página anterior)
+                        else if (scrollInfo.overscroll < 0) {
+                          _handleScrollAttempt(isScrollingDown: false);
+                        }
+                        return true; // Consumir la notificación
                       }
-                      // Detectar swipe hacia abajo (scroll hacia la página anterior)
-                      else if (details.delta.dy > 5) {
-                        _handleScrollAttempt(isScrollingDown: false);
-                      }
+                      return false;
                     },
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(
@@ -296,7 +300,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                           TireInspectionForm(
                             currentMounting: currentMounting,
                             onDataChanged: (data) {
-                              // Usar el índice específico de esta página
                               final currentData = inspectionData[index] ?? {};
                               inspectionData[index] = {
                                 'mounting':
