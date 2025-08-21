@@ -74,6 +74,7 @@ class _InspectionDetailsState extends State<InspectionDetails> {
                             LicensePlate(
                               licensePlate: licensePlate,
                               fontSize: 22,
+                              textSelectable: true,
                             )
                           ],
                         ),

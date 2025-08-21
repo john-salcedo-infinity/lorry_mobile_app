@@ -247,6 +247,10 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         );
   }
 
+  bool get _isKeyboardOpen {
+    return MediaQuery.of(context).viewInsets.bottom > 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProviderProvider);
@@ -289,16 +293,15 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     );
   }
 
-  // SOLUCIÓN HÍBRIDA - Combina lo mejor de ambos mundos
   Widget _buildHybridPageContent(int index) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
           onPanUpdate: (details) {
             // Detectar swipes independientemente del scroll
-            if (details.delta.dy < -8) {
+            if (details.delta.dy < -10) {
               _handleScrollAttempt(isScrollingDown: true);
-            } else if (details.delta.dy > 8) {
+            } else if (details.delta.dy > 10) {
               _handleScrollAttempt(isScrollingDown: false);
             }
           },
@@ -308,32 +311,34 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               if (scrollInfo is ScrollStartNotification) {
                 return false;
               }
-              
+
               if (scrollInfo is ScrollUpdateNotification) {
                 // Durante el scroll activo, desactivar temporalmente los gestures
                 return false;
               }
-              
+
               if (scrollInfo is ScrollEndNotification) {
                 // Verificar si hay scroll disponible
                 if (scrollInfo.metrics.maxScrollExtent <= 0) {
                   // No hay scroll real - los gestures ya manejaron esto
                   return false;
                 }
-                
+
                 // Hay scroll real - verificar si llegamos a los límites
-                if (scrollInfo.metrics.pixels >= scrollInfo.metrics.maxScrollExtent - 5) {
+                if (scrollInfo.metrics.pixels >=
+                    scrollInfo.metrics.maxScrollExtent - 5) {
                   Future.delayed(const Duration(milliseconds: 100), () {
                     _handleScrollAttempt(isScrollingDown: true);
                   });
-                } else if (scrollInfo.metrics.pixels <= scrollInfo.metrics.minScrollExtent + 5) {
+                } else if (scrollInfo.metrics.pixels <=
+                    scrollInfo.metrics.minScrollExtent + 5) {
                   Future.delayed(const Duration(milliseconds: 100), () {
                     _handleScrollAttempt(isScrollingDown: false);
                   });
                 }
                 return true;
               }
-              
+
               if (scrollInfo is OverscrollNotification) {
                 // Overscroll - cambiar página inmediatamente
                 if (scrollInfo.overscroll > 0) {
@@ -343,7 +348,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                 }
                 return true;
               }
-              
+
               return false;
             },
             child: SingleChildScrollView(
@@ -358,7 +363,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   Widget _buildContent(int index) {
     final currentMounting = mountings[index];
-    
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -372,9 +377,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
             inspectionData[index] = {
               'mounting': data['mounting'] ?? currentData['mounting'],
               'pressure': data['pressure'] ?? currentData['pressure'],
-              'prof_external': data['prof_external'] ?? currentData['prof_external'],
+              'prof_external':
+                  data['prof_external'] ?? currentData['prof_external'],
               'prof_center': data['prof_center'] ?? currentData['prof_center'],
-              'prof_internal': data['prof_internal'] ?? currentData['prof_internal'],
+              'prof_internal':
+                  data['prof_internal'] ?? currentData['prof_internal'],
             };
             setState(() {});
           },
@@ -390,6 +397,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   }
 
   void _handleScrollAttempt({required bool isScrollingDown}) {
+    if (_isKeyboardOpen) {
+      // Si el teclado está abierto, no hacer nada
+      return;
+    }
+
     if (isScrollingDown) {
       // Intentando ir a la siguiente página
       if (_currentTireIndex < mountings.length - 1) {
@@ -411,10 +423,12 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,
         );
+        FocusScope.of(context).unfocus();
       }
     } else {
       // Intentando ir a la página anterior
       if (_currentTireIndex > 0) {
+        FocusScope.of(context).unfocus();
         _pageController.previousPage(
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeInOut,

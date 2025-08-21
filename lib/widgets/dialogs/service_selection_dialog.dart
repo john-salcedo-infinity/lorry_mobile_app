@@ -33,49 +33,49 @@ class ServiceSelectionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BackdropFilter(
-      filter: ImageFilter.blur(sigmaX: 2.0, sigmaY: 2.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(
-            child: AlertDialog(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4)),
-              backgroundColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 32, vertical: 32), // Agregar más padding interno
-              title: _buildHeader(),
-              content: SizedBox(
-                child: SingleChildScrollView(
-                  child: _buildServicesList(context),
-                ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(
+          child: AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(4),
+            ),
+            backgroundColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 32,
+              vertical: 32,
+            ), // Agregar más padding interno
+            title: _buildHeader(),
+            content: SizedBox(
+              child: SingleChildScrollView(
+                child: _buildServicesList(context),
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Apptheme.textColorPrimary,
-                  width: 2,
-                ),
-              ),
-              child: const Icon(
-                Icons.close,
+        ),
+        const SizedBox(height: 16),
+        GestureDetector(
+          onTap: () => Navigator.of(context).pop(),
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              border: Border.all(
                 color: Apptheme.textColorPrimary,
-                size: 20,
+                width: 2,
               ),
             ),
+            child: const Icon(
+              Icons.close,
+              color: Apptheme.textColorPrimary,
+              size: 20,
+            ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 

@@ -49,7 +49,7 @@ class Authservice {
     };
     final resp =
         await MainService.put('/update-password/', passwordData, token: token);
-    final Map<String, dynamic> data = json.decode(resp.body);
+    final Map<String, dynamic> data = json.decode(utf8.decode(resp.bodyBytes));
     final finals = AuthResponse.fromJson(data);
     return finals;
   }
