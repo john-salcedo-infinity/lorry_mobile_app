@@ -6,9 +6,14 @@ import 'package:app_lorry/services/services.dart';
 
 class Authservice {
   static Future<AuthResponse> login(String email, String password) async {
-    final Map<String, String> authData = {'email': email, 'password': password};
+    final Map<String, String> authData = {
+      'email': email,
+      'password': password,
+      'app_movil':
+          'lorryMovil' // Flag para identificar que la solicitud de acceso al login viene de la App Mobile.
+    };
     final resp = await MainService.post('/login/', authData);
-    final Map<String, dynamic> data = json.decode(resp.body);
+    final Map<String, dynamic> data = json.decode(utf8.decode(resp.bodyBytes));
     final finals = AuthResponse.fromJson(data);
     return finals;
   }

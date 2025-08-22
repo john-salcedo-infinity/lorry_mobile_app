@@ -194,65 +194,77 @@ class _FormLogin extends ConsumerWidget {
           height: 10,
         ),
         CustomButton(
-            500,
-            50,
-            !loading
-                ? Text(
-                    "Iniciar Sesión",
-                    style: Apptheme.h4HighlightBody(
-                      context,
-                      color: Apptheme.backgroundColor,
-                    ),
-                  )
-                : const SizedBox(
-                    width: 50,
-                    height: 20,
-                    child: BallBeatLoading(),
-                  ), () async {
-          ref.read(loadingProviderProvider.notifier).changeLoading(true);
-          //  quitar foucs
-          FocusScope.of(context).requestFocus(FocusNode());
-          // ToastHelper.show_success(context, "Bienvenido");
-          // Acción cuando se presiona el botón
-          String? email = formValues['email'];
-          String? password = formValues['password'];
+          500,
+          50,
+          !loading
+              ? Text(
+                  "Iniciar Sesión",
+                  style: Apptheme.h4HighlightBody(
+                    context,
+                    color: Apptheme.backgroundColor,
+                  ),
+                )
+              : const SizedBox(
+                  width: 50,
+                  height: 20,
+                  child: BallBeatLoading(),
+                ),
+          () async {
+            // quitar focus
+            FocusScope.of(context).requestFocus(FocusNode());
 
-          if ((email == null || email.isEmpty)) {
-            ToastHelper.show_alert(context, "El correo es requerido.");
-            ref.read(loadingProviderProvider.notifier).changeLoading(false);
-            return;
-          }
+            try {
+              ref.read(loadingProviderProvider.notifier).changeLoading(true);
 
-          if ((password == null || password.isEmpty)) {
-            ToastHelper.show_alert(context, "La contraseña es requerida.");
-            ref.read(loadingProviderProvider.notifier).changeLoading(false);
-            return;
-          }
-          final response = await Authservice.login(email, password);
+              String? email = formValues['email'];
+              String? password = formValues['password'];
 
-          ref.read(loadingProviderProvider.notifier).changeLoading(false);
+              if ((email == null || email.isEmpty)) {
+                ToastHelper.show_alert(context, "El correo es requerido.");
+                return;
+              }
 
-          if (!context.mounted) return;
+              if ((password == null || password.isEmpty)) {
+                ToastHelper.show_alert(context, "La contraseña es requerida.");
+                return;
+              }
 
-          if (!response.success!) {
-            ToastHelper.show_alert(context, "Credenciales incorrectas!!");
-            return;
-          } else {
-            ToastHelper.show_success(context, "Bienvenido!!");
-            Preferences pref = Preferences();
-            await pref.init();
-            pref.saveKey("token", response.data!.token!);
-            pref.saveKey("refresh-token", response.data!.refreshToken!);
-            pref.saveKey("menu", jsonEncode(response.data!.menuAcces!));
-            pref.saveKey("user", jsonEncode(response.data!.user!));
-            await Future.delayed(Duration(seconds: 1));
+              final response = await Authservice.login(email, password);
 
-            if (!context.mounted) return;
+              if (!context.mounted) return;
 
-            ref.read(appRouterProvider).go('/home');
-            // ref.read(appRouterProvider).go('/rotationview');
-          }
-        })
+              if (!response.success!) {
+                ToastHelper.show_alert(
+                  context,
+                  response.messages?.first ?? "Credenciales incorrectas!!",
+                );
+                return;
+              }
+
+              ToastHelper.show_success(context, "Bienvenido!!");
+
+              Preferences pref = Preferences();
+              await pref.init();
+              pref.saveKey("token", response.data!.token!);
+              pref.saveKey("refresh-token", response.data!.refreshToken!);
+              pref.saveKey("menu", jsonEncode(response.data!.menuAcces!));
+              pref.saveKey("user", jsonEncode(response.data!.user!));
+
+              await Future.delayed(const Duration(seconds: 1));
+
+              if (!context.mounted) return;
+
+              ref.read(appRouterProvider).go('/home');
+              // ref.read(appRouterProvider).go('/rotationview');
+            } catch (e, st) {
+              // opcional: loguear el error
+              debugPrint("Error en login: $e\n$st");
+              ToastHelper.show_alert(context, "Ocurrió un error inesperado.");
+            } finally {
+              ref.read(loadingProviderProvider.notifier).changeLoading(false);
+            }
+          },
+        )
       ],
     );
   }
