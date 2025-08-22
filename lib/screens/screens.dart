@@ -22,4 +22,5 @@ export './app/vehiclesData/InfoVehicles.dart';
 
 // Utility screens
 export './app/changePass/ChangePass.dart';
+export './app/notifications/notifications_screen.dart';
 // export './app/test/testScreen.dart';

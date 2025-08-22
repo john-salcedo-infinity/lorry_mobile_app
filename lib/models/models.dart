@@ -36,3 +36,6 @@ export './tire/route.dart';
 export './tire/stay.dart';
 export './tire/status_tire.dart';
 export './tire/warehouse.dart';
+
+// Notification
+export './NotificationResponse.dart';

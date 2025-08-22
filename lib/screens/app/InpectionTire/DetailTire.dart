@@ -108,6 +108,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       showDelete: true,
       showHome: true,
       showHomeDialogConfirm: true,
+      showNotificationDialogConfirm: true,
       showNotifications: true,
       isLoading: isLoading,
       onDeletePressed: () {

@@ -19,12 +19,17 @@ GoRouter appRouter(Ref ref) {
       path: '/login',
       builder: (context, state) => const LoginScreen(),
     ),
-    GoRoute(path: '/forgotPassword',
+    GoRoute(
+      path: '/forgotPassword',
       builder: (context, state) => const Forgotpassscreen(),
     ),
     GoRoute(
       path: '/home',
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/notifications',
+      builder: (context, state) => const NotificationsScreen(),
     ),
     GoRoute(
       path: '/inspectionDetails',
@@ -80,7 +85,6 @@ GoRouter appRouter(Ref ref) {
           final data = state.extra as ObservationSceenParams;
           return ObservationScreen(data: data);
         })),
-
     GoRoute(
       path: '/services',
       builder: (context, state) {

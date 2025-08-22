@@ -23,6 +23,10 @@ class _ScrollToTopFabState extends State<ScrollToTopFab> {
   @override
   void initState() {
     super.initState();
+    // inicializar según el offset actual
+    if (widget.scrollController.hasClients) {
+      _showFab = widget.scrollController.offset > 600;
+    }
     widget.scrollController.addListener(_onScroll);
   }
 
@@ -54,31 +58,34 @@ class _ScrollToTopFabState extends State<ScrollToTopFab> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedScale(
-      scale: _showFab ? 1.0 : 0.0,
-      duration: const Duration(milliseconds: 200),
-      child: FloatingActionButton(
-        mini: true,
-        shape: CircleBorder(
-          side: BorderSide(color: Apptheme.textColorPrimary, width: 2),
-        ),
-        backgroundColor: Colors.white,
-        onPressed: _showFab
-            ? () {
-                widget.scrollController.animateTo(
-                  0,
-                  duration: const Duration(milliseconds: 1000),
-                  curve: Curves.easeInOutQuart,
-                );
-              }
-            : null,
-        elevation: 0,
-        child: Container(
-          margin: EdgeInsets.only(top: 4),
-          child: const Icon(
-            Icons.keyboard_control_key_sharp,
-            color: Apptheme.textColorPrimary,
-            size: 30,
+    return Visibility(
+      visible: _showFab,
+      child: AnimatedScale(
+        scale: _showFab ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        child: FloatingActionButton(
+          mini: true,
+          shape: CircleBorder(
+            side: BorderSide(color: Apptheme.textColorPrimary, width: 2),
+          ),
+          backgroundColor: Colors.white,
+          onPressed: _showFab
+              ? () {
+                  widget.scrollController.animateTo(
+                    0,
+                    duration: const Duration(milliseconds: 1000),
+                    curve: Curves.easeInOutQuart,
+                  );
+                }
+              : null,
+          elevation: 0,
+          child: Container(
+            margin: EdgeInsets.only(top: 4),
+            child: const Icon(
+              Icons.keyboard_control_key_sharp,
+              color: Apptheme.textColorPrimary,
+              size: 30,
+            ),
           ),
         ),
       ),

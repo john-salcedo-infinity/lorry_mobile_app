@@ -32,6 +32,8 @@ class Apptheme {
   static const Color lightGray = Color.fromRGBO(148, 148, 148, .5);
   static const Color textColorSecondary = Color.fromRGBO(73, 77, 76, 1);
   static const Color alarmYellow = Color.fromRGBO(230, 189, 28, 1);
+  static const Color unReadNotificationBackground = Color.fromRGBO(255, 255, 255, 1);
+  static const Color unReadNotificationBorder =  Color.fromRGBO(205, 221, 219, 1);
 
   // Alerts Backgrounds
   static const Color highAlertBackground = Color.fromRGBO(255, 242, 235, 1);

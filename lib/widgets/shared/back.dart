@@ -14,6 +14,7 @@ class Back extends StatelessWidget {
   final VoidCallback? onHomePressed;
   final VoidCallback? onNotificationPressed;
   final bool? showHomeDialogConfirm;
+  final bool? showNotificationDialogConfirm;
   final bool interceptSystemBack; // Nueva propiedad
 
   const Back({
@@ -27,6 +28,7 @@ class Back extends StatelessWidget {
     this.onHomePressed,
     this.onNotificationPressed,
     this.showHomeDialogConfirm,
+    this.showNotificationDialogConfirm,
     this.interceptSystemBack = false,
   });
 
@@ -72,6 +74,7 @@ class Back extends StatelessWidget {
                 NotificationButton(
                   onPressed: onNotificationPressed,
                   isEnabled: !isLoading,
+                  showDialogConfirm: showNotificationDialogConfirm ?? false,
                 ),
               if (showHome)
                 HomeButton(

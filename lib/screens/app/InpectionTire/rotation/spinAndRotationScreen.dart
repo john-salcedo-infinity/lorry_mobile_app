@@ -702,6 +702,7 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
       showNotifications: true,
       isLoading: isLoading,
       showHomeDialogConfirm: true,
+      showNotificationDialogConfirm: true,
       interceptSystemBack: true,
       onDeletePressed: () {
         ConfirmationDialog.show(

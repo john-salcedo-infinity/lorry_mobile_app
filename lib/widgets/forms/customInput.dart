@@ -65,20 +65,20 @@ class CustomInputField extends ConsumerWidget {
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
               border: showBorder
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Apptheme.grayInput),
                     )
                   : InputBorder.none,
               focusedBorder: showBorder
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide:
                           const BorderSide(color: Apptheme.primary, width: 2),
                     )
                   : InputBorder.none,
               enabledBorder: showBorder
                   ? OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(color: Apptheme.grayInput),
                     )
                   : InputBorder.none,

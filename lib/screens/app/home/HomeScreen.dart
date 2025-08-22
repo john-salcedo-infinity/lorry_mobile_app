@@ -281,7 +281,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   height: 22,
                 ),
               ),
-              NotificationButton()
+              NotificationButton(
+                onPressed: () {
+                  ref.read(appRouterProvider).push("/notifications");
+                },
+              )
             ],
           )),
       body: SafeArea(
@@ -308,8 +312,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Container(
                       decoration: const BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.all(Radius.circular(4)),
+                        borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
+                      clipBehavior: Clip.hardEdge,
                       child: CustomInputField(
                         showBorder: false,
                         height: 42,
