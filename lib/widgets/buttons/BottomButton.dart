@@ -89,7 +89,7 @@ class BottomButton extends StatelessWidget {
         )
       ]),
       child: Padding(
-        padding: padding ?? const EdgeInsets.all(20),
+        padding: padding ?? const EdgeInsets.fromLTRB(20, 20, 20, 10),
         child: _buildButtonLayout(context),
       ),
     );
