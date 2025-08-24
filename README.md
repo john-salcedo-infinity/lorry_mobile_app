@@ -260,4 +260,3 @@ flutter pub get
 
 **Versión Flutter:** 3.6.1+  
 © 2025 **Lorry™** (https://lorry.la/)
-**Última actualización:** Agosto 2025
