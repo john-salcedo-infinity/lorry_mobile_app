@@ -4,11 +4,9 @@ export './auth/login/loginScreen.dart';
 export './auth/forgotPass/forgotPassScreen.dart';
 
 // Dashboard and main app screens
-export './app/dashboard/Dashboard.dart';
 export './app/home/HomeScreen.dart';
 
 // Inspection related screens
-export 'package:app_lorry/screens/app/new_inspection/01_plate_register.dart';
 export './app/new_inspection/02_manual_plate_registe.dart';
 export './app/home/inspection_details.dart';
 

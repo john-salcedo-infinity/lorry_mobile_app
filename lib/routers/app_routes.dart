@@ -39,18 +39,8 @@ GoRouter appRouter(Ref ref) {
       },
     ),
     GoRoute(
-      path: '/Dashboard',
-      builder: (context, state) => const Dashboard(),
-    ),
-    GoRoute(
       path: '/ChangePassword',
       builder: (context, state) => const ChangePass(),
-    ),
-    GoRoute(
-      path: '/PlateRegister',
-      builder: (context, state) {
-        return PlateRegister.fromExtra(state.extra);
-      },
     ),
     GoRoute(
       path: '/ManualPlateRegister',
