@@ -135,8 +135,8 @@ flutter run --flavor prod --dart-define=FLAVOR=prod
 # Build APK producción
 flutter build apk --release --flavor prod --dart-define=FLAVOR=prod
 
-# Build App Bundle para Play Store
-flutter build appbundle --release --flavor prod --dart-define=FLAVOR=prod
+# Build apk Producción ABI (Optimizado)
+flutter build apk --release --flavor prod --dart-define=FLAVOR=prod --split-per-abi
 ```
 
 ## 🐛 Debug en VS Code
@@ -259,4 +259,5 @@ flutter pub get
 ---
 
 **Versión Flutter:** 3.6.1+  
+© 2025 **Lorry™** (https://lorry.la/)
 **Última actualización:** Agosto 2025
