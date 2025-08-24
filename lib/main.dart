@@ -7,10 +7,11 @@ import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/helpers/permission_helper.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+const String appFlavor = String.fromEnvironment('FLAVOR', defaultValue: 'dev');
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  _setFlavorFromEnvironment();
+  AppConfig.setFlavorFromString(appFlavor);
   await AppConfig.initialize();
 
   await SystemChrome.setPreferredOrientations([
@@ -22,21 +23,6 @@ void main() async {
   await PermissionHandler.requestInitialPermissions();
 
   runApp(const ProviderScope(child: MyApp()));
-}
-
-void _setFlavorFromEnvironment() {
-  const String flavorString = String.fromEnvironment('FLAVOR', defaultValue: 'dev');
-  
-  switch (flavorString) {
-    case 'qa':
-      AppConfig.appFlavor = Flavor.qa;
-      break;
-    case 'prod':
-      AppConfig.appFlavor = Flavor.prod;
-      break;
-    default:
-      AppConfig.appFlavor = Flavor.dev;
-  }
 }
 
 class MyApp extends ConsumerWidget {
