@@ -1,0 +1,8 @@
+flutter_icons:
+  android: true
+  ios: true
+  image_path: 'assets/app_logo/qa/Icon_App_Qa.png'
+  adaptive_icon_background: 'assets/app_logo/qa/Icon_App_Bg_Qa.png'
+  adaptive_icon_foreground: 'assets/app_logo/qa/Icon_App_Fg_Qa.png'
+  android_icon_name: 'ic_launcher_qa'
+  ios_icon_name: 'AppIcon-qa'

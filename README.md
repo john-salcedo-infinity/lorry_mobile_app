@@ -70,10 +70,7 @@ lorry_app_mobile/
 │   │           └── AndroidManifest.xml
 ├── assets/                     # Recursos estáticos
 │   ├── truckimage.jpeg
-│   └── icons/                 # Iconos SVG y PNG
-│       ├── Add_image.svg
-│       ├── Alert_Icon.jpg
-│       └── Icon_App.png
+│
 ├── lib/                       # Código fuente principal
 │   ├── main.dart             # Punto de entrada con detección de flavors
 │   ├── config/               # Configuraciones
@@ -108,6 +105,13 @@ La aplicación soporta 3 entornos diferentes:
 | **PROD** | `prod` | "Lorry" | `com.example.app_lorry` | Producción |
 
 ## ⚡ Comandos de Ejecución
+
+
+### Generar íconos
+```bash
+# Generar íconos para la app
+./generate_icons.sh
+```
 
 ### Desarrollo (DEV)
 ```bash
@@ -168,12 +172,6 @@ flutter pub get
 
 # Rebuild completo
 flutter clean && flutter pub get && flutter run --flavor dev --dart-define=FLAVOR=dev
-```
-
-### Generar íconos
-```bash
-# Generar íconos para la app
-dart run flutter_launcher_icons:main
 ```
 
 ### Verificar configuración
