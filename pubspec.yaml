@@ -52,4 +52,7 @@ flutter:
     - assets/
     - assets/icons/
     - assets/icons/services/
-    - .env
+    - lib/config/env/.env.dev
+    - lib/config/env/.env.qa
+    - lib/config/env/.env.prod
+
