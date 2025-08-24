@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
 import 'package:app_lorry/models/ManualPlateRegisterResponse.dart';
-import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/ballBeatLoading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

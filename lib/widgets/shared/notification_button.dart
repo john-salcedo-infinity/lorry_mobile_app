@@ -1,6 +1,5 @@
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/providers/providers.dart';
-import 'package:app_lorry/services/NotificationService.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
