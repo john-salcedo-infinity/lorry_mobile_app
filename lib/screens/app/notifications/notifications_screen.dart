@@ -269,7 +269,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       child: CustomInputField(
                         showBorder: false,
                         height: 42,
-                        hint: "Buscar por VHC asociada",
+                        hint: "Buscar...",
                         onChanged: _onSearchChanged,
                         showLabel: false,
                         suffixIcon: Icon(
