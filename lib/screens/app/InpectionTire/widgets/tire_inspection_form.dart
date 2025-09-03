@@ -232,21 +232,21 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
           ),
           const SizedBox(height: 12),
           TireDataTextField(
-            label: "Profun. Interna",
-            controller: _internalController,
-            isEditable: true,
-            lastValue:
-                widget.currentMounting.tire?.profInternalCurrent?.toDouble() ??
-                    0.0,
-            onValueChanged: _handleTireAlert,
-          ),
-          const SizedBox(height: 12),
-          TireDataTextField(
             label: "Profun. Central",
             controller: _centerController,
             isEditable: true,
             lastValue:
                 widget.currentMounting.tire?.profCenterCurrent?.toDouble() ??
+                    0.0,
+            onValueChanged: _handleTireAlert,
+          ),
+          const SizedBox(height: 12),
+          TireDataTextField(
+            label: "Profun. Interna",
+            controller: _internalController,
+            isEditable: true,
+            lastValue:
+                widget.currentMounting.tire?.profInternalCurrent?.toDouble() ??
                     0.0,
             onValueChanged: _handleTireAlert,
           ),
