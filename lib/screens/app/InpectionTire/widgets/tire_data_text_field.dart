@@ -153,6 +153,9 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
               builder: (context, animatedBorderColor, child) {
                 return TextField(
                   focusNode: _focusNode,
+                  onTapOutside: (event) {
+                    FocusScope.of(context).unfocus();
+                  },
                   enabled: widget.isEditable,
                   controller: _controller,
                   keyboardType: widget.isPressure == true
