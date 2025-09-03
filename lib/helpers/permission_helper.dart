@@ -8,6 +8,9 @@ class PermissionHandler {
       Permission.camera,
       Permission.photos,
       Permission.storage,
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan,
+      Permission.location
     ].request();
   }
 
