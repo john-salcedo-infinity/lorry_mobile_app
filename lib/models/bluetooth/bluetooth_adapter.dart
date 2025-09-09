@@ -1,5 +1,6 @@
 import '../bluetooth/bluetooth_response.dart';
 import '../bluetooth/bluetooth_device.dart';
+import '../depth_device.dart';
 
 /// Interface abstracta para manejar escaneo de dispositivos Bluetooth
 abstract class BluetoothAdapter {
@@ -23,6 +24,8 @@ abstract class BluetoothAdapter {
   /// Verifica el estado real de la conexión
   Future<void> verifyConnectionState();
 
+  Future<void> getDeviceInput();
+
   /// Getters para obtener información del estado actual
   bool get isScanning;
   List<BluetoothDeviceModel> get discoveredDevices;
@@ -32,6 +35,13 @@ abstract class BluetoothAdapter {
   Stream<List<BluetoothDeviceModel>> get devicesStream;
   Stream<bool> get scanningStream;
   Stream<BluetoothDeviceModel?> get connectedDeviceStream;
+
+  /// Streams genéricos para datos de profundidad (compatibles con cualquier dispositivo)
+  Stream<DepthData> get depthDataStream;
+
+  /// Método para procesar datos entrantes del dispositivo
+  /// Cada adaptador implementará este método según el protocolo de su dispositivo
+  void processIncomingData(List<int> data);
 
   /// Libera recursos
   Future<void> dispose();

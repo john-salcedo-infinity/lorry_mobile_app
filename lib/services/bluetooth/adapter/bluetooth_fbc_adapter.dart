@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:app_lorry/models/models.dart';
-import 'package:flutter/rendering.dart';
+import 'package:app_lorry/helpers/tlg1_decoder_helper.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_blue_classic/flutter_blue_classic.dart' as fbc;
 
 class BluetoothClassicAdapter implements BluetoothAdapter {
@@ -21,6 +22,13 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
   /// Controlador para el dispositivo conectado
   final StreamController<BluetoothDeviceModel?> _connectedDeviceController =
       StreamController.broadcast();
+
+  /// Controlador para los datos de profundidad del dispositivo
+  final StreamController<DepthData> _depthDataController =
+      StreamController.broadcast();
+
+  /// Helper para decodificar datos del dispositivo
+  final DepthDataProcessor _dataProcessor = TLG1DecoderHelper('TLG1-Device');
 
   // Suscripciones a streams
   StreamSubscription<fbc.BluetoothDevice>? _discoverySubscription;
@@ -50,6 +58,10 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
   @override
   Stream<BluetoothDeviceModel?> get connectedDeviceStream =>
       _connectedDeviceController.stream;
+
+  /// Stream de datos de profundidad del dispositivo
+  @override
+  Stream<DepthData> get depthDataStream => _depthDataController.stream;
 
   /// Inicia el escaneo de dispositivos Bluetooth
   @override
@@ -135,24 +147,6 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
         _connectedDevice = device;
         _connectedDeviceController.add(_connectedDevice);
 
-        // Escuchar desconexiones para limpiar el estado
-        _connection!.input?.listen(
-          (data) {
-            // Manejar datos recibidos si es necesario
-            debugPrint(data.toString());
-          },
-          onDone: () {
-            _connectedDevice = null;
-            _connectedDeviceController.add(null);
-            _connection = null;
-          },
-          onError: (error) {
-            _connectedDevice = null;
-            _connectedDeviceController.add(null);
-            _connection = null;
-          },
-        );
-
         return BluetoothConnectionResult.success(
           BluetoothConnectionState.connected,
         );
@@ -219,6 +213,49 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
     }
   }
 
+  @override
+  Future<void>getDeviceInput() async {
+    if (_connection != null) {
+      _connection!.input?.listen(
+        (data) {
+          processIncomingData(data);
+        },
+        onDone: () {
+          _connectedDevice = null;
+          _connectedDeviceController.add(null);
+          _connection = null;
+        },
+        onError: (error) {
+          _connectedDevice = null;
+          _connectedDeviceController.add(null);
+          _connection = null;
+        },
+      );
+    }
+  }
+
+  /// Implementación del método de la interfaz para procesar datos entrantes del dispositivo
+  @override
+  void processIncomingData(List<int> data) {
+    try {
+      debugPrint('Device - Datos raw recibidos: ${data.toString()}');
+
+      final depthData = _dataProcessor.processRawData(data);
+
+      if (depthData != null) {
+        debugPrint(
+            'Device - Datos procesados exitosamente: ${depthData.depthWithUnit}');
+        _depthDataController.add(depthData);
+      } else {
+        debugPrint('Device - No se pudieron procesar los datos');
+      }
+    } catch (e) {
+      debugPrint('Device - Error procesando datos: $e');
+    }
+  }
+
+  /// Implementación del método de la interfaz para actualizar el estado del dispositivo
+
   /// Método para verificar y restaurar el estado de conexión
   @override
   Future<void> verifyConnectionState() async {
@@ -239,5 +276,6 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
     await _devicesController.close();
     await _scanningController.close();
     await _connectedDeviceController.close();
+    await _depthDataController.close();
   }
 }

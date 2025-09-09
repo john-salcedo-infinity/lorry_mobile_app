@@ -306,11 +306,11 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
                   color: Apptheme.primary,
                 ),
                 title: Text(
-                  'Calibrar dispositivo',
+                  'Comprobación dispositivo',
                   style: Apptheme.h4Medium(context, color: Apptheme.textColorPrimary),
                 ),
                 subtitle: Text(
-                  'Optimizar la conexión Bluetooth',
+                  'Verifica la información enviada por el dispositivo',
                   style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
                 ),
                 onTap: () {

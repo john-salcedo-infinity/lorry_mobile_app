@@ -1,7 +1,7 @@
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/screens/app/InpectionTire/rotation/spinAndRotationScreen.dart';
 import 'package:app_lorry/screens/app/InpectionTire/services/services_screen.dart';
-import 'package:app_lorry/screens/app/bluetooth/calibration_screen.dart';
+import 'package:app_lorry/screens/app/bluetooth/bluetoothTest_screen.dart';
 import 'package:app_lorry/screens/screens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
