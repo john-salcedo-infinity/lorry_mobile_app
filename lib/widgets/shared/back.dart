@@ -1,3 +1,4 @@
+import 'package:app_lorry/widgets/bluetooth/bluetooth_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:app_lorry/widgets/shared/back_button.dart' as custom;
 import 'package:app_lorry/widgets/shared/home_button.dart';
@@ -6,6 +7,7 @@ import 'package:app_lorry/widgets/shared/delete_button.dart';
 
 class Back extends StatelessWidget {
   final bool showHome;
+  final bool showBluetooth;
   final bool showNotifications;
   final bool showDelete;
   final bool isLoading;
@@ -21,6 +23,7 @@ class Back extends StatelessWidget {
     super.key,
     this.showHome = false,
     this.showNotifications = false,
+    this.showBluetooth = false,
     this.showDelete = false,
     this.isLoading = false,
     this.onDeletePressed,
@@ -65,6 +68,10 @@ class Back extends StatelessWidget {
           // Iconos adicionales
           Row(
             children: [
+              if (showBluetooth)
+                const BluetoothTag(
+                  onTap: null,
+                ),
               if (showDelete)
                 DeleteButton(
                   onPressed: onDeletePressed,

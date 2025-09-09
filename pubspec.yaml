@@ -8,6 +8,7 @@ environment:
 dependencies:
   badges: ^3.1.2
   bluetooth_classic: ^0.0.1
+  flutter_blue_classic: ^0.0.6
   camera: ^0.10.5+5
   cupertino_icons: ^1.0.8
   dotted_border: ^3.1.0
@@ -59,4 +60,3 @@ flutter:
     - lib/config/env/.env.dev
     - lib/config/env/.env.qa
     - lib/config/env/.env.prod
-

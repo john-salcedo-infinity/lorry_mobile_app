@@ -48,7 +48,7 @@ class ConfirmationDialog extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Expanded(child: _buildCancelButton(context)),
-            const SizedBox(width: 16),
+            const SizedBox(width: 6),
             Expanded(child: _buildAcceptButton(context)),
           ],
         ),
@@ -73,6 +73,7 @@ class ConfirmationDialog extends StatelessWidget {
       ),
       child: Text(
         cancelText,
+        textAlign: TextAlign.center,
         style: Apptheme.h4HighlightBody(context, color: Apptheme.primary),
       ),
     );
@@ -96,6 +97,7 @@ class ConfirmationDialog extends StatelessWidget {
       ),
       child: Text(
         acceptText,
+        textAlign: TextAlign.center,
         style: Apptheme.h4HighlightBody(
           context,
           color: Colors.white,

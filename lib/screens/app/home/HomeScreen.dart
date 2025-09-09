@@ -2,6 +2,8 @@
 
 import 'dart:async';
 
+import 'package:app_lorry/widgets/bluetooth/bluetooth_widgets.dart';
+import 'package:app_lorry/widgets/bluetooth/bluetooth_bottom_sheet.dart';
 import 'package:app_lorry/services/services.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/forms/customInput.dart';
@@ -277,14 +279,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 margin: const EdgeInsets.only(top: 12),
                 child: SvgPicture.asset(
                   'assets/icons/logo_lorryv2.svg',
-                  width: 125, // Ajusta el tamaño según sea necesario
-                  height: 22,
+                  width: 100, // Ajusta el tamaño según sea necesario
+                  height: 18,
                 ),
               ),
-              NotificationButton(
-                onPressed: () {
-                  ref.read(appRouterProvider).push("/notifications");
-                },
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  BluetoothTag(
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const BluetoothBottomSheet(),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  NotificationButton(
+                    onPressed: () {
+                      ref.read(appRouterProvider).push("/notifications");
+                    },
+                  )
+                ],
               )
             ],
           )),
