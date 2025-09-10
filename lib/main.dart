@@ -1,3 +1,6 @@
+import 'package:app_lorry/helpers/helpers.dart';
+import 'package:app_lorry/models/bluetooth/bluetooth_device.dart';
+import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +13,22 @@ import 'package:intl/date_symbol_data_local.dart';
 const String appFlavor = String.fromEnvironment('FLAVOR', defaultValue: 'dev');
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  final BluetoothService bluetoothService = BluetoothService.instance;
+
+  Preferences prefs = Preferences();
+  await prefs.init();
+  final device = prefs.getList(
+    BluetoothSharedPreference.lastConnectedDevice.key,
+  );
+
+  if (device.isNotEmpty) {
+    debugPrint("Conectando al dispositivo guardado: $device");
+    bluetoothService.connectToDevice(
+        BluetoothDeviceModel(name: device[1], address: device[0]));
+  }
+
+  debugPrint('Last connected device device: $device');
 
   AppConfig.setFlavorFromString(appFlavor);
   await AppConfig.initialize();

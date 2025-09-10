@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/services/bluetooth/adapter/bluetooth_fbc_adapter.dart';
 
@@ -76,16 +77,27 @@ class BluetoothService {
   }
 
   /// Conecta a un dispositivo Bluetooth
-  Future<BluetoothConnectionResult> connectToDevice(BluetoothDeviceModel device) async {
+  Future<BluetoothConnectionResult> connectToDevice(
+      BluetoothDeviceModel device) async {
     if (_adapter == null) initialize();
-    
+
     final result = await _adapter!.connectToDevice(device);
-    
+
+    // Almacenar el dispositivo conectado si la conexión fue exitosa
+    if (result.state == BluetoothConnectionState.connected) {
+      Preferences prefs = Preferences();
+      await prefs.init();
+      prefs.saveList(
+        BluetoothSharedPreference.lastConnectedDevice.key,
+        [device.address, device.name],
+      );
+    }
+
     // Si la conexión fue exitosa, configurar el listener de datos
     if (result.state == BluetoothConnectionState.connected) {
       await getDeviceInput();
     }
-    
+
     return result;
   }
 

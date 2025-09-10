@@ -48,3 +48,11 @@ class BluetoothDeviceModel {
   @override
   int get hashCode => address.hashCode;
 }
+
+
+enum BluetoothSharedPreference {
+  lastConnectedDevice('last_connected_device');
+
+  final String key;
+  const BluetoothSharedPreference(this.key);
+}

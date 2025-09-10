@@ -23,6 +23,20 @@ class Preferences {
     prefs!.setString(key, value);
   }
 
+  void saveList(String key, List<String> value) {
+    if (prefs == null) {
+      return;
+    }
+    prefs!.setStringList(key, value);
+  }
+
+  List<String> getList(String key) {
+    if (prefs == null) {
+      return [];
+    }
+    return prefs!.getStringList(key) ?? [];
+  }
+
   void removeKey(String key) {
     if (prefs == null) {
       return;

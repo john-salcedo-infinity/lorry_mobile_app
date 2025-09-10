@@ -18,6 +18,7 @@ abstract class BluetoothAdapter {
   Future<BluetoothConnectionResult> connectToDevice(
       BluetoothDeviceModel device);
 
+
   /// Desconecta del dispositivo actual
   Future<void> disconnectDevice();
 

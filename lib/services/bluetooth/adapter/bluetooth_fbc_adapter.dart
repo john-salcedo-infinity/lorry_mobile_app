@@ -214,7 +214,7 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
   }
 
   @override
-  Future<void>getDeviceInput() async {
+  Future<void> getDeviceInput() async {
     if (_connection != null) {
       _connection!.input?.listen(
         (data) {
