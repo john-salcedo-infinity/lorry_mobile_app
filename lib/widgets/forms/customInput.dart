@@ -14,6 +14,7 @@ class CustomInputField extends ConsumerWidget {
   final bool showLabel;
   final bool showBorder;
   final double? height;
+  final FocusNode? focusNode;
 
   const CustomInputField({
     super.key,
@@ -28,6 +29,7 @@ class CustomInputField extends ConsumerWidget {
     this.showBorder = true,
     this.keyboardType,
     this.height,
+    this.focusNode,
   });
 
   @override
@@ -48,6 +50,7 @@ class CustomInputField extends ConsumerWidget {
         SizedBox(
           height: height ?? 48, // Default height if not provided
           child: TextFormField(
+            focusNode: focusNode,
             keyboardType: keyboardType ?? TextInputType.text,
             controller: controller,
             obscureText: obscureText,
