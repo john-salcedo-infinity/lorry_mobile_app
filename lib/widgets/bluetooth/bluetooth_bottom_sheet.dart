@@ -1,3 +1,4 @@
+import 'package:app_lorry/widgets/buttons/CustomButton.dart';
 import 'package:flutter/material.dart';
 import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:app_lorry/models/models.dart';
@@ -11,7 +12,8 @@ class BluetoothBottomSheet extends ConsumerStatefulWidget {
   const BluetoothBottomSheet({super.key});
 
   @override
-  ConsumerState<BluetoothBottomSheet> createState() => _BluetoothBottomSheetState();
+  ConsumerState<BluetoothBottomSheet> createState() =>
+      _BluetoothBottomSheetState();
 }
 
 class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
@@ -260,7 +262,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
         });
 
         _showStatusMessage(
-          '🔌 Dispositivo ${_connectedDevice?.name} desconectado',
+          '🔌 Dispositivo desconectado',
           color: Apptheme.alertOrange,
         );
       }
@@ -297,7 +299,8 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
               const SizedBox(height: 8),
               Text(
                 device.address,
-                style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
+                style: Apptheme.h5Body(context,
+                    color: Apptheme.textColorSecondary),
               ),
               const SizedBox(height: 24),
               ListTile(
@@ -307,11 +310,13 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
                 ),
                 title: Text(
                   'Comprobación dispositivo',
-                  style: Apptheme.h4Medium(context, color: Apptheme.textColorPrimary),
+                  style: Apptheme.h4Medium(context,
+                      color: Apptheme.textColorPrimary),
                 ),
                 subtitle: Text(
                   'Verifica la información enviada por el dispositivo',
-                  style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
+                  style: Apptheme.h5Body(context,
+                      color: Apptheme.textColorSecondary),
                 ),
                 onTap: () {
                   Navigator.pop(context);
@@ -377,7 +382,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
 
           // Título
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Text(
               _connectedDevice != null
                   ? 'Conectado: ${_connectedDevice!.name}'
@@ -415,12 +420,6 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
             margin: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: Colors.transparent,
-              border: Border(
-                bottom: BorderSide(
-                  color: Apptheme.lightGray,
-                  width: 1,
-                ),
-              ),
             ),
             child: TabBar(
               controller: _tabController,
@@ -432,12 +431,11 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
                 insets: const EdgeInsets.symmetric(horizontal: 16),
               ),
               labelColor: Apptheme.primary,
-              unselectedLabelColor: Apptheme.textColorSecondary,
               labelStyle: Apptheme.h4HighlightBody(context),
               unselectedLabelStyle: Apptheme.h4Body(context),
               indicatorSize: TabBarIndicatorSize.tab,
               tabs: const [
-                Tab(text: 'Todos los dispositivos'),
+                Tab(text: 'Todos'),
                 Tab(text: 'Recientes'),
               ],
             ),
@@ -480,46 +478,35 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
           // Botón de escanear
           Padding(
             padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: (_isConnecting || _isDisconnecting)
-                    ? null
-                    : (_isScanning
-                        ? () => _bluetoothService.stopScanning()
-                        : _startScanning),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      _isScanning ? Apptheme.alertOrange : Apptheme.primary,
-                  disabledBackgroundColor: Apptheme.lightGray,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: _isScanning
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: Apptheme.loadingIndicatorButton(),
+            child: CustomButton(
+              double.infinity,
+              46,
+              _isScanning
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: Apptheme.loadingIndicatorButton(),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          "Escaneando...",
+                          style: Apptheme.h4HighlightBody(
+                            context,
+                            color: Colors.white,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Escaneando...',
-                            style: Apptheme.h4HighlightBody(context,
-                                color: Colors.white),
-                          ),
-                        ],
-                      )
-                    : Text(
-                        'Escanear Dispositivos',
-                        style: Apptheme.h4HighlightBody(context,
-                            color: Colors.white),
-                      ),
-              ),
+                        ),
+                      ],
+                    )
+                  : Text("Escanear dispositivos"),
+              _isConnecting || _isDisconnecting
+                  ? null
+                  : (_isScanning
+                      ? () => _bluetoothService.stopScanning()
+                      : _startScanning),
+              type: 1,
             ),
           ),
         ],
@@ -671,8 +658,8 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
                 size: 16,
               ),
         onTap: isInteractive ? () => _handleDeviceTap(device) : null,
-        onLongPress: isConnected && isInteractive 
-            ? () => _showCalibrationContextMenu(device) 
+        onLongPress: isConnected && isInteractive
+            ? () => _showCalibrationContextMenu(device)
             : null,
       ),
     );

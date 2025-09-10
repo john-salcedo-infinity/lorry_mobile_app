@@ -33,6 +33,12 @@ class _DepthInputFieldsState extends ConsumerState<DepthInputFields> {
   @override
   void initState() {
     super.initState();
+    
+    // Agregar listeners para detectar cambios de foco manuales
+    _profExtrFocus.addListener(_onExtrFocusChanged);
+    _profCentFocus.addListener(_onCentFocusChanged);
+    _profIntFocus.addListener(_onIntFocusChanged);
+    
     // Inicialmente el foco está en el primer campo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _profExtrFocus.requestFocus();
@@ -54,6 +60,11 @@ class _DepthInputFieldsState extends ConsumerState<DepthInputFields> {
 
   @override
   void dispose() {
+    // Remover listeners antes de disponer los FocusNodes
+    _profExtrFocus.removeListener(_onExtrFocusChanged);
+    _profCentFocus.removeListener(_onCentFocusChanged);
+    _profIntFocus.removeListener(_onIntFocusChanged);
+    
     _profExtrController.dispose();
     _profCentController.dispose();
     _profIntController.dispose();
@@ -98,6 +109,31 @@ class _DepthInputFieldsState extends ConsumerState<DepthInputFields> {
     _profIntController.clear();
     _currentFieldIndex = 0;
     _profExtrFocus.requestFocus();
+  }
+
+  // Métodos para manejar cambios de foco manuales
+  void _onExtrFocusChanged() {
+    if (_profExtrFocus.hasFocus) {
+      setState(() {
+        _currentFieldIndex = 0;
+      });
+    }
+  }
+
+  void _onCentFocusChanged() {
+    if (_profCentFocus.hasFocus) {
+      setState(() {
+        _currentFieldIndex = 1;
+      });
+    }
+  }
+
+  void _onIntFocusChanged() {
+    if (_profIntFocus.hasFocus) {
+      setState(() {
+        _currentFieldIndex = 2;
+      });
+    }
   }
 
   @override
