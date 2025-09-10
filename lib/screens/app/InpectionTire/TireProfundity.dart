@@ -1,10 +1,11 @@
-// ignore_for_file: use_build_context_synchronously
+import 'dart:async';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/providers/auth/loginProvider.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/screens/app/InpectionTire/DetailTire.dart';
 import 'package:app_lorry/screens/app/InpectionTire/services/services_screen.dart';
+import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
@@ -56,6 +57,18 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   int _currentTireIndex = 0;
   late PageController _pageController;
 
+  final BluetoothService _bluetoothService = BluetoothService.instance;
+  // Estado para mostrar datos de profundidad del dispositivo
+  DepthData? currentDepth;
+
+  // Variables para el manejo de los campos de entrada
+  bool shouldFillNextField = false;
+  String? latestDepthValue;
+  DepthData? previousDepth;
+
+  // Subscripciones a streams
+  StreamSubscription<DepthData>? depthSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -72,9 +85,51 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
     // Inicializar los datos de inspección con los valores originales
     _initializeInspectionData();
+    _initializeStreams();
 
     // Marcar la llanta inicial como inspeccionada
     inspectedTires.add(_currentTireIndex);
+  }
+
+  void _initializeStreams() {
+    // Escuchar datos de profundidad
+    depthSubscription = _bluetoothService.depthDataStream.listen(
+      (depthData) {
+        debugPrint(
+            'Calibration Screen - Datos de profundidad recibidos: ${depthData.depthWithUnit}');
+
+        // Usar addPostFrameCallback para evitar setState durante build
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              currentDepth = depthData;
+
+              // Verificar si es un nuevo valor de profundidad para llenar campos automáticamente
+              if (previousDepth == null ||
+                  previousDepth!.depth != depthData.depth) {
+                latestDepthValue = depthData.depth.toString();
+                shouldFillNextField = true;
+                previousDepth = depthData;
+              } else {
+                shouldFillNextField = false;
+              }
+            });
+          }
+        });
+      },
+      onError: (error) {
+        debugPrint(
+            'Calibration Screen - Error en stream de profundidad: $error');
+        // Usar addPostFrameCallback para evitar setState durante build
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            setState(() {
+              shouldFillNextField = false;
+            });
+          }
+        });
+      },
+    );
   }
 
   void _initializeInspectionData() {
@@ -150,8 +205,13 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     // Buscar la siguiente llanta no inspeccionada
     int nextIndex = _findNextUninspectedTire();
 
-    setState(() {
-      _currentTireIndex = nextIndex;
+    // Usar addPostFrameCallback para evitar setState durante build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _currentTireIndex = nextIndex;
+        });
+      }
     });
   }
 
@@ -267,9 +327,14 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                 scrollDirection: Axis.vertical,
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (index) {
-                  setState(() {
-                    _currentTireIndex = index;
-                    inspectedTires.add(index);
+                  // Usar addPostFrameCallback para evitar setState durante build
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (mounted) {
+                      setState(() {
+                        _currentTireIndex = index;
+                        inspectedTires.add(index);
+                      });
+                    }
                   });
                 },
                 itemCount: mountings.length,
@@ -371,6 +436,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         _buildTitleWidget(currentMounting.position.toString()),
         const SizedBox(height: 18),
         TireInspectionForm(
+          shouldFillNext: shouldFillNextField,
+          newDepthValue: latestDepthValue,
           currentMounting: currentMounting,
           onDataChanged: (data) {
             final currentData = inspectionData[index] ?? {};
@@ -383,12 +450,22 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               'prof_internal':
                   data['prof_internal'] ?? currentData['prof_internal'],
             };
-            setState(() {});
+            // Evitar setState durante build usando addPostFrameCallback
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {});
+              }
+            });
           },
           existingNovelties: noveltiesData[index] ?? [],
           onNoveltiesChanged: (novelties) {
             noveltiesData[index] = novelties;
-            setState(() {});
+            // Evitar setState durante build usando addPostFrameCallback
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {});
+              }
+            });
           },
           initialInspectionData: inspectionData[index],
         ),
@@ -567,6 +644,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   void dispose() {
     _pageController.dispose();
     _currentTireIndex = 0; // Reset
+    depthSubscription?.cancel();
     super.dispose();
   }
 }

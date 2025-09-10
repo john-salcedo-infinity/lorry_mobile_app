@@ -11,6 +11,7 @@ class TireDataTextField extends StatefulWidget {
   final bool? isPressure;
   final Function(String fieldName, double currentValue, double lastValue)?
       onValueChanged;
+  final FocusNode? focusNode; // Agregar focusNode opcional
 
   const TireDataTextField({
     super.key,
@@ -21,6 +22,7 @@ class TireDataTextField extends StatefulWidget {
     this.isEditable = true,
     this.isPressure = false,
     this.onValueChanged,
+    this.focusNode, // Agregar al constructor
   });
 
   @override
@@ -28,7 +30,8 @@ class TireDataTextField extends StatefulWidget {
 }
 
 class _TireDataTextFieldState extends State<TireDataTextField> {
-  final FocusNode _focusNode = FocusNode();
+  final FocusNode _internalFocusNode = FocusNode();
+  late FocusNode _focusNode;
   late TextEditingController _controller;
   bool _hasFocus = false;
   double _currentValue = 0;
@@ -36,6 +39,9 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
   @override
   void initState() {
     super.initState();
+
+    // Usar el focusNode externo si está disponible, sino usar el interno
+    _focusNode = widget.focusNode ?? _internalFocusNode;
 
     if (widget.controller != null) {
       _controller = widget.controller!;
@@ -111,7 +117,11 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
   void dispose() {
     _controller.removeListener(_onTextChanged);
     _focusNode.removeListener(_onFocusChanged);
-    _focusNode.dispose();
+    
+    // Solo dispose del focusNode si lo creamos nosotros
+    if (widget.focusNode == null) {
+      _internalFocusNode.dispose();
+    }
 
     // Solo dispose del controller si lo creamos nosotros
     if (widget.controller == null) {
