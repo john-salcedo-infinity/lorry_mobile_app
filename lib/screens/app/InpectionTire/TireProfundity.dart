@@ -334,6 +334,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                       setState(() {
                         _currentTireIndex = index;
                         inspectedTires.add(index);
+                        // Al cambiar de llanta, cancelar cualquier llenado pendiente
+                        shouldFillNextField = false;
                       });
                     }
                   });
@@ -429,6 +431,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   Widget _buildContent(int index) {
     final currentMounting = mountings[index];
+  final bool isActive = index == _currentTireIndex; // Solo la página activa recibe lecturas
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -437,11 +440,12 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         _buildTitleWidget(currentMounting.position.toString()),
         const SizedBox(height: 18),
         TireInspectionForm(
-          shouldFillNext: shouldFillNextField,
-          newDepthValue: latestDepthValue,
-          depthSequence: _depthSequence, // nuevo
+          // Pasar lecturas SOLO a la llanta activa para evitar que se llenen las otras
+          shouldFillNext: isActive && shouldFillNextField,
+          newDepthValue: isActive ? latestDepthValue : null,
+          depthSequence: isActive ? _depthSequence : null, // null para inactivas
           currentMounting: currentMounting,
-          newDepthTypeValue: currentDepthType,
+          newDepthTypeValue: isActive ? currentDepthType : null,
           onDataChanged: (data) {
             final currentData = inspectionData[index] ?? {};
             inspectionData[index] = {

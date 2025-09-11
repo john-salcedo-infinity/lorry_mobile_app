@@ -53,6 +53,7 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: AppConfig.appName,
       debugShowCheckedModeBanner: AppConfig.debugMode,
+      showPerformanceOverlay: AppConfig.debugMode || AppConfig.isQA,
       routerConfig: appRouter,
       theme: Apptheme.lightTheme,
     );
