@@ -27,23 +27,23 @@ class TLG1DecoderHelper implements DepthDataProcessor {
     try {
       // Convertir bytes a string usando UTF-8
       String receivedData = utf8.decode(data, allowMalformed: true);
-      
+
       debugPrint('TLG1 - Datos recibidos (bytes): ${data.toString()}');
       debugPrint('TLG1 - Datos convertidos: "$receivedData"');
-      
+
       // Agregar al buffer para manejar datos fragmentados
       _dataBuffer += receivedData;
-      
+
       // Procesar líneas completas (terminadas en \n o \r\n)
       while (_dataBuffer.contains('\n') || _dataBuffer.contains('\r')) {
         int endIndex = _dataBuffer.indexOf('\n');
         if (endIndex == -1) {
           endIndex = _dataBuffer.indexOf('\r');
         }
-        
+
         String line = _dataBuffer.substring(0, endIndex).trim();
         _dataBuffer = _dataBuffer.substring(endIndex + 1);
-        
+
         if (line.isNotEmpty) {
           final depthData = _parseDepthLine(line);
           if (depthData != null) {
@@ -51,7 +51,7 @@ class TLG1DecoderHelper implements DepthDataProcessor {
           }
         }
       }
-      
+
       return null;
     } catch (e) {
       debugPrint('TLG1 - Error procesando datos: $e');
@@ -64,9 +64,9 @@ class TLG1DecoderHelper implements DepthDataProcessor {
     try {
       // Limpiar espacios y caracteres especiales
       String cleanLine = line.trim();
-      
+
       debugPrint('TLG1 - Procesando línea: "$cleanLine"');
-      
+
       // Si la línea empieza con 'T', remover el prefijo (formato: T15.99)
       if (cleanLine.startsWith('T') && cleanLine.length > 1) {
         cleanLine = cleanLine.substring(1); // Remover la 'T'
@@ -86,22 +86,26 @@ class TLG1DecoderHelper implements DepthDataProcessor {
           debugPrint('TLG1 - Después de dividir por ":": "$cleanLine"');
         }
       }
-      
+
       // Intentar convertir a número decimal
-      double? depth = double.tryParse(cleanLine);
-      
-      if (depth != null) {
-        debugPrint('TLG1 - Profundidad procesada: $depth mm');
-        
+      double? value = double.tryParse(cleanLine);
+      DepthValueType valueType =
+          line.startsWith('T') ? DepthValueType.depth : DepthValueType.pressure;
+
+      if (value != null) {
+        debugPrint('TLG1 - Profundidad procesada: $value $valueType');
+
         return DepthGaugeData(
-          depth: depth,
-          unit: 'mm',
+          value: value,
+          valueType: valueType,
+          unit: valueType == DepthValueType.depth ? 'mm' : 'psi',
           timestamp: DateTime.now(),
           rawData: line,
           deviceId: _deviceId,
         );
       } else {
-        debugPrint('TLG1 - Línea no válida para profundidad después del parsing: "$cleanLine"');
+        debugPrint(
+            'TLG1 - Línea no válida para profundidad después del parsing: "$cleanLine"');
         return null;
       }
     } catch (e) {
@@ -120,26 +124,26 @@ class TLG1DecoderHelper implements DepthDataProcessor {
   @override
   bool isValidData(String data) {
     final cleanData = data.trim();
-    
+
     // Si empieza con 'T', remover el prefijo
     String numberPart = cleanData;
     if (numberPart.startsWith('T') && numberPart.length > 1) {
       numberPart = numberPart.substring(1);
     }
-    
+
     return double.tryParse(numberPart) != null;
   }
 
   /// Valida si los datos recibidos son válidos
   static bool isValidDepthData(String data) {
     final cleanData = data.trim();
-    
+
     // Si empieza con 'T', remover el prefijo
     String numberPart = cleanData;
     if (numberPart.startsWith('T') && numberPart.length > 1) {
       numberPart = numberPart.substring(1);
     }
-    
+
     return double.tryParse(numberPart) != null;
   }
 

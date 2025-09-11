@@ -1,14 +1,22 @@
 /// Modelo genérico para datos de profundidad de cualquier dispositivo
 /// Este modelo es independiente del tipo de dispositivo específico
+
+enum DepthValueType {
+  depth,
+  pressure,
+}
+
 class DepthGaugeData {
-  final double depth;
+  final double value;
+  final DepthValueType valueType;
   final String unit;
   final DateTime timestamp;
   final String rawData;
   final String? deviceId;
 
   DepthGaugeData({
-    required this.depth,
+    required this.value,
+    required this.valueType,
     required this.unit,
     required this.timestamp,
     required this.rawData,
@@ -17,11 +25,11 @@ class DepthGaugeData {
 
   @override
   String toString() {
-    return 'DepthData(depth: $depth $unit, timestamp: $timestamp, device: $deviceId, raw: "$rawData")';
+    return 'DepthData(depth: $value $unit, timestamp: $timestamp, device: $deviceId, raw: "$rawData")';
   }
 
   /// Retorna la profundidad formateada con decimales
-  String get formattedDepth => depth.toStringAsFixed(2);
+  String get formattedDepth => value.toStringAsFixed(2);
 
   /// Retorna la profundidad con unidad
   String get depthWithUnit => '$formattedDepth $unit';
@@ -29,7 +37,7 @@ class DepthGaugeData {
   /// Convierte a JSON para persistencia o transmisión
   Map<String, dynamic> toJson() {
     return {
-      'depth': depth,
+      'depth': value,
       'unit': unit,
       'timestamp': timestamp.toIso8601String(),
       'rawData': rawData,
@@ -40,7 +48,8 @@ class DepthGaugeData {
   /// Crea una instancia desde JSON
   factory DepthGaugeData.fromJson(Map<String, dynamic> json) {
     return DepthGaugeData(
-      depth: json['depth']?.toDouble() ?? 0.0,
+      value: json['depth']?.toDouble() ?? 0.0,
+      valueType: json['valueType'] ?? 'unknown',
       unit: json['unit'] ?? 'mm',
       timestamp: DateTime.parse(json['timestamp']),
       rawData: json['rawData'] ?? '',
@@ -57,7 +66,8 @@ class DepthGaugeData {
     String? deviceId,
   }) {
     return DepthGaugeData(
-      depth: depth ?? this.depth,
+      value: depth ?? value,
+      valueType: valueType,
       unit: unit ?? this.unit,
       timestamp: timestamp ?? this.timestamp,
       rawData: rawData ?? this.rawData,

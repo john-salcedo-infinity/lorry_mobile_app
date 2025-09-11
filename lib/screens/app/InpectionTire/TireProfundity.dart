@@ -106,8 +106,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
               // Verificar si es un nuevo valor de profundidad para llenar campos automáticamente
               if (previousDepth == null ||
-                  previousDepth!.depth != depthData.depth) {
-                latestDepthValue = depthData.depth.toString();
+                  previousDepth!.value != depthData.value) {
+                latestDepthValue = depthData.value.toString();
                 shouldFillNextField = true;
                 previousDepth = depthData;
               } else {

@@ -27,14 +27,11 @@ class _BluetoothCalibrationScreenState
 
   // Estado para mostrar datos de profundidad del dispositivo
   DepthGaugeData? _currentDepth;
-  String _statusMessage = 'Esperando datos del dispositivo...';
+  DepthGaugeData? _currentPressure;
 
-  // Variables para el manejo de los campos de entrada
-  // bool _shouldFillNextField = false;
-  // String? _latestDepthValue;
   DepthGaugeData? _previousDepth;
+  DepthGaugeData? _previousPressure;
 
-  // Subscripciones a streams
   StreamSubscription<DepthGaugeData>? _depthSubscription;
 
   @override
@@ -50,47 +47,33 @@ class _BluetoothCalibrationScreenState
   }
 
   void _initializeStreams() {
-    // Escuchar datos de profundidad
     _depthSubscription = _bluetoothService.depthDataStream.listen(
       (depthData) {
         debugPrint(
             'Calibration Screen - Datos de profundidad recibidos: ${depthData.depthWithUnit}');
 
         setState(() {
-          _currentDepth = depthData;
-          _statusMessage = 'Última profundidad: ${depthData.depthWithUnit}';
-
-          // Verificar si es un nuevo valor de profundidad para llenar campos automáticamente
-          if (_previousDepth == null ||
-              _previousDepth!.depth != depthData.depth) {
-            // _latestDepthValue = depthData.depth.toString();
-            // _shouldFillNextField = true;
-            _previousDepth = depthData;
-          } else {
-            // _shouldFillNextField = false;
+          if (depthData.valueType == DepthValueType.depth) {
+            _currentDepth = depthData;
+            if (_previousDepth == null ||
+                _previousDepth!.value != depthData.value) {
+              _previousDepth = depthData;
+            }
+          } else if (depthData.valueType == DepthValueType.pressure) {
+            _currentPressure = depthData;
+            if (_previousPressure == null ||
+                _previousPressure!.value != depthData.value) {
+              _previousPressure = depthData;
+            }
           }
         });
       },
       onError: (error) {
         debugPrint(
             'Calibration Screen - Error en stream de profundidad: $error');
-        setState(() {
-          _statusMessage = 'Error en datos de profundidad: $error';
-          // _shouldFillNextField = false;
-        });
       },
     );
   }
-
-  // void _onAllFieldsFilled(String extrema, String centro, String interna) {
-  //   debugPrint('Calibration Screen - Todos los campos completados:');
-  //   debugPrint('  Profundidad Extrema: $extrema');
-  //   debugPrint('  Profundidad Centro: $centro');
-  //   debugPrint('  Profundidad Interna: $interna');
-    
-  //   // Aquí puedes agregar la lógica para procesar los datos cuando todos los campos estén llenos
-  //   // Por ejemplo, enviar los datos al servidor, guardar en base de datos local, etc.
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -108,12 +91,8 @@ class _BluetoothCalibrationScreenState
                     _buildDeviceInfo(),
                     const SizedBox(height: 20),
                     _buildDepthDisplay(),
-                    // const SizedBox(height: 20),
-                    // DepthInputFields(
-                    //   shouldFillNext: _shouldFillNextField,
-                    //   newDepthValue: _latestDepthValue,
-                    //   onAllFieldsFilled: _onAllFieldsFilled,
-                    // ),
+                    const SizedBox(height: 20),
+                    _buildPressureDisplay(),
                   ],
                 ),
               ),
@@ -199,7 +178,13 @@ class _BluetoothCalibrationScreenState
     );
   }
 
-  Widget _buildDepthDisplay() {
+  // Reusable card builder for measurement displays
+  Widget _buildMeasurementCard({
+    required String title,
+    required String value,
+    required Color valueColor,
+    DateTime? timestamp,
+  }) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -217,28 +202,23 @@ class _BluetoothCalibrationScreenState
       child: Column(
         children: [
           Text(
-            'Profundidad Actual',
+            title,
             style: Apptheme.h2Title(context, color: Apptheme.textColorPrimary),
           ),
           const SizedBox(height: 16),
           Text(
-            _currentDepth != null ? _currentDepth!.depthWithUnit : '--- mm',
+            value,
             style: TextStyle(
               fontSize: 48,
               fontWeight: FontWeight.bold,
-              color: _getDepthColor(),
+              color: valueColor,
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            _statusMessage,
-            style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
-            textAlign: TextAlign.center,
-          ),
-          if (_currentDepth != null) ...[
+          if (timestamp != null) ...[
             const SizedBox(height: 8),
             Text(
-              'Última actualización: ${_formatTime(_currentDepth!.timestamp)}',
+              'Última actualización: ${_formatTime(timestamp)}',
               style:
                   Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
             ),
@@ -248,11 +228,42 @@ class _BluetoothCalibrationScreenState
     );
   }
 
+  Widget _buildDepthDisplay() {
+    final value = _currentDepth != null ? _currentDepth!.depthWithUnit : '--- mm';
+    return _buildMeasurementCard(
+      title: 'Profundidad Actual',
+      value: value,
+      valueColor: _getDepthColor(),
+      timestamp: _currentDepth?.timestamp,
+    );
+  }
+
+  Widget _buildPressureDisplay() {
+    final value = _currentPressure != null
+        ? _currentPressure!.depthWithUnit
+        : '--- psi';
+    return _buildMeasurementCard(
+      title: 'Presión Actual',
+      value: value,
+      valueColor: _getPressureColor(),
+      timestamp: _currentPressure?.timestamp,
+    );
+  }
+
   Color _getDepthColor() {
-    if (_currentDepth != null && _currentDepth!.depth < 0) {
+    if (_currentDepth != null && _currentDepth!.value < 0) {
       return Colors.red;
     } else if (_currentDepth != null) {
       return Apptheme.primary;
+    }
+    return Apptheme.textColorSecondary;
+  }
+
+  Color _getPressureColor() {
+    if (_currentPressure != null && _currentPressure!.value < 0) {
+      return Colors.red;
+    } else if (_currentPressure != null) {
+      return Apptheme.secondary; // Differentiate with a different theme color
     }
     return Apptheme.textColorSecondary;
   }
