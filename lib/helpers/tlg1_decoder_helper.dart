@@ -88,7 +88,9 @@ class TLG1DecoderHelper implements DepthDataProcessor {
       }
 
       // Intentar convertir a número decimal
-      double? value = double.tryParse(cleanLine);
+      double? parsedValue = double.tryParse(cleanLine);
+      String? formattedValue = parsedValue?.toStringAsFixed(1);
+      double? value = formattedValue != null ? double.parse(formattedValue) : null;
       DepthValueType valueType =
           line.startsWith('T') ? DepthValueType.depth : DepthValueType.pressure;
 

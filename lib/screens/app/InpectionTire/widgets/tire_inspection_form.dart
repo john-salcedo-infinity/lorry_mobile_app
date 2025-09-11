@@ -15,6 +15,8 @@ class TireInspectionForm extends ConsumerStatefulWidget {
   final Map<String, dynamic>? initialInspectionData; // Datos ya guardados
   final bool shouldFillNext;
   final String? newDepthValue;
+  final DepthValueType? newDepthTypeValue;
+  final int? depthSequence;
 
   const TireInspectionForm({
     super.key,
@@ -25,6 +27,8 @@ class TireInspectionForm extends ConsumerStatefulWidget {
     this.initialInspectionData,
     this.shouldFillNext = false,
     this.newDepthValue,
+    this.newDepthTypeValue,
+    this.depthSequence,
   });
 
   @override
@@ -43,20 +47,24 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   final FocusNode _centerFocus = FocusNode();
   final FocusNode _internalFocus = FocusNode();
 
-  int _currentFieldIndex = 0; // 0: pressure, 1: external, 2: center, 3: internal
+  int _currentFieldIndex =
+      0; // 0: pressure, 1: external, 2: center, 3: internal
+
+  // Guardar última secuencia procesada para no repetir
+  int? _lastProcessedSequence;
 
   @override
   void initState() {
     super.initState();
-    
+
     // Agregar listeners para detectar cambios de foco manuales
     _pressureFocus.addListener(_onPressureFocusChanged);
     _externalFocus.addListener(_onExternalFocusChanged);
     _centerFocus.addListener(_onCenterFocusChanged);
     _internalFocus.addListener(_onInternalFocusChanged);
-    
+
     _initControllers();
-    
+
     // Inicialmente el foco está en el primer campo
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _pressureFocus.requestFocus();
@@ -109,12 +117,16 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   void didUpdateWidget(covariant TireInspectionForm oldWidget) {
     super.didUpdateWidget(oldWidget);
 
-    // Si se debe llenar el siguiente campo con un nuevo valor del dispositivo
-    if (widget.shouldFillNext && 
-        widget.newDepthValue != null && 
+    final incomingSeq = widget.depthSequence;
+    if (widget.shouldFillNext &&
+        widget.newDepthValue != null &&
         widget.newDepthValue!.isNotEmpty &&
-        widget.newDepthValue != oldWidget.newDepthValue) {
-      _fillCurrentField(widget.newDepthValue!);
+        incomingSeq != null &&
+        incomingSeq != _lastProcessedSequence &&
+        widget.newDepthTypeValue != null) {
+      _handleIncomingMeasurement(
+          widget.newDepthValue!, widget.newDepthTypeValue!);
+      _lastProcessedSequence = incomingSeq;
       return;
     }
 
@@ -189,6 +201,52 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
     widget.onDataChanged(data);
   }
 
+  // manejar medición según tipo y foco actual
+  void _handleIncomingMeasurement(String value, DepthValueType type) {
+    // Normalizar valor
+    final v = value.trim();
+
+    if (type == DepthValueType.depth) {
+      // Si el foco está en presión (0) saltar al primer campo de profundidad
+      if (_currentFieldIndex == 0) {
+        _currentFieldIndex = 2; // external
+        _externalController.text = v;
+        _centerFocus.requestFocus();
+      } else {
+        // Foco ya en algún campo de profundidad => llenar ese mismo
+        switch (_currentFieldIndex) {
+          case 1:
+            _externalController.text = v;
+            _currentFieldIndex = 2;
+            _centerFocus.requestFocus();
+            break;
+          case 2:
+            _centerController.text = v;
+            _currentFieldIndex = 3;
+            _internalFocus.requestFocus();
+            break;
+          case 3:
+            _internalController.text = v;
+            _currentFieldIndex = 0;
+            _pressureFocus.requestFocus();
+            break;
+          default:
+            // Si por alguna razón índice es otro, forzar a external
+            _currentFieldIndex = 1;
+            _externalController.text = v;
+            _externalFocus.requestFocus();
+        }
+      }
+    } else if (type == DepthValueType.pressure) {
+      // Si llega presión y estamos en profundidad, llenar presión
+      _pressureController.text = v;
+      _currentFieldIndex = 0;
+      _pressureFocus.requestFocus();
+    }
+
+    _notifyDataChanged();
+  }
+
   // Métodos para manejar cambios de foco manuales
   void _onPressureFocusChanged() {
     if (_pressureFocus.hasFocus) {
@@ -223,6 +281,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   }
 
   void _fillCurrentField(String value) {
+    // Método legado de avance secuencial manual (no usado para mediciones automáticas ahora)
     switch (_currentFieldIndex) {
       case 0:
         _pressureController.text = value;
@@ -243,7 +302,6 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
         _internalController.text = value;
         _currentFieldIndex = 0;
         _pressureFocus.requestFocus();
-        // Notificar que se actualizaron los datos
         _notifyDataChanged();
         break;
     }
@@ -256,17 +314,17 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
     _externalFocus.removeListener(_onExternalFocusChanged);
     _centerFocus.removeListener(_onCenterFocusChanged);
     _internalFocus.removeListener(_onInternalFocusChanged);
-    
+
     _pressureController.dispose();
     _externalController.dispose();
     _internalController.dispose();
     _centerController.dispose();
-    
+
     _pressureFocus.dispose();
     _externalFocus.dispose();
     _centerFocus.dispose();
     _internalFocus.dispose();
-    
+
     super.dispose();
   }
 

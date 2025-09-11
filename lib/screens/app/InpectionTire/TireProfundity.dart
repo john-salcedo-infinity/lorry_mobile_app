@@ -60,6 +60,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   final BluetoothService _bluetoothService = BluetoothService.instance;
   // Estado para mostrar datos de profundidad del dispositivo
   DepthGaugeData? currentDepth;
+  DepthValueType? currentDepthType;
 
   // Variables para el manejo de los campos de entrada
   bool shouldFillNextField = false;
@@ -68,6 +69,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   // Subscripciones a streams
   StreamSubscription<DepthGaugeData>? depthSubscription;
+
+  // Nuevo: secuencia incremental para disparos únicos por lectura
+  int _depthSequence = 0;
 
   @override
   void initState() {
@@ -104,15 +108,12 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
             setState(() {
               currentDepth = depthData;
 
-              // Verificar si es un nuevo valor de profundidad para llenar campos automáticamente
-              if (previousDepth == null ||
-                  previousDepth!.value != depthData.value) {
-                latestDepthValue = depthData.value.toString();
-                shouldFillNextField = true;
-                previousDepth = depthData;
-              } else {
-                shouldFillNextField = false;
-              }
+              // Siempre intentar llenar el siguiente campo, aunque el valor sea el mismo
+              latestDepthValue = depthData.value.toString();
+              shouldFillNextField = true; // bandera para el form
+              previousDepth = depthData;
+              currentDepthType = depthData.valueType;
+              _depthSequence++; // incrementar cada lectura
             });
           }
         });
@@ -438,7 +439,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         TireInspectionForm(
           shouldFillNext: shouldFillNextField,
           newDepthValue: latestDepthValue,
+          depthSequence: _depthSequence, // nuevo
           currentMounting: currentMounting,
+          newDepthTypeValue: currentDepthType,
           onDataChanged: (data) {
             final currentData = inspectionData[index] ?? {};
             inspectionData[index] = {
