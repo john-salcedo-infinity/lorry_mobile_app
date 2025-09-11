@@ -29,7 +29,7 @@ export './bluetooth/bluetooth_response.dart';
 export './bluetooth/bluetooth_adapter.dart';
 
 // Depth Device Models
-export './depth_device.dart';
+export 'bluetooth/depth_device.dart';
 
 // Tire & Related Models
 export './tire/tire.dart';

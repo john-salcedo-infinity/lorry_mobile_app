@@ -4,7 +4,7 @@ import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:app_lorry/models/models.dart';
-import 'package:app_lorry/widgets/bluetooth/depth_input_fields.dart';
+// import 'package:app_lorry/widgets/bluetooth/depth_input_fields.dart';
 
 class BluetoothCalibrationScreen extends StatefulWidget {
   final String? deviceName;
@@ -30,8 +30,8 @@ class _BluetoothCalibrationScreenState
   String _statusMessage = 'Esperando datos del dispositivo...';
 
   // Variables para el manejo de los campos de entrada
-  bool _shouldFillNextField = false;
-  String? _latestDepthValue;
+  // bool _shouldFillNextField = false;
+  // String? _latestDepthValue;
   DepthData? _previousDepth;
 
   // Subscripciones a streams
@@ -63,11 +63,11 @@ class _BluetoothCalibrationScreenState
           // Verificar si es un nuevo valor de profundidad para llenar campos automáticamente
           if (_previousDepth == null ||
               _previousDepth!.depth != depthData.depth) {
-            _latestDepthValue = depthData.depth.toString();
-            _shouldFillNextField = true;
+            // _latestDepthValue = depthData.depth.toString();
+            // _shouldFillNextField = true;
             _previousDepth = depthData;
           } else {
-            _shouldFillNextField = false;
+            // _shouldFillNextField = false;
           }
         });
       },
@@ -76,21 +76,21 @@ class _BluetoothCalibrationScreenState
             'Calibration Screen - Error en stream de profundidad: $error');
         setState(() {
           _statusMessage = 'Error en datos de profundidad: $error';
-          _shouldFillNextField = false;
+          // _shouldFillNextField = false;
         });
       },
     );
   }
 
-  void _onAllFieldsFilled(String extrema, String centro, String interna) {
-    debugPrint('Calibration Screen - Todos los campos completados:');
-    debugPrint('  Profundidad Extrema: $extrema');
-    debugPrint('  Profundidad Centro: $centro');
-    debugPrint('  Profundidad Interna: $interna');
+  // void _onAllFieldsFilled(String extrema, String centro, String interna) {
+  //   debugPrint('Calibration Screen - Todos los campos completados:');
+  //   debugPrint('  Profundidad Extrema: $extrema');
+  //   debugPrint('  Profundidad Centro: $centro');
+  //   debugPrint('  Profundidad Interna: $interna');
     
-    // Aquí puedes agregar la lógica para procesar los datos cuando todos los campos estén llenos
-    // Por ejemplo, enviar los datos al servidor, guardar en base de datos local, etc.
-  }
+  //   // Aquí puedes agregar la lógica para procesar los datos cuando todos los campos estén llenos
+  //   // Por ejemplo, enviar los datos al servidor, guardar en base de datos local, etc.
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -108,12 +108,12 @@ class _BluetoothCalibrationScreenState
                     _buildDeviceInfo(),
                     const SizedBox(height: 20),
                     _buildDepthDisplay(),
-                    const SizedBox(height: 20),
-                    DepthInputFields(
-                      shouldFillNext: _shouldFillNextField,
-                      newDepthValue: _latestDepthValue,
-                      onAllFieldsFilled: _onAllFieldsFilled,
-                    ),
+                    // const SizedBox(height: 20),
+                    // DepthInputFields(
+                    //   shouldFillNext: _shouldFillNextField,
+                    //   newDepthValue: _latestDepthValue,
+                    //   onAllFieldsFilled: _onAllFieldsFilled,
+                    // ),
                   ],
                 ),
               ),

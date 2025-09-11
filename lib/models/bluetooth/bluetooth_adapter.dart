@@ -1,6 +1,6 @@
 import '../bluetooth/bluetooth_response.dart';
 import '../bluetooth/bluetooth_device.dart';
-import '../depth_device.dart';
+import 'depth_device.dart';
 
 /// Interface abstracta para manejar escaneo de dispositivos Bluetooth
 abstract class BluetoothAdapter {

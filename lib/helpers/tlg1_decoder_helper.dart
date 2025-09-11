@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
-import 'package:app_lorry/models/depth_device.dart';
+import 'package:app_lorry/models/bluetooth/depth_device.dart';
 
 /// Helper para decodificar datos del dispositivo TLG1
 /// Implementa la interfaz genérica DepthDataProcessor
