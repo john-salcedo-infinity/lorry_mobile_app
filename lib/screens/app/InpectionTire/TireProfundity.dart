@@ -59,15 +59,15 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   final BluetoothService _bluetoothService = BluetoothService.instance;
   // Estado para mostrar datos de profundidad del dispositivo
-  DepthData? currentDepth;
+  DepthGaugeData? currentDepth;
 
   // Variables para el manejo de los campos de entrada
   bool shouldFillNextField = false;
   String? latestDepthValue;
-  DepthData? previousDepth;
+  DepthGaugeData? previousDepth;
 
   // Subscripciones a streams
-  StreamSubscription<DepthData>? depthSubscription;
+  StreamSubscription<DepthGaugeData>? depthSubscription;
 
   @override
   void initState() {

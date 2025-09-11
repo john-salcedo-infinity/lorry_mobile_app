@@ -17,13 +17,13 @@ class TLG1DecoderHelper implements DepthDataProcessor {
 
   /// Implementación del método genérico usando la interfaz común
   @override
-  DepthData? processRawData(List<int> data) {
+  DepthGaugeData? processRawData(List<int> data) {
     final uint8List = Uint8List.fromList(data);
     return processIncomingData(uint8List);
   }
 
   /// Procesa los bytes recibidos del dispositivo y retorna la profundidad decodificada
-  DepthData? processIncomingData(Uint8List data) {
+  DepthGaugeData? processIncomingData(Uint8List data) {
     try {
       // Convertir bytes a string usando UTF-8
       String receivedData = utf8.decode(data, allowMalformed: true);
@@ -60,7 +60,7 @@ class TLG1DecoderHelper implements DepthDataProcessor {
   }
 
   /// Parsea una línea de datos de profundidad
-  DepthData? _parseDepthLine(String line) {
+  DepthGaugeData? _parseDepthLine(String line) {
     try {
       // Limpiar espacios y caracteres especiales
       String cleanLine = line.trim();
@@ -93,7 +93,7 @@ class TLG1DecoderHelper implements DepthDataProcessor {
       if (depth != null) {
         debugPrint('TLG1 - Profundidad procesada: $depth mm');
         
-        return DepthData(
+        return DepthGaugeData(
           depth: depth,
           unit: 'mm',
           timestamp: DateTime.now(),

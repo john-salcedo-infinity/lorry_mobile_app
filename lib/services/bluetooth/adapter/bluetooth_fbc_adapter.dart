@@ -24,7 +24,7 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
       StreamController.broadcast();
 
   /// Controlador para los datos de profundidad del dispositivo
-  final StreamController<DepthData> _depthDataController =
+  final StreamController<DepthGaugeData> _depthDataController =
       StreamController.broadcast();
 
   /// Helper para decodificar datos del dispositivo
@@ -61,7 +61,7 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
 
   /// Stream de datos de profundidad del dispositivo
   @override
-  Stream<DepthData> get depthDataStream => _depthDataController.stream;
+  Stream<DepthGaugeData> get depthDataStream => _depthDataController.stream;
 
   /// Inicia el escaneo de dispositivos Bluetooth
   @override

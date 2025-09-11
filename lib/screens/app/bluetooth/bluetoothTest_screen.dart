@@ -26,16 +26,16 @@ class _BluetoothCalibrationScreenState
   final BluetoothService _bluetoothService = BluetoothService.instance;
 
   // Estado para mostrar datos de profundidad del dispositivo
-  DepthData? _currentDepth;
+  DepthGaugeData? _currentDepth;
   String _statusMessage = 'Esperando datos del dispositivo...';
 
   // Variables para el manejo de los campos de entrada
   // bool _shouldFillNextField = false;
   // String? _latestDepthValue;
-  DepthData? _previousDepth;
+  DepthGaugeData? _previousDepth;
 
   // Subscripciones a streams
-  StreamSubscription<DepthData>? _depthSubscription;
+  StreamSubscription<DepthGaugeData>? _depthSubscription;
 
   @override
   void initState() {

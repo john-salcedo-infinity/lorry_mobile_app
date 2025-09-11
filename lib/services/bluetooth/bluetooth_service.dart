@@ -61,7 +61,7 @@ class BluetoothService {
       _adapter?.connectedDeviceStream ?? const Stream.empty();
 
   /// Getters genéricos para datos de profundidad (ahora independientes del dispositivo)
-  Stream<DepthData> get depthDataStream {
+  Stream<DepthGaugeData> get depthDataStream {
     return _adapter?.depthDataStream ?? const Stream.empty();
   }
 

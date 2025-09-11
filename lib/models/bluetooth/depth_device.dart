@@ -1,13 +1,13 @@
 /// Modelo genérico para datos de profundidad de cualquier dispositivo
 /// Este modelo es independiente del tipo de dispositivo específico
-class DepthData {
+class DepthGaugeData {
   final double depth;
   final String unit;
   final DateTime timestamp;
   final String rawData;
   final String? deviceId;
 
-  DepthData({
+  DepthGaugeData({
     required this.depth,
     required this.unit,
     required this.timestamp,
@@ -38,8 +38,8 @@ class DepthData {
   }
 
   /// Crea una instancia desde JSON
-  factory DepthData.fromJson(Map<String, dynamic> json) {
-    return DepthData(
+  factory DepthGaugeData.fromJson(Map<String, dynamic> json) {
+    return DepthGaugeData(
       depth: json['depth']?.toDouble() ?? 0.0,
       unit: json['unit'] ?? 'mm',
       timestamp: DateTime.parse(json['timestamp']),
@@ -49,14 +49,14 @@ class DepthData {
   }
 
   /// Crea una copia con valores modificados
-  DepthData copyWith({
+  DepthGaugeData copyWith({
     double? depth,
     String? unit,
     DateTime? timestamp,
     String? rawData,
     String? deviceId,
   }) {
-    return DepthData(
+    return DepthGaugeData(
       depth: depth ?? this.depth,
       unit: unit ?? this.unit,
       timestamp: timestamp ?? this.timestamp,
@@ -71,7 +71,7 @@ class DepthData {
 /// Modelo genérico para el estado de dispositivos de profundidad
 class DepthDeviceState {
   final String message;
-  final DepthData? lastReading;
+  final DepthGaugeData? lastReading;
   final DateTime timestamp;
   final String? deviceId;
 
@@ -90,7 +90,7 @@ class DepthDeviceState {
   /// Crea una copia con valores modificados
   DepthDeviceState copyWith({
     String? message,
-    DepthData? lastReading,
+    DepthGaugeData? lastReading,
     DateTime? timestamp,
     String? deviceId,
   }) {
@@ -117,7 +117,7 @@ class DepthDeviceState {
     return DepthDeviceState(
       message: json['message'] ?? '',
       lastReading: json['lastReading'] != null
-          ? DepthData.fromJson(json['lastReading'])
+          ? DepthGaugeData.fromJson(json['lastReading'])
           : null,
       timestamp: DateTime.parse(json['timestamp']),
       deviceId: json['deviceId'],
@@ -129,7 +129,7 @@ class DepthDeviceState {
 /// Cualquier dispositivo debe implementar esta interfaz para ser compatible
 abstract class DepthDataProcessor {
   /// Procesa los datos raw del dispositivo y retorna datos de profundidad
-  DepthData? processRawData(List<int> data);
+  DepthGaugeData? processRawData(List<int> data);
 
   /// Limpia el buffer interno del procesador
   void clearBuffer();

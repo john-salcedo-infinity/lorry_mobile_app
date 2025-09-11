@@ -38,7 +38,7 @@ abstract class BluetoothAdapter {
   Stream<BluetoothDeviceModel?> get connectedDeviceStream;
 
   /// Streams genéricos para datos de profundidad (compatibles con cualquier dispositivo)
-  Stream<DepthData> get depthDataStream;
+  Stream<DepthGaugeData> get depthDataStream;
 
   /// Método para procesar datos entrantes del dispositivo
   /// Cada adaptador implementará este método según el protocolo de su dispositivo
