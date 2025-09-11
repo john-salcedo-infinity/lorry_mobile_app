@@ -98,7 +98,7 @@ class TLG1DecoderHelper implements DepthDataProcessor {
         debugPrint('TLG1 - Profundidad procesada: $value $valueType');
 
         return DepthGaugeData(
-          value: value,
+          value: valueType == DepthValueType.depth ? value : int.parse(value.toStringAsFixed(0)),
           valueType: valueType,
           unit: valueType == DepthValueType.depth ? 'mm' : 'psi',
           timestamp: DateTime.now(),

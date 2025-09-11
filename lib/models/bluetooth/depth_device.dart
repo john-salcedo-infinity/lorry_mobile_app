@@ -7,7 +7,7 @@ enum DepthValueType {
 }
 
 class DepthGaugeData {
-  final double value;
+  final num value;
   final DepthValueType valueType;
   final String unit;
   final DateTime timestamp;

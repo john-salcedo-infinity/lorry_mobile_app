@@ -250,7 +250,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
       // Si llega presión y estamos en profundidad, llenar presión
       _pressureController.text = v;
       _currentFieldIndex = 0;
-      _pressureFocus.requestFocus();
+      _externalFocus.requestFocus();
     }
 
     _notifyDataChanged();
