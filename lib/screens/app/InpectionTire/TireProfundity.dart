@@ -446,6 +446,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           depthSequence: isActive ? _depthSequence : null, // null para inactivas
           currentMounting: currentMounting,
           newDepthTypeValue: isActive ? currentDepthType : null,
+          isActive: isActive,
           onDataChanged: (data) {
             final currentData = inspectionData[index] ?? {};
             inspectionData[index] = {

@@ -12,6 +12,10 @@ class TireDataTextField extends StatefulWidget {
   final Function(String fieldName, double currentValue, double lastValue)?
       onValueChanged;
   final FocusNode? focusNode; // Agregar focusNode opcional
+  // Evitar que el teclado aparezca automáticamente; sólo al tocar manualmente
+  final bool suppressKeyboardUntilTap;
+  // Foco del siguiente campo cuando se presiona Enter/Next
+  final FocusNode? nextFocusNode;
 
   const TireDataTextField({
     super.key,
@@ -23,6 +27,8 @@ class TireDataTextField extends StatefulWidget {
     this.isPressure = false,
     this.onValueChanged,
     this.focusNode, // Agregar al constructor
+    this.suppressKeyboardUntilTap = true,
+  this.nextFocusNode,
   });
 
   @override
@@ -30,11 +36,14 @@ class TireDataTextField extends StatefulWidget {
 }
 
 class _TireDataTextFieldState extends State<TireDataTextField> {
+  // Desbloquea el teclado en el próximo foco si se avanzó con Enter
+  static bool _unlockForNextFocus = false;
   final FocusNode _internalFocusNode = FocusNode();
   late FocusNode _focusNode;
   late TextEditingController _controller;
   bool _hasFocus = false;
   double _currentValue = 0;
+  bool _suppressKeyboard = true;
 
   @override
   void initState() {
@@ -63,6 +72,9 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
 
     // Listener para cambios de foco
     _focusNode.addListener(_onFocusChanged);
+
+    // Inicializar supresión de teclado según prop
+    _suppressKeyboard = widget.suppressKeyboardUntilTap;
   }
 
   void _onTextChanged() {
@@ -99,6 +111,29 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
         _hasFocus = hasFocus;
       });
     }
+    Future.microtask(() {
+      if (_hasFocus) {
+        _controller.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _controller.text.length,
+        );
+      }
+    });
+
+    // Si ganamos foco por avance con Enter, no suprimir teclado
+    if (hasFocus && widget.suppressKeyboardUntilTap && _suppressKeyboard) {
+      if (_unlockForNextFocus) {
+        setState(() {
+          _suppressKeyboard = false;
+          _unlockForNextFocus = false;
+        });
+      }
+    }
+
+    // Si perdemos foco, volver a suprimir teclado para próximos montajes
+    if (!hasFocus && widget.suppressKeyboardUntilTap) {
+      _suppressKeyboard = true;
+    }
   }
 
   void _checkAndTriggerAlerts() {
@@ -117,7 +152,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
   void dispose() {
     _controller.removeListener(_onTextChanged);
     _focusNode.removeListener(_onFocusChanged);
-    
+
     // Solo dispose del focusNode si lo creamos nosotros
     if (widget.focusNode == null) {
       _internalFocusNode.dispose();
@@ -163,11 +198,29 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
               builder: (context, animatedBorderColor, child) {
                 return TextField(
                   focusNode: _focusNode,
+                  onSubmitted: (value) {
+                    // Avanzar al siguiente sin cerrar el teclado
+                    if (widget.nextFocusNode != null) {
+                      _unlockForNextFocus = true;
+                      FocusScope.of(context).requestFocus(widget.nextFocusNode);
+                    } else {
+                      // Mantener el foco actual para no cerrar el teclado
+                      _focusNode.requestFocus();
+                    }
+                  },
+                  onTap: () {
+                    if (widget.suppressKeyboardUntilTap && _suppressKeyboard) {
+                      setState(() => _suppressKeyboard = false);
+                    }
+                  },
                   onTapOutside: (event) {
                     FocusScope.of(context).unfocus();
                   },
                   enabled: widget.isEditable,
                   controller: _controller,
+                  showCursor: !_suppressKeyboard,
+                  readOnly:
+                      widget.suppressKeyboardUntilTap && _suppressKeyboard,
                   keyboardType: widget.isPressure == true
                       ? TextInputType.number
                       : const TextInputType.numberWithOptions(decimal: true),

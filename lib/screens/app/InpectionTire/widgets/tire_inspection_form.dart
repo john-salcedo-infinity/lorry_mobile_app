@@ -17,6 +17,7 @@ class TireInspectionForm extends ConsumerStatefulWidget {
   final String? newDepthValue;
   final DepthValueType? newDepthTypeValue;
   final int? depthSequence;
+  final bool isActive; // indica si la página está activa para forzar foco
 
   const TireInspectionForm({
     super.key,
@@ -29,6 +30,7 @@ class TireInspectionForm extends ConsumerStatefulWidget {
     this.newDepthValue,
     this.newDepthTypeValue,
     this.depthSequence,
+  this.isActive = false,
   });
 
   @override
@@ -116,6 +118,15 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   @override
   void didUpdateWidget(covariant TireInspectionForm oldWidget) {
     super.didUpdateWidget(oldWidget);
+
+    // Si la tarjeta pasa a estar activa, forzar foco al primer campo (sin teclado)
+    if (widget.isActive && !oldWidget.isActive) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          _pressureFocus.requestFocus();
+        }
+      });
+    }
 
     final incomingSeq = widget.depthSequence;
     if (widget.shouldFillNext &&
@@ -271,39 +282,12 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
       });
     }
   }
-
+  
   void _onInternalFocusChanged() {
     if (_internalFocus.hasFocus) {
       setState(() {
         _currentFieldIndex = 3;
       });
-    }
-  }
-
-  void _fillCurrentField(String value) {
-    // Método legado de avance secuencial manual (no usado para mediciones automáticas ahora)
-    switch (_currentFieldIndex) {
-      case 0:
-        _pressureController.text = value;
-        _currentFieldIndex = 1;
-        _externalFocus.requestFocus();
-        break;
-      case 1:
-        _externalController.text = value;
-        _currentFieldIndex = 2;
-        _centerFocus.requestFocus();
-        break;
-      case 2:
-        _centerController.text = value;
-        _currentFieldIndex = 3;
-        _internalFocus.requestFocus();
-        break;
-      case 3:
-        _internalController.text = value;
-        _currentFieldIndex = 0;
-        _pressureFocus.requestFocus();
-        _notifyDataChanged();
-        break;
     }
   }
 
@@ -376,6 +360,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
           ),
           const SizedBox(height: 18),
           TireDataTextField(
+            key: ValueKey('pressure-${widget.currentMounting.id}'),
             label: "Presión llanta",
             controller: _pressureController,
             isEditable: true,
@@ -383,9 +368,12 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             lastValue: widget.currentMounting.tire?.pressure?.toInt() ?? 0,
             onValueChanged: _handleTireAlert,
             focusNode: _pressureFocus,
+            suppressKeyboardUntilTap: true,
+            nextFocusNode: _externalFocus,
           ),
           const SizedBox(height: 38),
           TireDataTextField(
+            key: ValueKey('prof_ext-${widget.currentMounting.id}'),
             label: "Profun. Externa",
             controller: _externalController,
             isEditable: true,
@@ -394,9 +382,12 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
                     0.0,
             onValueChanged: _handleTireAlert,
             focusNode: _externalFocus,
+            suppressKeyboardUntilTap: true,
+            nextFocusNode: _centerFocus,
           ),
           const SizedBox(height: 12),
           TireDataTextField(
+            key: ValueKey('prof_center-${widget.currentMounting.id}'),
             label: "Profun. Central",
             controller: _centerController,
             isEditable: true,
@@ -405,9 +396,12 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
                     0.0,
             onValueChanged: _handleTireAlert,
             focusNode: _centerFocus,
+            suppressKeyboardUntilTap: true,
+            nextFocusNode: _internalFocus,
           ),
           const SizedBox(height: 12),
           TireDataTextField(
+            key: ValueKey('prof_internal-${widget.currentMounting.id}'),
             label: "Profun. Interna",
             controller: _internalController,
             isEditable: true,
@@ -416,6 +410,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
                     0.0,
             onValueChanged: _handleTireAlert,
             focusNode: _internalFocus,
+            suppressKeyboardUntilTap: true,
+            nextFocusNode: _pressureFocus,
           ),
           const SizedBox(height: 32),
           _buildAddObservationButton(),
