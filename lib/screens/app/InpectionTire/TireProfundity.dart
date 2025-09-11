@@ -10,6 +10,7 @@ import 'package:app_lorry/widgets/buttons/BottomButton.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:go_router/go_router.dart';
@@ -73,6 +74,10 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   // Nuevo: secuencia incremental para disparos únicos por lectura
   int _depthSequence = 0;
 
+  // Throttle simple para lecturas del profundímetro
+  DateTime? _lastDepthAt;
+  static const int _depthThrottleMs = 60; // ajustar si es necesario
+
   @override
   void initState() {
     super.initState();
@@ -99,36 +104,49 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     // Escuchar datos de profundidad
     depthSubscription = _bluetoothService.depthDataStream.listen(
       (depthData) {
-        debugPrint(
-            'Calibration Screen - Datos de profundidad recibidos: ${depthData.depthWithUnit}');
+        // Throttle para evitar exceso de reconstrucciones
+        final now = DateTime.now();
+        if (_lastDepthAt != null &&
+            now.difference(_lastDepthAt!).inMilliseconds < _depthThrottleMs) {
+          return;
+        }
+        _lastDepthAt = now;
 
-        // Usar addPostFrameCallback para evitar setState durante build
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            setState(() {
-              currentDepth = depthData;
-
-              // Siempre intentar llenar el siguiente campo, aunque el valor sea el mismo
-              latestDepthValue = depthData.value.toString();
-              shouldFillNextField = true; // bandera para el form
-              previousDepth = depthData;
-              currentDepthType = depthData.valueType;
-              _depthSequence++; // incrementar cada lectura
-            });
-          }
-        });
+        if (!mounted) return;
+        final phase = SchedulerBinding.instance.schedulerPhase;
+        void update() {
+          if (!mounted) return;
+          setState(() {
+            currentDepth = depthData;
+            latestDepthValue = depthData.value.toString();
+            shouldFillNextField = true;
+            previousDepth = depthData;
+            currentDepthType = depthData.valueType;
+            _depthSequence++;
+          });
+        }
+        if (phase == SchedulerPhase.persistentCallbacks ||
+            phase == SchedulerPhase.postFrameCallbacks) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => update());
+        } else {
+          update();
+        }
       },
       onError: (error) {
-        debugPrint(
-            'Calibration Screen - Error en stream de profundidad: $error');
-        // Usar addPostFrameCallback para evitar setState durante build
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            setState(() {
-              shouldFillNextField = false;
-            });
-          }
-        });
+        if (!mounted) return;
+        final phase = SchedulerBinding.instance.schedulerPhase;
+        void update() {
+          if (!mounted) return;
+          setState(() {
+            shouldFillNextField = false;
+          });
+        }
+        if (phase == SchedulerPhase.persistentCallbacks ||
+            phase == SchedulerPhase.postFrameCallbacks) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => update());
+        } else {
+          update();
+        }
       },
     );
   }
@@ -328,16 +346,12 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                 scrollDirection: Axis.vertical,
                 physics: const NeverScrollableScrollPhysics(),
                 onPageChanged: (index) {
-                  // Usar addPostFrameCallback para evitar setState durante build
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    if (mounted) {
-                      setState(() {
-                        _currentTireIndex = index;
-                        inspectedTires.add(index);
-                        // Al cambiar de llanta, cancelar cualquier llenado pendiente
-                        shouldFillNextField = false;
-                      });
-                    }
+                  if (!mounted) return;
+                  setState(() {
+                    _currentTireIndex = index;
+                    inspectedTires.add(index);
+                    // Al cambiar de llanta, cancelar cualquier llenado pendiente
+                    shouldFillNextField = false;
                   });
                 },
                 itemCount: mountings.length,
@@ -395,14 +409,10 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
                 // Hay scroll real - verificar si llegamos a los límites
                 if (scrollInfo.metrics.pixels >=
                     scrollInfo.metrics.maxScrollExtent - 5) {
-                  Future.delayed(const Duration(milliseconds: 100), () {
-                    _handleScrollAttempt(isScrollingDown: true);
-                  });
+                  _handleScrollAttempt(isScrollingDown: true);
                 } else if (scrollInfo.metrics.pixels <=
                     scrollInfo.metrics.minScrollExtent + 5) {
-                  Future.delayed(const Duration(milliseconds: 100), () {
-                    _handleScrollAttempt(isScrollingDown: false);
-                  });
+                  _handleScrollAttempt(isScrollingDown: false);
                 }
                 return true;
               }
@@ -458,22 +468,32 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               'prof_internal':
                   data['prof_internal'] ?? currentData['prof_internal'],
             };
-            // Evitar setState durante build usando addPostFrameCallback
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                setState(() {});
-              }
-            });
+            if (!mounted) return;
+            void update() {
+              if (!mounted) return;
+              setState(() {});
+            }
+            final phase = SchedulerBinding.instance.schedulerPhase;
+            if (phase == SchedulerPhase.idle) {
+              update();
+            } else {
+              WidgetsBinding.instance.addPostFrameCallback((_) => update());
+            }
           },
           existingNovelties: noveltiesData[index] ?? [],
           onNoveltiesChanged: (novelties) {
             noveltiesData[index] = novelties;
-            // Evitar setState durante build usando addPostFrameCallback
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (mounted) {
-                setState(() {});
-              }
-            });
+            if (!mounted) return;
+            void update() {
+              if (!mounted) return;
+              setState(() {});
+            }
+            final phase = SchedulerBinding.instance.schedulerPhase;
+            if (phase == SchedulerPhase.idle) {
+              update();
+            } else {
+              WidgetsBinding.instance.addPostFrameCallback((_) => update());
+            }
           },
           initialInspectionData: inspectionData[index],
         ),
@@ -503,21 +523,27 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           return; // Bloquear el scroll
         }
 
-        // Si no hay errores, permitir el scroll
-        _pageController.nextPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
+        // Si no hay errores, permitir el scroll con animación ligera
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            _currentTireIndex + 1,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+          );
+        }
         FocusScope.of(context).unfocus();
       }
     } else {
       // Intentando ir a la página anterior
       if (_currentTireIndex > 0) {
         FocusScope.of(context).unfocus();
-        _pageController.previousPage(
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
+        if (_pageController.hasClients) {
+          _pageController.animateToPage(
+            _currentTireIndex - 1,
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+          );
+        }
       }
     }
   }

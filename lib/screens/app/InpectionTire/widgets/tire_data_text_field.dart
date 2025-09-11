@@ -92,15 +92,8 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
     }
 
     if (_currentValue != newValue) {
-      setState(() {
-        _currentValue = newValue;
-      });
-
-      _focusNode.addListener(() {
-        if (!_focusNode.hasFocus) {
-          _checkAndTriggerAlerts();
-        }
-      });
+      _currentValue = newValue;
+      if (mounted) setState(() {});
     }
   }
 
@@ -182,97 +175,78 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
           style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
         ),
         const SizedBox(height: 2),
-        TweenAnimationBuilder<Color?>(
-          duration: const Duration(milliseconds: 200),
-          tween: ColorTween(
-            begin: colors['background'],
-            end: colors['background'],
-          ),
-          builder: (context, animatedBackgroundColor, child) {
-            return TweenAnimationBuilder<Color?>(
-              duration: const Duration(milliseconds: 200),
-              tween: ColorTween(
-                begin: colors['border'],
-                end: colors['border'],
-              ),
-              builder: (context, animatedBorderColor, child) {
-                return TextField(
-                  focusNode: _focusNode,
-                  onSubmitted: (value) {
-                    // Avanzar al siguiente sin cerrar el teclado
-                    if (widget.nextFocusNode != null) {
-                      _unlockForNextFocus = true;
-                      FocusScope.of(context).requestFocus(widget.nextFocusNode);
-                    } else {
-                      // Mantener el foco actual para no cerrar el teclado
-                      _focusNode.requestFocus();
-                    }
-                  },
-                  onTap: () {
-                    if (widget.suppressKeyboardUntilTap && _suppressKeyboard) {
-                      setState(() => _suppressKeyboard = false);
-                    }
-                  },
-                  onTapOutside: (event) {
-                    FocusScope.of(context).unfocus();
-                  },
-                  enabled: widget.isEditable,
-                  controller: _controller,
-                  showCursor: !_suppressKeyboard,
-                  readOnly:
-                      widget.suppressKeyboardUntilTap && _suppressKeyboard,
-                  keyboardType: widget.isPressure == true
-                      ? TextInputType.number
-                      : const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: widget.isPressure == true
-                      ? [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(
-                              3), // Máximo 3 dígitos (200)
-                        ]
-                      : [
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'^\d+\.?\d{0,1}$')),
-                        ],
-                  textInputAction: TextInputAction.next,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: animatedBackgroundColor ?? colors['background'],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: animatedBorderColor ?? colors['border']!,
-                        width: 1,
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: animatedBorderColor ?? colors['border']!,
-                        width: 1,
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(
-                        color: animatedBorderColor ?? colors['border']!,
-                        width: 2,
-                      ),
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 16,
-                    ),
-                  ),
-                  style: Apptheme.h4TitleDecorative(
-                    context,
-                    color: colors['text']!,
-                  ),
-                  textAlign: TextAlign.center,
-                );
-              },
-            );
+        TextField(
+          focusNode: _focusNode,
+          onSubmitted: (value) {
+            // Avanzar al siguiente sin cerrar el teclado
+            if (widget.nextFocusNode != null) {
+              _unlockForNextFocus = true;
+              FocusScope.of(context).requestFocus(widget.nextFocusNode);
+            } else {
+              // Mantener el foco actual para no cerrar el teclado
+              _focusNode.requestFocus();
+            }
           },
+          onTap: () {
+            if (widget.suppressKeyboardUntilTap && _suppressKeyboard) {
+              setState(() => _suppressKeyboard = false);
+            }
+          },
+          onTapOutside: (event) {
+            FocusScope.of(context).unfocus();
+            _checkAndTriggerAlerts();
+          },
+          enabled: widget.isEditable,
+          controller: _controller,
+          showCursor: !_suppressKeyboard,
+          readOnly: widget.suppressKeyboardUntilTap && _suppressKeyboard,
+          keyboardType: widget.isPressure == true
+              ? TextInputType.number
+              : const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: widget.isPressure == true
+              ? [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(3), // Máximo 3 dígitos (200)
+                ]
+              : [
+                  FilteringTextInputFormatter.allow(
+                      RegExp(r'^\d+\.?\d{0,1}$')),
+                ],
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: colors['background'],
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: colors['border']!,
+                width: 1,
+              ),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: colors['border']!,
+                width: 1,
+              ),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(
+                color: colors['border']!,
+                width: 2,
+              ),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 14,
+              vertical: 16,
+            ),
+          ),
+          style: Apptheme.h4TitleDecorative(
+            context,
+            color: colors['text']!,
+          ),
+          textAlign: TextAlign.center,
         ),
       ],
     );

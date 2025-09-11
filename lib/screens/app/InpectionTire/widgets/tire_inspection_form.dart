@@ -121,11 +121,9 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
 
     // Si la tarjeta pasa a estar activa, forzar foco al primer campo (sin teclado)
     if (widget.isActive && !oldWidget.isActive) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _pressureFocus.requestFocus();
-        }
-      });
+      if (mounted) {
+        _pressureFocus.requestFocus();
+      }
     }
 
     final incomingSeq = widget.depthSequence;
@@ -261,33 +259,41 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   // Métodos para manejar cambios de foco manuales
   void _onPressureFocusChanged() {
     if (_pressureFocus.hasFocus) {
-      setState(() {
-        _currentFieldIndex = 0;
-      });
+      if (_currentFieldIndex != 0 && mounted) {
+        setState(() {
+          _currentFieldIndex = 0;
+        });
+      }
     }
   }
 
   void _onExternalFocusChanged() {
     if (_externalFocus.hasFocus) {
-      setState(() {
-        _currentFieldIndex = 1;
-      });
+      if (_currentFieldIndex != 1 && mounted) {
+        setState(() {
+          _currentFieldIndex = 1;
+        });
+      }
     }
   }
 
   void _onCenterFocusChanged() {
     if (_centerFocus.hasFocus) {
-      setState(() {
-        _currentFieldIndex = 2;
-      });
+      if (_currentFieldIndex != 2 && mounted) {
+        setState(() {
+          _currentFieldIndex = 2;
+        });
+      }
     }
   }
   
   void _onInternalFocusChanged() {
     if (_internalFocus.hasFocus) {
-      setState(() {
-        _currentFieldIndex = 3;
-      });
+      if (_currentFieldIndex != 3 && mounted) {
+        setState(() {
+          _currentFieldIndex = 3;
+        });
+      }
     }
   }
 
