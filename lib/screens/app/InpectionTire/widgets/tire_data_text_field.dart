@@ -94,6 +94,11 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
     if (_currentValue != newValue) {
       _currentValue = newValue;
       if (mounted) setState(() {});
+      
+      // Disparar alertas inmediatamente al cambiar el valor
+      if (widget.controller != null) {
+        _checkAndTriggerAlerts();
+      }
     }
   }
 
@@ -130,7 +135,8 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
   }
 
   void _checkAndTriggerAlerts() {
-    final newValue = double.tryParse(widget.controller!.text) ?? 0;
+    // Usar el valor actual ya parseado en lugar de volver a parsear
+    final newValue = _currentValue;
 
     if (widget.onValueChanged != null) {
       widget.onValueChanged!(

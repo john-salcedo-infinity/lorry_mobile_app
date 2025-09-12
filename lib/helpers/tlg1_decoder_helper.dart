@@ -22,7 +22,7 @@ class TLG1DecoderHelper implements DepthDataProcessor {
     return processIncomingData(uint8List);
   }
 
-  /// Procesa los bytes recibidos del dispositivo y retorna la profundidad decodificada
+  /// Procesa los bytes recibidos del dispositivo y retorna la información decodificada
   DepthGaugeData? processIncomingData(Uint8List data) {
     try {
       // Convertir bytes a string usando UTF-8
@@ -76,6 +76,9 @@ class TLG1DecoderHelper implements DepthDataProcessor {
       else if (cleanLine.startsWith('P') && cleanLine.length > 1) {
         cleanLine = cleanLine.substring(1); // Remover la 'P' (presión)
         debugPrint('TLG1 - Después de remover P: "$cleanLine"');
+      } else if (cleanLine.startsWith('N') && cleanLine.length > 1) {
+        cleanLine = cleanLine.substring(1); // Remover la 'N' (no válido)
+        debugPrint('TLG1 - Después de remover N: "$cleanLine"');
       }
       // Manejar formato con otros caracteres especiales
       else if (cleanLine.contains(':')) {
@@ -90,15 +93,32 @@ class TLG1DecoderHelper implements DepthDataProcessor {
       // Intentar convertir a número decimal
       double? parsedValue = double.tryParse(cleanLine);
       String? formattedValue = parsedValue?.toStringAsFixed(1);
-      double? value = formattedValue != null ? double.parse(formattedValue) : null;
-      DepthValueType valueType =
-          line.startsWith('T') ? DepthValueType.depth : DepthValueType.pressure;
+      double? value =
+          formattedValue != null ? double.parse(formattedValue) : null;
+      DepthValueType valueType = line.startsWith('T')
+          ? DepthValueType.depth
+          : line.startsWith('P')
+              ? DepthValueType.pressure
+              : DepthValueType.action;
 
       if (value != null) {
         debugPrint('TLG1 - Profundidad procesada: $value $valueType');
 
+        if (valueType == DepthValueType.action) {
+          return DepthGaugeData(
+            value: value,
+            valueType: valueType,
+            unit: 'N/A',
+            timestamp: DateTime.now(),
+            rawData: line,
+            deviceId: _deviceId
+          );
+        }
+
         return DepthGaugeData(
-          value: valueType == DepthValueType.depth ? value : int.parse(value.toStringAsFixed(0)),
+          value: valueType == DepthValueType.depth
+              ? value
+              : int.parse(value.toStringAsFixed(0)),
           valueType: valueType,
           unit: valueType == DepthValueType.depth ? 'mm' : 'psi',
           timestamp: DateTime.now(),

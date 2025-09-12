@@ -39,7 +39,7 @@ class TireProfundity extends ConsumerStatefulWidget {
   ConsumerState<TireProfundity> createState() => _TireProfundityState();
 }
 
-class _TireProfundityState extends ConsumerState<TireProfundity> {
+class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBindingObserver {
   late final int licensePlate; // id del vehículo
   late final List<MountingResult> mountings; // Lista de montajes
 
@@ -74,6 +74,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   // Nuevo: secuencia incremental para disparos únicos por lectura
   int _depthSequence = 0;
 
+  // Estado para acción detectada
+  bool _actionDetected = false;
+  bool _hasErrors = false;
+  Timer? _actionTimer;
+
   // Throttle simple para lecturas del profundímetro
   DateTime? _lastDepthAt;
   static const int _depthThrottleMs = 60; // ajustar si es necesario
@@ -81,6 +86,9 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   @override
   void initState() {
     super.initState();
+    
+    // Agregar observer para detectar cambios en el ciclo de vida de la app
+    WidgetsBinding.instance.addObserver(this);
 
     final data = widget.data;
     licensePlate = data.vehicle;
@@ -100,6 +108,19 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
     inspectedTires.add(_currentTireIndex);
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    // Cuando la app vuelve a primer plano, reinicializar streams si es necesario
+    if (state == AppLifecycleState.resumed) {
+      if (mounted && depthSubscription == null) {
+        print("App resumed - reinitializing streams");
+        _initializeStreams();
+      }
+    }
+  }
+
   void _initializeStreams() {
     // Escuchar datos de profundidad
     depthSubscription = _bluetoothService.depthDataStream.listen(
@@ -116,6 +137,13 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         final phase = SchedulerBinding.instance.schedulerPhase;
         void update() {
           if (!mounted) return;
+
+          // Manejar datos de acción
+          if (depthData.valueType == DepthValueType.action) {
+            _handleActionData(depthData.rawData);
+            return;
+          }
+
           setState(() {
             currentDepth = depthData;
             latestDepthValue = depthData.value.toString();
@@ -125,6 +153,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
             _depthSequence++;
           });
         }
+
         if (phase == SchedulerPhase.persistentCallbacks ||
             phase == SchedulerPhase.postFrameCallbacks) {
           WidgetsBinding.instance.addPostFrameCallback((_) => update());
@@ -141,6 +170,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
             shouldFillNextField = false;
           });
         }
+
         if (phase == SchedulerPhase.persistentCallbacks ||
             phase == SchedulerPhase.postFrameCallbacks) {
           WidgetsBinding.instance.addPostFrameCallback((_) => update());
@@ -149,6 +179,116 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         }
       },
     );
+  }
+
+  void _handleActionData(String actionData) {
+    print("Action data received in TireProfundity: $actionData");
+
+    // Verificar si el widget aún está montado y la suscripción es válida
+    if (!mounted || depthSubscription == null) {
+      return;
+    }
+
+    // Evitar acción si ya hay una en progreso de error
+    if (_hasErrors) {
+      return;
+    }
+
+    // Activar indicador visual
+    setState(() {
+      _actionDetected = true;
+    });
+
+    // Mostrar la indicación por 1 segundo
+    _actionTimer?.cancel();
+    _actionTimer = Timer(const Duration(seconds: 1), () {
+      if (mounted) {
+        setState(() {
+          _actionDetected = false;
+        });
+      }
+    });
+
+    // Intentar avanzar a la siguiente inspección
+    _handleActionNavigation();
+  }
+
+  void _handleActionNavigation() {
+    // Evitar acción si ya hay errores en progreso
+    if (_hasErrors) {
+      return;
+    }
+    
+    // Si es la última llanta, verificar si podemos finalizar
+    if (_currentTireIndex >= mountings.length - 1) {
+      // Validar la llanta actual
+      final validation = _validateTireProfundity(_currentTireIndex);
+      if (!validation['hasErrors'] && !btnDisabled) {
+        // Si no hay errores y el botón de finalizar está habilitado, finalizar
+        _onFinish();
+      } else {
+        // Activar indicador visual de error temporalmente
+        setState(() {
+          _hasErrors = true;
+        });
+        
+        // Desactivar después de 1 segundo
+        Timer(const Duration(seconds: 1), () {
+          if (mounted) {
+            setState(() {
+              _hasErrors = false;
+            });
+          }
+        });
+        
+        // Mostrar mensaje indicando que no se puede finalizar
+        ValidationToastHelper.showValidationToast(
+          context: context,
+          title: "No se puede finalizar",
+          message:
+              "Completa todas las inspecciones correctamente antes de finalizar.",
+        );
+      }
+      return;
+    }
+
+    // Validar errores en la página actual antes de avanzar
+    final validation = _validateTireProfundity(_currentTireIndex);
+    if (validation['hasErrors']) {
+      // Activar indicador visual de error temporalmente
+      setState(() {
+        _hasErrors = true;
+      });
+      
+      // Desactivar después de 1 segundo
+      Timer(const Duration(seconds: 1), () {
+        if (mounted) {
+          setState(() {
+            _hasErrors = false;
+          });
+        }
+      });
+      
+      ValidationToastHelper.showValidationToast(
+        context: context,
+        title: "Errores en la inspección actual",
+        message:
+            "La llanta ${mountings[_currentTireIndex].position} tiene errores: ${validation['errors'].join(', ')}",
+      );
+      return;
+    }
+
+    // Si no hay errores, avanzar a la siguiente llanta
+    if (_pageController.hasClients) {
+      _pageController.animateToPage(
+        _currentTireIndex + 1,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+
+    // Quitar el foco del teclado
+    FocusScope.of(context).unfocus();
   }
 
   void _initializeInspectionData() {
@@ -290,6 +430,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   }
 
   void _onFinish() async {
+    // Marcar que estamos navegando para pausar temporalmente las acciones del botón
+    setState(() {
+      _actionDetected = true; // Esto bloqueará temporalmente nuevas acciones
+    });
+    
     List<Map<String, dynamic>> inspections = [];
 
     for (int i = 0; i < mountings.length; i++) {
@@ -316,6 +461,10 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       "inspections": inspections
     };
 
+    // Pausar brevemente el stream durante la navegación
+    depthSubscription?.cancel();
+    depthSubscription = null;
+
     ref.read(appRouterProvider).push(
           "/DetailTire",
           extra: DetailTireParams(
@@ -323,7 +472,16 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               vehicle: mountings.first.vehicle!,
               mileage: widget.data.mileage,
               inspectionData: jsonInspectionData),
-        );
+        ).then((_) {
+      // Cuando regresamos de DetailTire, reinicializar el stream
+      if (mounted && depthSubscription == null) {
+        print("Returned from DetailTire - reinitializing streams");
+        _initializeStreams();
+        setState(() {
+          _actionDetected = false; // Reactivar acciones
+        });
+      }
+    });
   }
 
   bool get _isKeyboardOpen {
@@ -441,7 +599,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   Widget _buildContent(int index) {
     final currentMounting = mountings[index];
-  final bool isActive = index == _currentTireIndex; // Solo la página activa recibe lecturas
+    final bool isActive =
+        index == _currentTireIndex; // Solo la página activa recibe lecturas
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -453,7 +612,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           // Pasar lecturas SOLO a la llanta activa para evitar que se llenen las otras
           shouldFillNext: isActive && shouldFillNextField,
           newDepthValue: isActive ? latestDepthValue : null,
-          depthSequence: isActive ? _depthSequence : null, // null para inactivas
+          depthSequence:
+              isActive ? _depthSequence : null, // null para inactivas
           currentMounting: currentMounting,
           newDepthTypeValue: isActive ? currentDepthType : null,
           isActive: isActive,
@@ -473,6 +633,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               if (!mounted) return;
               setState(() {});
             }
+
             final phase = SchedulerBinding.instance.schedulerPhase;
             if (phase == SchedulerPhase.idle) {
               update();
@@ -488,6 +649,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
               if (!mounted) return;
               setState(() {});
             }
+
             final phase = SchedulerBinding.instance.schedulerPhase;
             if (phase == SchedulerPhase.idle) {
               update();
@@ -506,6 +668,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
       // Si el teclado está abierto, no hacer nada
       return;
     }
+    
+    // Evitar acción si ya hay una en progreso
+    if (_hasErrors || _actionDetected) {
+      return;
+    }
 
     if (isScrollingDown) {
       // Intentando ir a la siguiente página
@@ -514,6 +681,20 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
         final validation = _validateTireProfundity(_currentTireIndex);
 
         if (validation['hasErrors']) {
+          // Activar indicador visual de error temporalmente
+          setState(() {
+            _hasErrors = true;
+          });
+          
+          // Desactivar después de 1 segundo
+          Timer(const Duration(seconds: 1), () {
+            if (mounted) {
+              setState(() {
+                _hasErrors = false;
+              });
+            }
+          });
+          
           ValidationToastHelper.showValidationToast(
             context: context,
             title: "Errores encontrados en la Inspección",
@@ -528,8 +709,28 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           _pageController.animateToPage(
             _currentTireIndex + 1,
             duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
+            curve: Curves.easeInOut,
           );
+          // Agregar indicador visual de acción
+          // delay de cambiar de página
+
+          Future.delayed(const Duration(milliseconds: 220), () {
+            if (mounted) {
+              setState(() {
+                _actionDetected = true;
+              });
+            }
+          });
+
+          // Mostrar la indicación por 1 segundo
+          _actionTimer?.cancel();
+          _actionTimer = Timer(const Duration(seconds: 1), () {
+            if (mounted) {
+              setState(() {
+                _actionDetected = false;
+              });
+            }
+          });
         }
         FocusScope.of(context).unfocus();
       }
@@ -541,8 +742,26 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
           _pageController.animateToPage(
             _currentTireIndex - 1,
             duration: const Duration(milliseconds: 220),
-            curve: Curves.easeOutCubic,
+            curve: Curves.easeInOut,
           );
+          // Agregar indicador visual de acción
+          Future.delayed(const Duration(milliseconds: 220), () {
+            if (mounted) {
+              setState(() {
+                _actionDetected = true;
+              });
+            }
+          });
+
+          // Mostrar la indicación por 1 segundo
+          _actionTimer?.cancel();
+          _actionTimer = Timer(const Duration(seconds: 1), () {
+            if (mounted) {
+              setState(() {
+                _actionDetected = false;
+              });
+            }
+          });
         }
       }
     }
@@ -582,28 +801,64 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
   }
 
   Widget _buildTitleWidget(String position) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        RichText(
-          text: TextSpan(
-            style:
-                Apptheme.h1Title(context, color: Apptheme.textColorSecondary),
-            children: [
-              const TextSpan(text: "Inspección llanta "),
-              TextSpan(
-                text: 'P$position',
-                style: Apptheme.h1TitleDecorative(
-                  context,
-                  color: Apptheme.secondary,
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: _actionDetected
+            ? _hasErrors
+                ? Apptheme.highAlertBackground
+                : Colors.green.withOpacity(0.1)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        border: _actionDetected
+            ? _hasErrors
+                ? Border.all(color: Apptheme.alertOrange, width: 1)
+                : Border.all(color: Colors.green, width: 1)
+            : null,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          RichText(
+            text: TextSpan(
+              style:
+                  Apptheme.h1Title(context, color: Apptheme.textColorSecondary),
+              children: [
+                const TextSpan(text: "Inspección llanta "),
+                TextSpan(
+                  text: 'P$position',
+                  style: Apptheme.h1TitleDecorative(
+                    context,
+                    color: Apptheme.secondary,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-        const SizedBox(width: 6),
-        const Icon(Icons.error, color: Apptheme.primary),
-      ],
+          const SizedBox(width: 6),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 300),
+            child: _actionDetected
+                ? !_hasErrors
+                    ? const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        key: ValueKey('action'),
+                      )
+                    : const Icon(
+                        Icons.cancel,
+                        color: Apptheme.primary,
+                        key: ValueKey('normal'),
+                      )
+                : const Icon(
+                    Icons.error,
+                    color: Apptheme.primary,
+                    key: ValueKey('normal'),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -676,9 +931,14 @@ class _TireProfundityState extends ConsumerState<TireProfundity> {
 
   @override
   void dispose() {
+    // Cancelar todas las suscripciones y timers antes de dispose
+    depthSubscription?.cancel();
+    depthSubscription = null;
+    _actionTimer?.cancel();
+    _actionTimer = null;
+    
     _pageController.dispose();
     _currentTireIndex = 0; // Reset
-    depthSubscription?.cancel();
     super.dispose();
   }
 }

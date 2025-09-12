@@ -34,6 +34,10 @@ class _BluetoothCalibrationScreenState
 
   StreamSubscription<DepthGaugeData>? _depthSubscription;
 
+  // Estado simple para acción detectada
+  bool _actionDetected = false;
+  Timer? _actionTimer;
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +47,7 @@ class _BluetoothCalibrationScreenState
   @override
   void dispose() {
     _depthSubscription?.cancel();
+    _actionTimer?.cancel();
     super.dispose();
   }
 
@@ -65,6 +70,8 @@ class _BluetoothCalibrationScreenState
                 _previousPressure!.value != depthData.value) {
               _previousPressure = depthData;
             }
+          } else if (depthData.valueType == DepthValueType.action) {
+            _handleActionData(depthData.rawData);
           }
         });
       },
@@ -73,6 +80,22 @@ class _BluetoothCalibrationScreenState
             'Calibration Screen - Error en stream de profundidad: $error');
       },
     );
+  }
+
+  void _handleActionData(String actionData) {
+    setState(() {
+      _actionDetected = true;
+    });
+
+    // Mostrar la indicación por 2 segundos
+    _actionTimer?.cancel();
+    _actionTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _actionDetected = false;
+        });
+      }
+    });
   }
 
   @override
@@ -112,15 +135,21 @@ class _BluetoothCalibrationScreenState
   }
 
   Widget _buildDeviceInfo() {
-    return Container(
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: _actionDetected ? Apptheme.lightOrange : Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: _actionDetected 
+            ? Border.all(color: Apptheme.primary, width: 2)
+            : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(5),
+            color: _actionDetected 
+                ? Apptheme.primary.withAlpha(20)
+                : Colors.black.withAlpha(5),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
