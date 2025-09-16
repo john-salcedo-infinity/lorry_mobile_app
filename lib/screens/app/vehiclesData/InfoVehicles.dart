@@ -17,15 +17,14 @@ import 'package:app_lorry/widgets/shared/back.dart';
 
 // Constants for UI dimensions and styling
 class _Constants {
-  static const double containerWidth = 342.0;
-  static const double alertContainerHeight = 84.0;
-  static const double mileageContainerHeight = 170.0;
-  static const double inputFieldWidth = 292.0;
-  static const double inputFieldHeight = 46.0;
-  static const double borderRadius = 8.0;
+  // static const double containerWidth = 342.0;
+  // static const double alertContainerHeight = 84.0;
+  // static const double mileageContainerHeight = 170.0;
+  // static const double inputFieldWidth = 292.0;
+  // static const double inputFieldHeight = 46.0;
+  // static const double borderRadius = 8.0;
   static const double iconSize = 20;
-  static const EdgeInsets containerPadding =
-      EdgeInsets.symmetric(vertical: 30.0, horizontal: 16.0);
+  static const EdgeInsets containerPadding = EdgeInsets.all(22);
 }
 
 /// Screen to display and update vehicle information and mileage
@@ -101,16 +100,20 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             children: [
               _buildHeader(),
               const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _buildPageTitle(),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    _buildPageTitle(),
+                    const SizedBox(height: 20),
+                    _buildVehicleInfoContainer(),
+                    const SizedBox(height: 20),
+                    _buildAlertContainer(),
+                    const SizedBox(height: 1),
+                    _buildMileageUpdateContainer(),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
-              _buildVehicleInfoContainer(),
-              const SizedBox(height: 20),
-              _buildAlertContainer(),
-              const SizedBox(height: 1),
-              _buildMileageUpdateContainer(),
             ],
           ),
         ),
@@ -155,11 +158,10 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
         _mountingResult.vehicle?.customer?.businessName ?? 'N/A';
 
     return Container(
-      width: _Constants.containerWidth,
       padding: _Constants.containerPadding,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(_Constants.borderRadius),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,9 +185,10 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text('Última medición Kilometraje',
-            style:
-                Apptheme.h5Body(context, color: Apptheme.textColorSecondary)),
+        Text(
+          'Última medición Kilometraje',
+          style: Apptheme.h5Body(context, color: Apptheme.textColorSecondary),
+        ),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -223,14 +226,14 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
 
   Widget _buildAlertContainer() {
     return Container(
-      width: _Constants.containerWidth,
-      height: _Constants.alertContainerHeight,
-      padding: const EdgeInsets.all(24),
-      decoration: const BoxDecoration(
+      // width: _Constants.containerWidth,
+      // height: _Constants.alertContainerHeight,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(_Constants.borderRadius),
-          topRight: Radius.circular(_Constants.borderRadius),
+          bottomLeft: Radius.circular(8),
+          bottomRight: Radius.circular(8),
         ),
       ),
       child: Row(
@@ -252,14 +255,12 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
 
   Widget _buildMileageUpdateContainer() {
     return Container(
-      width: _Constants.containerWidth,
-      height: _Constants.mileageContainerHeight,
-      padding: const EdgeInsets.only(top: 22, bottom: 26),
-      decoration: const BoxDecoration(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(_Constants.borderRadius),
-          bottomRight: Radius.circular(_Constants.borderRadius),
+          bottomLeft: Radius.circular(8),
+          bottomRight: Radius.circular(8),
         ),
       ),
       child: Column(
@@ -274,8 +275,6 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
 
   Widget _buildMileageInputField() {
     return Container(
-      width: _Constants.inputFieldWidth,
-      height: _Constants.inputFieldHeight,
       decoration: BoxDecoration(
         border: Border.all(color: Apptheme.lightGray, width: 1),
         borderRadius: BorderRadius.circular(4),
@@ -335,8 +334,8 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
           child: IgnorePointer(
             ignoring: !enabled,
             child: CustomButton(
-              _Constants.inputFieldWidth,
-              _Constants.inputFieldHeight,
+              double.infinity,
+              46,
               const Text("Actualizar Kilometraje",
                   style: TextStyle(
                     fontSize: 16,

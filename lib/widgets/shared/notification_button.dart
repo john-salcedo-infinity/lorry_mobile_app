@@ -56,10 +56,10 @@ class NotificationButton extends ConsumerWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        IconButton(
-          onPressed:
+        GestureDetector(
+          onTap:
               !isEnabled ? null : () => _handleNotifications(context, ref),
-          icon: SvgPicture.asset(
+          child: SvgPicture.asset(
             'assets/icons/Lorry_Icono_Notificación_Vacía.svg',
             width: width,
             height: height,

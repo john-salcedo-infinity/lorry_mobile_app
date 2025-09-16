@@ -430,7 +430,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(26),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Apptheme.lightGreen,
         borderRadius: BorderRadius.circular(10),
@@ -445,7 +445,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
                   Apptheme.h1Title(context, color: Apptheme.textColorPrimary),
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 16),
           TireDataTextField(
             key: ValueKey('pressure-${widget.currentMounting.id}'),
             label: "Presión llanta",
@@ -458,7 +458,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             suppressKeyboardUntilTap: true,
             nextFocusNode: _externalFocus,
           ),
-          const SizedBox(height: 38),
+          const SizedBox(height: 24),
           TireDataTextField(
             key: ValueKey('prof_ext-${widget.currentMounting.id}'),
             label: "Profun. Externa",
@@ -470,6 +470,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             onValueChanged: _handleTireAlert,
             focusNode: _externalFocus,
             suppressKeyboardUntilTap: true,
+
             nextFocusNode: _centerFocus,
           ),
           const SizedBox(height: 12),
@@ -500,9 +501,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             suppressKeyboardUntilTap: true,
             nextFocusNode: _pressureFocus,
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           _buildBluetoothConnectionButton(),
-          const SizedBox(height: 5),
           _buildAddObservationButton(),
         ],
       ),

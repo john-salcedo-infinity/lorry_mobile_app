@@ -127,7 +127,7 @@ class _BluetoothTagState extends State<BluetoothTag> {
   Widget _buildAsButton() {
     return CustomButton(
       double.infinity,
-      46,
+      36,
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -135,6 +135,10 @@ class _BluetoothTagState extends State<BluetoothTag> {
           const SizedBox(width: 8),
           Text(
             _getDisplayText(),
+            style: Apptheme.h5HighlightBody(
+              context,
+              color: Apptheme.backgroundColor,
+            ),
           ),
         ],
       ),

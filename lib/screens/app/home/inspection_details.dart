@@ -73,7 +73,7 @@ class _InspectionDetailsState extends State<InspectionDetails> {
                             ),
                             LicensePlate(
                               licensePlate: licensePlate,
-                              fontSize: 22,
+                              fontSize: 16,
                               textSelectable: true,
                             )
                           ],
@@ -134,24 +134,24 @@ class InspectionDetailsContent extends StatelessWidget {
     return Column(
       children: [
         _DetailsBadge(label: "Fecha", value: formattedDate),
-        SizedBox(height: 22),
+        SizedBox(height: 12),
         _DetailsBadge(label: "Hora", value: formattedTime),
-        SizedBox(height: 22),
+        SizedBox(height: 12),
         _DetailsBadge(
             label: "Tipo de vehículo",
             value: vehicle.typeVehicle?.name ?? 'N/A'),
-        SizedBox(height: 22),
+        SizedBox(height: 12),
         _DetailsBadge(
             label: "Línea de trabajo", value: vehicle.workLine?.name ?? 'N/A'),
-        SizedBox(height: 22),
+        SizedBox(height: 12),
         _DetailsBadge(
             label: "Cliente asociado al vehiculo",
             value: vehicle.customer?.businessName ?? 'N/A'),
-        SizedBox(height: 22),
+        SizedBox(height: 12),
         _DetailsBadge(label: "Número de llantas", value: totalTires),
-        SizedBox(height: 22),
+        SizedBox(height: 12),
         _DetailsBadge(label: "Nombre del inspector", value: inspectorName),
-        SizedBox(height: 22),
+        SizedBox(height: 12),
         Column(
           children: [
             Text(

@@ -221,6 +221,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
           textInputAction: TextInputAction.next,
           decoration: InputDecoration(
             filled: true,
+            isDense: true,
             fillColor: colors['background'],
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -242,10 +243,6 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
                 color: colors['border']!,
                 width: 2,
               ),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 16,
             ),
           ),
           style: Apptheme.h4TitleDecorative(

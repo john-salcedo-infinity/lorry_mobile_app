@@ -52,7 +52,7 @@ class Back extends StatelessWidget {
     final canGoBack = Navigator.canPop(context);
 
     Widget backWidget = Container(
-      margin: const EdgeInsets.only(top: 10, left: 14, right: 14),
+      margin: const EdgeInsets.only(top: 10, right: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,7 +66,8 @@ class Back extends StatelessWidget {
           else
             const SizedBox(width: 48),
           // Iconos adicionales
-          Row(
+          Row( 
+            spacing: 8,
             children: [
               if (showBluetooth)
                 const BluetoothTag(

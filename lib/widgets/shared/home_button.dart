@@ -38,12 +38,11 @@ class HomeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: !isEnabled
+    return GestureDetector(
+      onTap: !isEnabled
           ? null // Si isEnabled es false (loading), deshabilitar completamente
-          : () => _handleHome(
-              context), // Si está habilitado, usar la lógica normal (custom o default)
-      icon: SvgPicture.asset(
+          : () => _handleHome(context), // Si está habilitado, usar la lógica normal (custom o default)
+      child: SvgPicture.asset(
         'assets/icons/Icono_Casa_Lorry.svg',
         width: width,
         height: height,

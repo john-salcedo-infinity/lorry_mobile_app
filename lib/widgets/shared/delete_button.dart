@@ -25,11 +25,11 @@ class DeleteButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: !isEnabled 
-          ? null  // Si isEnabled es false (loading), deshabilitar completamente
+    return GestureDetector(
+      onTap: !isEnabled
+          ? null // Si isEnabled es false (loading), deshabilitar completamente
           : _handleDelete, // Si está habilitado, usar la lógica normal (custom o default)
-      icon: SvgPicture.asset(
+      child: SvgPicture.asset(
         'assets/icons/Lorry_Icono_Eliminar.svg',
         width: width,
         height: height,

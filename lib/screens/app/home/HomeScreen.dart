@@ -266,46 +266,47 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         offsetY: 200, // Valor fijo en píxeles para Y
       ),
       appBar: AppBar(
-          backgroundColor: Apptheme.backgroundColor,
-          surfaceTintColor: Colors.transparent,
-          scrolledUnderElevation: 0,
-          elevation: 0,
-          automaticallyImplyLeading: false,
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 12),
-                child: SvgPicture.asset(
-                  'assets/icons/logo_lorryv2.svg',
-                  width: 100, // Ajusta el tamaño según sea necesario
-                  height: 18,
-                ),
+        backgroundColor: Apptheme.backgroundColor,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              margin: const EdgeInsets.only(top: 12, left: 10),
+              child: SvgPicture.asset(
+                'assets/icons/logo_lorryv2.svg',
+                width: 100, // Ajusta el tamaño según sea necesario
+                height: 18,
               ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  BluetoothTag(
-                    onTap: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (context) => const BluetoothBottomSheet(),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  NotificationButton(
-                    onPressed: () {
-                      ref.read(appRouterProvider).push("/notifications");
-                    },
-                  )
-                ],
-              )
-            ],
-          )),
+            ),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                BluetoothTag(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => const BluetoothBottomSheet(),
+                    );
+                  },
+                ),
+                const SizedBox(width: 8),
+                NotificationButton(
+                  onPressed: () {
+                    ref.read(appRouterProvider).push("/notifications");
+                  },
+                )
+              ],
+            )
+          ],
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [

@@ -588,7 +588,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
               return false;
             },
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: _buildContent(index),
             ),
           ),
@@ -607,9 +607,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildTitleWidget(currentMounting.position.toString()),
-        const SizedBox(height: 18),
+        const SizedBox(height: 10),
         TireInspectionForm(
-          // Pasar lecturas SOLO a la llanta activa para evitar que se llenen las otras
           shouldFillNext: isActive && shouldFillNextField,
           newDepthValue: isActive ? latestDepthValue : null,
           depthSequence:
@@ -808,7 +807,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
         color: _actionDetected
             ? _hasErrors
                 ? Apptheme.highAlertBackground
-                : Colors.green.withOpacity(0.1)
+                : Colors.green.withAlpha(30)
             : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
         border: _actionDetected
