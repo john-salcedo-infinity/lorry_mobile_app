@@ -588,7 +588,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
               return false;
             },
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
               child: _buildContent(index),
             ),
           ),
