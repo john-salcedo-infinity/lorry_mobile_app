@@ -470,7 +470,6 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             onValueChanged: _handleTireAlert,
             focusNode: _externalFocus,
             suppressKeyboardUntilTap: true,
-
             nextFocusNode: _centerFocus,
           ),
           const SizedBox(height: 12),
@@ -598,8 +597,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             );
             return;
           }
-
-          if (snapshot.data != null && snapshot.data[0] != null) {
+          
+          if (snapshot.data != null) {
             if (bluetoothService.connectedDevice != null) {
               ConfirmationDialog.show(
                 context: context,
