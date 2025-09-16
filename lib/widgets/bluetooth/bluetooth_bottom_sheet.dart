@@ -26,6 +26,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
   bool _isDisconnecting = false;
   String? _connectingDeviceAddress;
   BluetoothDeviceModel? _connectedDevice;
+  bool _showUnnamedDevices = false;
 
   // Mensajes de estado
   String? _statusMessage;
@@ -39,6 +40,13 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
   StreamSubscription<List<BluetoothDeviceModel>>? _devicesSubscription;
   StreamSubscription<bool>? _scanningSubscription;
   StreamSubscription<BluetoothDeviceModel?>? _connectedDeviceSubscription;
+
+  /// Verifica si un dispositivo tiene un nombre real (no es uno de los valores por defecto)
+  bool _hasRealName(BluetoothDeviceModel device) {
+    return device.name.isNotEmpty &&
+        device.name != "Desconocido" &&
+        device.name != "Unknown";
+  }
 
   @override
   void initState() {
@@ -273,58 +281,60 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
-              Text(
-                device.name.isEmpty ? 'Dispositivo desconocido' : device.name,
-                style: Apptheme.h4HighlightBody(context,
-                    color: Apptheme.textColorPrimary),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                device.address,
-                style: Apptheme.h5Body(context,
-                    color: Apptheme.textColorSecondary),
-              ),
-              const SizedBox(height: 24),
-              ListTile(
-                leading: Icon(
-                  Icons.tune,
-                  color: Apptheme.primary,
-                ),
-                title: Text(
-                  'Comprobación dispositivo',
-                  style: Apptheme.h4Medium(context,
+                Text(
+                  device.name.isEmpty ? 'Dispositivo desconocido' : device.name,
+                  style: Apptheme.h4HighlightBody(context,
                       color: Apptheme.textColorPrimary),
                 ),
-                subtitle: Text(
-                  'Verifica la información enviada por el dispositivo',
+                const SizedBox(height: 8),
+                Text(
+                  device.address,
                   style: Apptheme.h5Body(context,
                       color: Apptheme.textColorSecondary),
                 ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _navigateToCalibration(device);
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 24),
+                ListTile(
+                  leading: Icon(
+                    Icons.tune,
+                    color: Apptheme.primary,
+                  ),
+                  title: Text(
+                    'Comprobación dispositivo',
+                    style: Apptheme.h4Medium(context,
+                        color: Apptheme.textColorPrimary),
+                  ),
+                  subtitle: Text(
+                    'Verifica la información enviada por el dispositivo',
+                    style: Apptheme.h5Body(context,
+                        color: Apptheme.textColorSecondary),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _navigateToCalibration(device);
+                  },
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         );
       },
@@ -361,155 +371,190 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.8,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        children: [
-          // Handle del bottom sheet
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.grey[300],
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-
-          // Título
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              _connectedDevice != null
-                  ? 'Conectado: ${_connectedDevice!.name}'
-                  : 'Dispositivos Bluetooth',
-              style:
-                  Apptheme.h2Title(context, color: Apptheme.textColorPrimary),
-            ),
-          ),
-
-          // Área de mensajes de estado
-          if (_statusMessage != null)
+    return SafeArea(
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Handle del bottom sheet
             Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
-                color: _statusMessageColor?.withOpacity(0.1),
-                border: Border.all(
-                  color: _statusMessageColor ?? Apptheme.secondary,
-                  width: 1,
-                ),
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
               ),
+            ),
+
+            // Título
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: Text(
-                _statusMessage!,
-                style: Apptheme.h5Body(context, color: _statusMessageColor),
-                textAlign: TextAlign.center,
+                _connectedDevice != null
+                    ? 'Conectado: ${_connectedDevice!.name}'
+                    : 'Dispositivos Bluetooth',
+                style:
+                    Apptheme.h2Title(context, color: Apptheme.textColorPrimary),
               ),
             ),
 
-          if (_statusMessage != null) const SizedBox(height: 16),
-
-          // Tabs
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-            ),
-            child: TabBar(
-              controller: _tabController,
-              indicator: UnderlineTabIndicator(
-                borderSide: BorderSide(
-                  color: Apptheme.primary,
-                  width: 3,
-                ),
-                insets: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-              labelColor: Apptheme.primary,
-              labelStyle: Apptheme.h4HighlightBody(context),
-              unselectedLabelStyle: Apptheme.h4Body(context),
-              indicatorSize: TabBarIndicatorSize.tab,
-              tabs: const [
-                Tab(text: 'Todos'),
-                Tab(text: 'Recientes'),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildAllDevicesTab(),
-                _buildRecentDevicesTab(),
-              ],
-            ),
-          ),
-
-          // Loading overlay si está conectando/desconectando
-          if (_isConnecting || _isDisconnecting)
-            Container(
-              padding: const EdgeInsets.all(16),
+            // Subtitulo
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: Apptheme.loadingIndicator(),
-                  ),
-                  const SizedBox(width: 12),
                   Text(
-                    _isConnecting ? 'Conectando...' : 'Desconectando...',
-                    style: Apptheme.h4Medium(context, color: Apptheme.primary),
+                    "Mostrar dispositivos sin nombre",
+                    style: Apptheme.h6Title(
+                      context,
+                      color: Apptheme.textColorSecondary,
+                    ),
+                  ),
+                  Transform.scale(
+                    scale: 0.8,
+                    child: Switch(
+                      value: _showUnnamedDevices,
+                      activeColor: Apptheme.primary,
+                      inactiveThumbColor: Apptheme.primaryopacity,
+                      inactiveTrackColor: Apptheme.lightOrange,
+                      onChanged: (value) {
+                        setState(() {
+                          _showUnnamedDevices = value;
+                        });
+                      },
+                    ),
                   ),
                 ],
               ),
             ),
 
-          // Botón de escanear
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: CustomButton(
-              double.infinity,
-              46,
-              _isScanning
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: Apptheme.loadingIndicatorButton(),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          "Escaneando...",
-                          style: Apptheme.h4HighlightBody(
-                            context,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    )
-                  : Text("Escanear dispositivos"),
-              _isConnecting || _isDisconnecting
-                  ? null
-                  : (_isScanning
-                      ? () => _bluetoothService.stopScanning()
-                      : _startScanning),
-              type: 1,
+            // Área de mensajes de estado
+            if (_statusMessage != null)
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _statusMessageColor?.withOpacity(0.1),
+                  border: Border.all(
+                    color: _statusMessageColor ?? Apptheme.secondary,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  _statusMessage!,
+                  style: Apptheme.h5Body(context, color: _statusMessageColor),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+            if (_statusMessage != null) const SizedBox(height: 16),
+
+            // Tabs
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+              ),
+              child: TabBar(
+                controller: _tabController,
+                indicator: UnderlineTabIndicator(
+                  borderSide: BorderSide(
+                    color: Apptheme.primary,
+                    width: 3,
+                  ),
+                  insets: const EdgeInsets.symmetric(horizontal: 16),
+                ),
+                labelColor: Apptheme.primary,
+                labelStyle: Apptheme.h4HighlightBody(context),
+                unselectedLabelStyle: Apptheme.h4Body(context),
+                indicatorSize: TabBarIndicatorSize.tab,
+                tabs: const [
+                  Tab(text: 'Todos'),
+                  Tab(text: 'Recientes'),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 16),
+
+            // Content
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildAllDevicesTab(),
+                  _buildRecentDevicesTab(),
+                ],
+              ),
+            ),
+
+            // Loading overlay si está conectando/desconectando
+            if (_isConnecting || _isDisconnecting)
+              Container(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: Apptheme.loadingIndicator(),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      _isConnecting ? 'Conectando...' : 'Desconectando...',
+                      style:
+                          Apptheme.h4Medium(context, color: Apptheme.primary),
+                    ),
+                  ],
+                ),
+              ),
+
+            // Botón de escanear
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: CustomButton(
+                double.infinity,
+                46,
+                _isScanning
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: Apptheme.loadingIndicatorButton(),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Escaneando...",
+                            style: Apptheme.h4HighlightBody(
+                              context,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text("Escanear dispositivos"),
+                _isConnecting || _isDisconnecting
+                    ? null
+                    : (_isScanning
+                        ? () => _bluetoothService.stopScanning()
+                        : _startScanning),
+                type: 1,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -532,20 +577,26 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
         !_isScanning &&
         _connectedDevice != null &&
         _currentTabIndex == 0) {
-      return ListView(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        children: [
-          _buildDeviceListTile(_connectedDevice!, true),
-          const SizedBox(height: 16),
-          Center(
-            child: Text(
-              'Presiona "Escanear Dispositivos" para buscar más dispositivos',
-              style: Apptheme.h5Body(context, color: Apptheme.gray),
-              textAlign: TextAlign.center,
+      // Verificar si el dispositivo conectado debe mostrarse según el filtro
+      final shouldShowConnectedDevice =
+          _showUnnamedDevices || _hasRealName(_connectedDevice!);
+
+      if (shouldShowConnectedDevice) {
+        return ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          children: [
+            _buildDeviceListTile(_connectedDevice!, true),
+            const SizedBox(height: 16),
+            Center(
+              child: Text(
+                'Presiona "Escanear Dispositivos" para buscar más dispositivos',
+                style: Apptheme.h5Body(context, color: Apptheme.gray),
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-        ],
-      );
+          ],
+        );
+      }
     }
 
     if (devices.isEmpty && !_isScanning) {
@@ -581,14 +632,24 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
     final sortedDevices = List<BluetoothDeviceModel>.from(devices);
     if (_connectedDevice != null) {
       sortedDevices.removeWhere((d) => d.address == _connectedDevice!.address);
-      sortedDevices.insert(0, _connectedDevice!);
+      // Solo agregar el dispositivo conectado si debe mostrarse según el filtro
+      final shouldShowConnectedDevice =
+          _showUnnamedDevices || _hasRealName(_connectedDevice!);
+      if (shouldShowConnectedDevice) {
+        sortedDevices.insert(0, _connectedDevice!);
+      }
     }
+
+    // Filtrar dispositivos según el estado del switch
+    final filteredDevices = _showUnnamedDevices
+        ? sortedDevices
+        : sortedDevices.where((device) => _hasRealName(device)).toList();
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: sortedDevices.length,
+      itemCount: filteredDevices.length,
       itemBuilder: (context, index) {
-        final device = sortedDevices[index];
+        final device = filteredDevices[index];
         final isConnected = _connectedDevice?.address == device.address;
         return _buildDeviceListTile(device, isConnected);
       },
