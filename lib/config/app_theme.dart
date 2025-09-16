@@ -21,6 +21,7 @@ class Apptheme {
   static const Color secondaryv2 = Color.fromRGBO(50, 150, 108, 1);
   static const Color secondaryv3 = Color.fromRGBO(220, 230, 227, 1);
   static const Color lightGreen = Color.fromRGBO(220, 230, 227, 1);
+  static const Color lightGreenv2 = Color.fromRGBO(240, 245, 243, 1);
   static const Color tireBackground = Color.fromRGBO(220, 230, 227, 1);
   static const Color textColorPrimary = Color.fromRGBO(23, 100, 93, 1);
   static const Color toastSucessBackground = Color.fromRGBO(235, 255, 241, 1);

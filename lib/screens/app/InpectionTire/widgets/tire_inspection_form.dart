@@ -438,13 +438,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Center(
-            child: Text(
-              "Serie LL-${widget.currentMounting.tire?.integrationCode ?? 'Sin Serie'}",
-              style:
-                  Apptheme.h1Title(context, color: Apptheme.textColorPrimary),
-            ),
-          ),
+          const SizedBox(height: 12),
+          _buildHeaderCard(),
           const SizedBox(height: 16),
           TireDataTextField(
             key: ValueKey('pressure-${widget.currentMounting.id}'),
@@ -505,6 +500,70 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
           _buildAddObservationButton(),
         ],
       ),
+    );
+  }
+
+  Widget _buildHeaderCard() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          "Serie LL-${widget.currentMounting.tire?.integrationCode ?? 'Sin Serie'}",
+          style: Apptheme.h1Title(context, color: Apptheme.textColorPrimary),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          spacing: 8,
+          children: [
+            Expanded(
+              // Añadir Expanded
+              child: Container(
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Apptheme.lightGreenv2,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Apptheme.secondary, width: 2),
+                ),
+                child: Center(
+                  // Centrar el texto
+                  child: Text(
+                    widget.currentMounting.tire?.design?.name ?? 'N/A',
+                    style: Apptheme.h5HighlightBody(
+                      context,
+                      color: Apptheme.secondary,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              // Añadir Expanded
+              child: Container(
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Apptheme.lightGreenv2,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Apptheme.secondary, width: 2),
+                ),
+                child: Center(
+                  // Centrar el texto
+                  child: Text(
+                    widget.currentMounting.tire?.band?.name ?? 'N/A',
+                    style: Apptheme.h5HighlightBody(
+                      context,
+                      color: Apptheme.secondary,
+                    ),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        )
+      ],
     );
   }
 
@@ -597,7 +656,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             );
             return;
           }
-          
+
           if (snapshot.data != null) {
             if (bluetoothService.connectedDevice != null) {
               ConfirmationDialog.show(
