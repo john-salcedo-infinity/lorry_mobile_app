@@ -1,6 +1,10 @@
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/routers/app_routes.dart';
 import 'package:app_lorry/screens/app/InpectionTire/observations/observation_sceen.dart';
+import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
+import 'package:app_lorry/widgets/bluetooth/bluetooth_bottom_sheet.dart';
+import 'package:app_lorry/widgets/bluetooth/bluetooth_tag.dart';
+import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/models/models.dart';
@@ -30,7 +34,7 @@ class TireInspectionForm extends ConsumerStatefulWidget {
     this.newDepthValue,
     this.newDepthTypeValue,
     this.depthSequence,
-  this.isActive = false,
+    this.isActive = false,
   });
 
   @override
@@ -286,7 +290,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
       }
     }
   }
-  
+
   void _onInternalFocusChanged() {
     if (_internalFocus.hasFocus) {
       if (_currentFieldIndex != 3 && mounted) {
@@ -342,6 +346,83 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
               "La $fieldName disminuyó más de 2mm. Se recomienda realizar servicio o corregir datos.",
         );
       }
+    }
+  }
+
+  Future<void> _activateBluetoothAndConnect(List<dynamic>? deviceData) async {
+    try {
+      final bluetoothService = BluetoothService.instance;
+
+      // Encender Bluetooth
+      await bluetoothService.turnBluetoothOn();
+
+      // Esperar un momento para que el Bluetooth se active completamente
+      await Future.delayed(const Duration(seconds: 2));
+
+      // Verificar que el Bluetooth esté realmente encendido
+      final isEnabled = await bluetoothService.validateBluetooth();
+
+      if (isEnabled && deviceData != null && deviceData[0] != null) {
+        // Intentar conectar al dispositivo guardado
+        await _connectToSavedDevice(deviceData);
+      } else if (!isEnabled) {
+        if (context.mounted) {
+          ValidationToastHelper.showValidationToast(
+            context: context,
+            title: "Error de Bluetooth",
+            message: "No se pudo activar el Bluetooth. Inténtelo manualmente.",
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ValidationToastHelper.showValidationToast(
+          context: context,
+          title: "Error de Conexión",
+          message: "Error al activar Bluetooth: $e",
+        );
+      }
+    }
+  }
+
+  Future<void> _connectToSavedDevice(List<dynamic> deviceData) async {
+    try {
+      final bluetoothService = BluetoothService.instance;
+
+      final connectionResult = await bluetoothService.connectToDevice(
+        BluetoothDeviceModel(
+          name: deviceData[1] ?? "Dispositivo",
+          address: deviceData[0],
+        ),
+      );
+
+      if (!mounted) return;
+
+      if (connectionResult.state == BluetoothConnectionState.connected) {
+        ToastHelper.show_success(
+          context,
+          "Conectado con éxito",
+        );
+      } else {
+        ToastHelper.show_alert(
+          context,
+          "No se pudo conectar al dispositivo",
+        );
+        showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          backgroundColor: Colors.transparent,
+          builder: (context) => const BluetoothBottomSheet(),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (context) => const BluetoothBottomSheet(),
+      );
     }
   }
 
@@ -420,6 +501,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             nextFocusNode: _pressureFocus,
           ),
           const SizedBox(height: 32),
+          _buildBluetoothConnectionButton(),
+          const SizedBox(height: 5),
           _buildAddObservationButton(),
         ],
       ),
@@ -481,6 +564,72 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
           ],
         ],
       ),
+    );
+  }
+
+  Widget _buildBluetoothConnectionButton() {
+    final BluetoothService bluetoothService = BluetoothService.instance;
+    return FutureBuilder<dynamic>(
+      future: () async {
+        Preferences prefs = Preferences();
+        await prefs.init();
+        return prefs.getList(
+          BluetoothSharedPreference.lastConnectedDevice.key,
+        );
+      }(),
+      builder: (context, snapshot) {
+        void handleTap() async {
+          // Validar que el Bluetooth esté encendido antes de cualquier operación
+          final isBluetoothEnabled = await bluetoothService.validateBluetooth();
+
+          if (!context.mounted) return;
+
+          if (!isBluetoothEnabled) {
+            ConfirmationDialog.show(
+              context: context,
+              title: 'Bluetooth Desactivado',
+              message:
+                  'El Bluetooth está desactivado. ¿Desea activarlo y conectar el dispositivo automáticamente?',
+              cancelText: 'Cancelar',
+              acceptText: 'Activar y Conectar',
+              onAccept: () async {
+                await _activateBluetoothAndConnect(snapshot.data);
+              },
+            );
+            return;
+          }
+
+          if (snapshot.data != null && snapshot.data[0] != null) {
+            if (bluetoothService.connectedDevice != null) {
+              ConfirmationDialog.show(
+                context: context,
+                title: 'Desconectar Dispositivo',
+                message:
+                    '¿Desea desconectar el dispositivo ${bluetoothService.connectedDevice!.name}?',
+                cancelText: 'Cancelar',
+                acceptText: 'Aceptar',
+                onAccept: () => bluetoothService.disconnectDevice(),
+              );
+              return;
+            }
+
+            // Conectar automáticamente si hay dispositivo guardado
+            await _connectToSavedDevice(snapshot.data);
+          } else {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) => const BluetoothBottomSheet(),
+            );
+          }
+        }
+
+        return BluetoothTag(
+          showAsButton: true,
+          onTap: handleTap,
+        );
+      },
     );
   }
 }

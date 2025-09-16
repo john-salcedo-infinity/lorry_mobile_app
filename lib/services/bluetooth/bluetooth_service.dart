@@ -101,6 +101,11 @@ class BluetoothService {
     return result;
   }
 
+  Future<bool> validateBluetooth() async {
+    if (_adapter == null) initialize();
+    return await _adapter!.validateBluetooth();
+  }
+
   /// Desconecta del dispositivo actual
   Future<void> disconnectDevice() async {
     if (_adapter == null) return;
@@ -116,6 +121,11 @@ class BluetoothService {
   Future<void> getDeviceInput() async {
     if (_adapter == null) return;
     await _adapter!.getDeviceInput();
+  }
+
+  Future<void> turnBluetoothOn() async {
+    if (_adapter == null) initialize();
+    await _adapter!.turnBluetoothOn();
   }
 
   /// Libera recursos

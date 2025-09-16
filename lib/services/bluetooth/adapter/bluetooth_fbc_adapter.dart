@@ -132,6 +132,10 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
         );
       }
 
+      // Emitir estado de "connecting" (usamos scanning como indicador de actividad)
+      _isScanning = true;
+      _scanningController.add(true);
+
       // Cerrar conexión anterior si existe y es diferente
       if (_connection != null && _connectedDevice?.address != device.address) {
         _connection!.dispose();
@@ -142,6 +146,10 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
 
       // Intentar conectar al dispositivo
       _connection = await _bluetooth.connect(device.address);
+
+      // Detener el estado de "connecting"
+      _isScanning = false;
+      _scanningController.add(false);
 
       if (_connection != null && _connection!.isConnected) {
         _connectedDevice = device;
@@ -157,15 +165,25 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
             "No se pudo conectar al dispositivo");
       }
     } catch (e) {
+      // Asegurarse de detener el estado de "connecting" en caso de error
+      _isScanning = false;
+      _scanningController.add(false);
+      
       _connectedDevice = null;
       _connectedDeviceController.add(null);
       return BluetoothConnectionResult.failure(e.toString());
     }
   }
 
+  @override
   Future<bool> validateBluetooth() async {
     final state = await _bluetooth.adapterStateNow;
     return state == fbc.BluetoothAdapterState.on;
+  }
+
+  @override
+  Future<void> turnBluetoothOn() async {
+    _bluetooth.turnOn();
   }
 
   @override

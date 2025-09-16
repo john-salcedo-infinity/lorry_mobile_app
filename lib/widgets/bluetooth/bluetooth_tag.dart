@@ -1,16 +1,19 @@
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
 /// Tag de Bluetooth que muestra el estado de conexión en tiempo real
 class BluetoothTag extends StatefulWidget {
   final VoidCallback? onTap;
+  final bool? showAsButton;
 
   const BluetoothTag({
     super.key,
     this.onTap,
+    this.showAsButton = false,
   });
 
   @override
@@ -48,7 +51,7 @@ class _BluetoothTagState extends State<BluetoothTag> {
     try {
       _bluetoothService.initialize();
       await _updateBluetoothStatus();
-      
+
       // Cargar estado inicial
       setState(() {
         _connectedDevice = _bluetoothService.connectedDevice;
@@ -61,7 +64,8 @@ class _BluetoothTagState extends State<BluetoothTag> {
 
   void _setupListeners() {
     // Escuchar cambios en el dispositivo conectado
-    _connectedDeviceSubscription = _bluetoothService.connectedDeviceStream.listen(
+    _connectedDeviceSubscription =
+        _bluetoothService.connectedDeviceStream.listen(
       (device) {
         if (mounted) {
           setState(() {
@@ -84,7 +88,8 @@ class _BluetoothTagState extends State<BluetoothTag> {
   }
 
   void _startPeriodicStatusCheck() {
-    _statusCheckTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+    _statusCheckTimer =
+        Timer.periodic(const Duration(seconds: 5), (timer) async {
       if (!mounted) {
         timer.cancel();
         return;
@@ -116,6 +121,29 @@ class _BluetoothTagState extends State<BluetoothTag> {
 
   @override
   Widget build(BuildContext context) {
+    return widget.showAsButton == true ? _buildAsButton() : _buildAsTag();
+  }
+
+  Widget _buildAsButton() {
+    return CustomButton(
+      double.infinity,
+      46,
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _connectedDevice != null ? _buildIcon() : SizedBox(),
+          const SizedBox(width: 8),
+          Text(
+            _getDisplayText(),
+          ),
+        ],
+      ),
+      _handleTap,
+      type: 3,
+    );
+  }
+
+  Widget _buildAsTag() {
     return GestureDetector(
       onTap: _handleTap,
       child: Container(
@@ -169,11 +197,11 @@ class _BluetoothTagState extends State<BluetoothTag> {
     if (!_isBluetoothEnabled) {
       return Icons.bluetooth_disabled;
     }
-    
+
     if (_connectedDevice != null) {
       return Icons.bluetooth_connected;
     }
-    
+
     return Icons.bluetooth;
   }
 
@@ -181,15 +209,15 @@ class _BluetoothTagState extends State<BluetoothTag> {
     if (!_isBluetoothEnabled) {
       return Apptheme.lightGray.withAlpha(30);
     }
-    
+
     if (_connectedDevice != null) {
       return Apptheme.lightGreen;
     }
-    
+
     if (_isScanning) {
       return Apptheme.lightOrange;
     }
-    
+
     return Apptheme.backgroundColor;
   }
 
@@ -197,15 +225,15 @@ class _BluetoothTagState extends State<BluetoothTag> {
     if (!_isBluetoothEnabled) {
       return Apptheme.gray;
     }
-    
+
     if (_connectedDevice != null) {
       return Apptheme.secondary;
     }
-    
+
     if (_isScanning) {
       return Apptheme.primary;
     }
-    
+
     return Apptheme.lightGray;
   }
 
@@ -213,15 +241,15 @@ class _BluetoothTagState extends State<BluetoothTag> {
     if (!_isBluetoothEnabled) {
       return Apptheme.gray;
     }
-    
+
     if (_connectedDevice != null) {
-      return Apptheme.secondary;
+      return widget.showAsButton == true ? Apptheme.backgroundColor : Apptheme.secondary;
     }
-    
+
     if (_isScanning) {
       return Apptheme.primary;
     }
-    
+
     return Apptheme.textColorSecondary;
   }
 
@@ -229,34 +257,38 @@ class _BluetoothTagState extends State<BluetoothTag> {
     if (!_isBluetoothEnabled) {
       return Apptheme.gray;
     }
-    
+
     if (_connectedDevice != null) {
       return Apptheme.secondary;
     }
-    
+
     if (_isScanning) {
       return Apptheme.primary;
     }
-    
+
     return Apptheme.textColorSecondary;
   }
 
   String _getDisplayText() {
     if (_isScanning) {
-      return 'Buscando...';
+      // Si hay un dispositivo conectado y está scanning, probablemente es una reconexión
+      if (_connectedDevice != null) {
+        return 'Reconectando...';
+      }
+      return 'Conectando...';
     }
-    
+
     if (!_isBluetoothEnabled) {
       return 'BT Deshabilitado';
     }
-    
+
     if (_connectedDevice != null) {
       // Mostrar solo las primeras 2 palabras del nombre del dispositivo
       final deviceName = _connectedDevice!.name;
       if (deviceName.isEmpty) {
         return 'Conectado';
       }
-      
+
       final words = deviceName.split(' ');
       if (words.length <= 1) {
         return deviceName;
@@ -264,7 +296,7 @@ class _BluetoothTagState extends State<BluetoothTag> {
         return words[1];
       }
     }
-    
-    return 'No Conectado';
+
+    return widget.showAsButton == true ? "Usar profundimetro" : 'No Conectado';
   }
 }

@@ -27,6 +27,10 @@ abstract class BluetoothAdapter {
 
   Future<void> getDeviceInput();
 
+  Future<bool> validateBluetooth();
+
+  Future<void> turnBluetoothOn();
+
   /// Getters para obtener información del estado actual
   bool get isScanning;
   List<BluetoothDeviceModel> get discoveredDevices;
