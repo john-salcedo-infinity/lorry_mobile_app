@@ -6,6 +6,7 @@ import 'package:app_lorry/widgets/bluetooth/bluetooth_bottom_sheet.dart';
 import 'package:app_lorry/widgets/bluetooth/bluetooth_tag.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -216,7 +217,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
 
   // manejar medición según tipo y foco actual
   void _handleIncomingMeasurement(String value, DepthValueType type) {
-    // Normalizar valor
+    VibrationHelper.playSuccess();
+
     final v = value.trim();
 
     if (type == DepthValueType.depth) {

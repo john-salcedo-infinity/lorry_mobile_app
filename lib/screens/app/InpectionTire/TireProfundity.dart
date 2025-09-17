@@ -209,7 +209,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity>
         });
       }
     });
-
     // Intentar avanzar a la siguiente inspección
     _handleActionNavigation();
   }
@@ -228,7 +227,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity>
         // Si no hay errores y el botón de finalizar está habilitado, finalizar
         _onFinish();
       } else {
-        // Activar indicador visual de error temporalmente
+        VibrationHelper.playError();
         setState(() {
           _hasErrors = true;
         });
@@ -276,6 +275,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity>
         message:
             "La llanta ${mountings[_currentTireIndex].position} tiene errores: ${validation['errors'].join(', ')}",
       );
+      VibrationHelper.playError();
       return;
     }
 
@@ -286,6 +286,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity>
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+      VibrationHelper.playSuccess();
     }
 
     // Quitar el foco del teclado
