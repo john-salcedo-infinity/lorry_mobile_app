@@ -39,7 +39,8 @@ class TireProfundity extends ConsumerStatefulWidget {
   ConsumerState<TireProfundity> createState() => _TireProfundityState();
 }
 
-class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBindingObserver {
+class _TireProfundityState extends ConsumerState<TireProfundity>
+    with WidgetsBindingObserver {
   late final int licensePlate; // id del vehículo
   late final List<MountingResult> mountings; // Lista de montajes
 
@@ -86,7 +87,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
   @override
   void initState() {
     super.initState();
-    
+
     // Agregar observer para detectar cambios en el ciclo de vida de la app
     WidgetsBinding.instance.addObserver(this);
 
@@ -111,7 +112,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    
+
     // Cuando la app vuelve a primer plano, reinicializar streams si es necesario
     if (state == AppLifecycleState.resumed) {
       if (mounted && depthSubscription == null) {
@@ -218,7 +219,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
     if (_hasErrors) {
       return;
     }
-    
+
     // Si es la última llanta, verificar si podemos finalizar
     if (_currentTireIndex >= mountings.length - 1) {
       // Validar la llanta actual
@@ -231,7 +232,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
         setState(() {
           _hasErrors = true;
         });
-        
+
         // Desactivar después de 1 segundo
         Timer(const Duration(seconds: 1), () {
           if (mounted) {
@@ -240,7 +241,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
             });
           }
         });
-        
+
         // Mostrar mensaje indicando que no se puede finalizar
         ValidationToastHelper.showValidationToast(
           context: context,
@@ -259,7 +260,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
       setState(() {
         _hasErrors = true;
       });
-      
+
       // Desactivar después de 1 segundo
       Timer(const Duration(seconds: 1), () {
         if (mounted) {
@@ -268,7 +269,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
           });
         }
       });
-      
+
       ValidationToastHelper.showValidationToast(
         context: context,
         title: "Errores en la inspección actual",
@@ -434,7 +435,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
     setState(() {
       _actionDetected = true; // Esto bloqueará temporalmente nuevas acciones
     });
-    
+
     List<Map<String, dynamic>> inspections = [];
 
     for (int i = 0; i < mountings.length; i++) {
@@ -465,14 +466,17 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
     depthSubscription?.cancel();
     depthSubscription = null;
 
-    ref.read(appRouterProvider).push(
+    ref
+        .read(appRouterProvider)
+        .push(
           "/DetailTire",
           extra: DetailTireParams(
               results: mountings.reversed.toList(),
               vehicle: mountings.first.vehicle!,
               mileage: widget.data.mileage,
               inspectionData: jsonInspectionData),
-        ).then((_) {
+        )
+        .then((_) {
       // Cuando regresamos de DetailTire, reinicializar el stream
       if (mounted && depthSubscription == null) {
         print("Returned from DetailTire - reinitializing streams");
@@ -530,70 +534,6 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildHybridPageContent(int index) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return GestureDetector(
-          onPanUpdate: (details) {
-            // Detectar swipes independientemente del scroll
-            if (details.delta.dy < -10) {
-              _handleScrollAttempt(isScrollingDown: true);
-            } else if (details.delta.dy > 10) {
-              _handleScrollAttempt(isScrollingDown: false);
-            }
-          },
-          child: NotificationListener<ScrollNotification>(
-            onNotification: (scrollInfo) {
-              // Solo manejar scroll notifications si realmente hay scroll
-              if (scrollInfo is ScrollStartNotification) {
-                return false;
-              }
-
-              if (scrollInfo is ScrollUpdateNotification) {
-                // Durante el scroll activo, desactivar temporalmente los gestures
-                return false;
-              }
-
-              if (scrollInfo is ScrollEndNotification) {
-                // Verificar si hay scroll disponible
-                if (scrollInfo.metrics.maxScrollExtent <= 0) {
-                  // No hay scroll real - los gestures ya manejaron esto
-                  return false;
-                }
-
-                // Hay scroll real - verificar si llegamos a los límites
-                if (scrollInfo.metrics.pixels >=
-                    scrollInfo.metrics.maxScrollExtent - 5) {
-                  _handleScrollAttempt(isScrollingDown: true);
-                } else if (scrollInfo.metrics.pixels <=
-                    scrollInfo.metrics.minScrollExtent + 5) {
-                  _handleScrollAttempt(isScrollingDown: false);
-                }
-                return true;
-              }
-
-              if (scrollInfo is OverscrollNotification) {
-                // Overscroll - cambiar página inmediatamente
-                if (scrollInfo.overscroll > 0) {
-                  _handleScrollAttempt(isScrollingDown: true);
-                } else if (scrollInfo.overscroll < 0) {
-                  _handleScrollAttempt(isScrollingDown: false);
-                }
-                return true;
-              }
-
-              return false;
-            },
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-              child: _buildContent(index),
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -662,12 +602,78 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
     );
   }
 
+  Widget _buildHybridPageContent(int index) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          onPanEnd: (details) {
+            final velocity = details.velocity.pixelsPerSecond.dy;
+            final threshold = 150.0;
+
+            if (velocity > threshold) {
+              _handleScrollAttempt(isScrollingDown: false);
+            } else if (velocity < -threshold) {
+              _handleScrollAttempt(isScrollingDown: true);
+            }
+          },
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (scrollInfo) {
+              if (scrollInfo is ScrollStartNotification) {
+                return false;
+              }
+
+              if (scrollInfo is ScrollUpdateNotification) {
+                return false;
+              }
+
+              if (scrollInfo is ScrollEndNotification) {
+                if (scrollInfo.metrics.maxScrollExtent <= 0) {
+                  return false;
+                }
+
+                final scrollThreshold = 1.0;
+                final currentPosition = scrollInfo.metrics.pixels;
+                final maxExtent = scrollInfo.metrics.maxScrollExtent;
+                final minExtent = scrollInfo.metrics.minScrollExtent;
+
+                if (currentPosition >= maxExtent + scrollThreshold) {
+                  _handleScrollAttempt(isScrollingDown: true);
+                } else if (currentPosition <= minExtent - scrollThreshold) {
+                  _handleScrollAttempt(isScrollingDown: false);
+                }
+                return true;
+              }
+
+              // Mantener la lógica de overscroll para casos donde hay contenido scrolleable
+              if (scrollInfo is OverscrollNotification) {
+                final overscrollThreshold =
+                    30.0; // Píxeles de overscroll necesarios
+
+                if (scrollInfo.overscroll > overscrollThreshold) {
+                  _handleScrollAttempt(isScrollingDown: true);
+                } else if (scrollInfo.overscroll < -overscrollThreshold) {
+                  _handleScrollAttempt(isScrollingDown: false);
+                }
+                return true;
+              }
+              return false;
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
+              child: _buildContent(index),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _handleScrollAttempt({required bool isScrollingDown}) {
     if (_isKeyboardOpen) {
       // Si el teclado está abierto, no hacer nada
       return;
     }
-    
+
     // Evitar acción si ya hay una en progreso
     if (_hasErrors || _actionDetected) {
       return;
@@ -684,7 +690,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
           setState(() {
             _hasErrors = true;
           });
-          
+
           // Desactivar después de 1 segundo
           Timer(const Duration(seconds: 1), () {
             if (mounted) {
@@ -693,7 +699,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
               });
             }
           });
-          
+
           ValidationToastHelper.showValidationToast(
             context: context,
             title: "Errores encontrados en la Inspección",
@@ -707,13 +713,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
         if (_pageController.hasClients) {
           _pageController.animateToPage(
             _currentTireIndex + 1,
-            duration: const Duration(milliseconds: 220),
+            duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
           );
-          // Agregar indicador visual de acción
-          // delay de cambiar de página
 
-          Future.delayed(const Duration(milliseconds: 220), () {
+          Future.delayed(const Duration(milliseconds: 400), () {
             if (mounted) {
               setState(() {
                 _actionDetected = true;
@@ -740,11 +744,11 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
         if (_pageController.hasClients) {
           _pageController.animateToPage(
             _currentTireIndex - 1,
-            duration: const Duration(milliseconds: 220),
+            duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
           );
           // Agregar indicador visual de acción
-          Future.delayed(const Duration(milliseconds: 220), () {
+          Future.delayed(const Duration(milliseconds: 400), () {
             if (mounted) {
               setState(() {
                 _actionDetected = true;
@@ -870,7 +874,8 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
     required bool isLoading,
   }) {
     return BottomButton(
-      gap: 20,
+      gap: 18,
+      padding: const EdgeInsets.only(left: 20, right: 20, bottom: 0, top: 12),
       buttons: [
         BottomButtonItem(
           text: "Servicios",
@@ -935,7 +940,7 @@ class _TireProfundityState extends ConsumerState<TireProfundity> with WidgetsBin
     depthSubscription = null;
     _actionTimer?.cancel();
     _actionTimer = null;
-    
+
     _pageController.dispose();
     _currentTireIndex = 0; // Reset
     super.dispose();

@@ -438,7 +438,6 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const SizedBox(height: 12),
           _buildHeaderCard(),
           const SizedBox(height: 16),
           TireDataTextField(
@@ -495,7 +494,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
             suppressKeyboardUntilTap: true,
             nextFocusNode: _pressureFocus,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 16),
           _buildBluetoothConnectionButton(),
           _buildAddObservationButton(),
         ],
@@ -568,8 +567,8 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
   }
 
   Widget _buildAddObservationButton() {
-    return TextButton(
-      onPressed: () async {
+    return GestureDetector(
+      onTap: () async {
         final result =
             await ref.read(appRouterProvider).push<List<Map<String, dynamic>>>(
                   "/observations",
@@ -584,43 +583,40 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
           widget.onNoveltiesChanged(result);
         }
       },
-      style: TextButton.styleFrom(
-        foregroundColor: Apptheme.textColorPrimary,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            widget.existingNovelties.isNotEmpty
-                ? "Editar Novedades"
-                : "Reportar Novedad",
-            style: Apptheme.h4HighlightBody(
-              context,
-              color: Apptheme.textColorPrimary,
-            ),
-          ),
-          if (widget.existingNovelties.isNotEmpty) ...[
-            const SizedBox(width: 8),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              decoration: BoxDecoration(
-                color: Apptheme.alertOrange,
-                borderRadius: BorderRadius.circular(4),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              widget.existingNovelties.isNotEmpty
+                  ? "Editar Novedades"
+                  : "Reportar Novedad",
+              style: Apptheme.h4HighlightBody(
+                context,
+                color: Apptheme.textColorPrimary,
               ),
-              child: Text(
-                '${widget.existingNovelties.length}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
+            ),
+            if (widget.existingNovelties.isNotEmpty) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Apptheme.alertOrange,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '${widget.existingNovelties.length}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

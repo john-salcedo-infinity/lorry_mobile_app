@@ -135,7 +135,7 @@ class _BluetoothTagState extends State<BluetoothTag> {
           const SizedBox(width: 8),
           Text(
             _getDisplayText(),
-            style: Apptheme.h5HighlightBody(
+            style: Apptheme.h4HighlightBody(
               context,
               color: Apptheme.backgroundColor,
             ),
