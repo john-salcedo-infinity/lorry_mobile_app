@@ -2,6 +2,7 @@ import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/widgets/widgets.dart';
+import 'package:app_lorry/widgets/bluetooth/battery_indicator.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 
@@ -9,12 +10,19 @@ import 'dart:async';
 class BluetoothTag extends StatefulWidget {
   final VoidCallback? onTap;
   final bool? showAsButton;
+  final bool? showBattery;
+  final bool? showBatteryPercentage;
+  final bool? batteryIconOnly;
+  final BatteryIndicatorSize batteryIconSize;
 
-  const BluetoothTag({
-    super.key,
-    this.onTap,
-    this.showAsButton = false,
-  });
+  const BluetoothTag(
+      {super.key,
+      this.onTap,
+      this.showAsButton = false,
+      this.showBattery = true,
+      this.showBatteryPercentage = false,
+      this.batteryIconOnly = false,
+      this.batteryIconSize = BatteryIndicatorSize.small});
 
   @override
   State<BluetoothTag> createState() => _BluetoothTagState();
@@ -129,17 +137,26 @@ class _BluetoothTagState extends State<BluetoothTag> {
       double.infinity,
       36,
       Row(
+        spacing: 8,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _connectedDevice != null ? _buildIcon() : SizedBox(),
-          const SizedBox(width: 8),
           Text(
             _getDisplayText(),
             style: Apptheme.h4HighlightBody(
               context,
               color: Apptheme.backgroundColor,
             ),
+            textAlign: TextAlign.center,
           ),
+          if (_connectedDevice != null && widget.showBattery == true) ...[
+            BatteryIndicator(
+              size: widget.batteryIconSize,
+              showPercentage: widget.showBatteryPercentage ?? false,
+              iconOnly: widget.batteryIconOnly ?? false,
+              customColor: Apptheme.backgroundColor,
+            ),
+          ],
         ],
       ),
       _handleTap,
@@ -172,6 +189,14 @@ class _BluetoothTagState extends State<BluetoothTag> {
                 color: _getTextColor(),
               ),
             ),
+            if (_connectedDevice != null && widget.showBattery == true) ...[
+              const SizedBox(width: 6),
+              BatteryIndicator(
+                size: widget.batteryIconSize,
+                showPercentage: widget.showBatteryPercentage ?? false,
+                iconOnly: widget.batteryIconOnly ?? true,
+              ),
+            ],
           ],
         ),
       ),
@@ -247,7 +272,9 @@ class _BluetoothTagState extends State<BluetoothTag> {
     }
 
     if (_connectedDevice != null) {
-      return widget.showAsButton == true ? Apptheme.backgroundColor : Apptheme.secondary;
+      return widget.showAsButton == true
+          ? Apptheme.backgroundColor
+          : Apptheme.secondary;
     }
 
     if (_isScanning) {

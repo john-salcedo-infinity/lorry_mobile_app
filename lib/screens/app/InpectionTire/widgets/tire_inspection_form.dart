@@ -5,6 +5,7 @@ import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:app_lorry/widgets/bluetooth/bluetooth_bottom_sheet.dart';
 import 'package:app_lorry/widgets/bluetooth/bluetooth_tag.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
+import 'package:app_lorry/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app_lorry/config/app_theme.dart';
@@ -683,6 +684,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
 
         return BluetoothTag(
           showAsButton: true,
+          showBatteryPercentage: true,
           onTap: handleTap,
         );
       },

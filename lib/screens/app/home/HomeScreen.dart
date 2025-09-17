@@ -10,6 +10,7 @@ import 'package:app_lorry/widgets/forms/customInput.dart';
 import 'package:app_lorry/widgets/shared/ScrollTopTop.dart';
 import 'package:app_lorry/widgets/shared/custom_fab_location.dart';
 import 'package:app_lorry/widgets/shared/notification_button.dart';
+import 'package:app_lorry/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/helpers/helpers.dart';
@@ -287,6 +288,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 BluetoothTag(
+                  showBattery: false,
                   onTap: () {
                     showModalBottomSheet(
                       context: context,

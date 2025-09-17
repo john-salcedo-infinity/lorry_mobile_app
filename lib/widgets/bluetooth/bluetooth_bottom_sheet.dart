@@ -4,6 +4,7 @@ import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/widgets/dialogs/confirmation_dialog.dart';
+import 'package:app_lorry/widgets/bluetooth/battery_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:app_lorry/routers/routers.dart';
 import 'dart:async';
@@ -708,10 +709,20 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
           ],
         ),
         trailing: isConnected
-            ? Icon(
-                Icons.check_circle,
-                color: Apptheme.secondary,
-                size: 24,
+            ? Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  BatteryIndicator(
+                    size: BatteryIndicatorSize.small,
+                    showPercentage: true,
+                  ),
+                  const SizedBox(width: 8),
+                  Icon(
+                    Icons.check_circle,
+                    color: Apptheme.secondary,
+                    size: 24,
+                  ),
+                ],
               )
             : Icon(
                 Icons.arrow_forward_ios,

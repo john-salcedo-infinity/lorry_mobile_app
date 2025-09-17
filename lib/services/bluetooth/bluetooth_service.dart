@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:app_lorry/helpers/helpers.dart';
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/services/bluetooth/adapter/bluetooth_fbc_adapter.dart';
+import 'package:app_lorry/services/bluetooth/battery_level_manager.dart';
 
 /// Enum para definir los tipos de adaptadores disponibles
 enum BluetoothAdapterType {
@@ -13,6 +14,7 @@ enum BluetoothAdapterType {
 class BluetoothService {
   static BluetoothService? _instance;
   BluetoothAdapter? _adapter;
+  StreamSubscription<DepthGaugeData>? _batteryLevelSubscription;
 
   BluetoothService._internal();
 
@@ -33,6 +35,28 @@ class BluetoothService {
       case BluetoothAdapterType.classic:
         _adapter = BluetoothClassicAdapter();
         break;
+    }
+
+    // Inicializar el manager de batería
+    _initializeBatteryManager();
+  }
+
+  /// Inicializa el manager de batería y configura el listener
+  void _initializeBatteryManager() async {
+    try {
+      // Inicializar el singleton de batería
+      await BatteryLevelManager.instance.initialize();
+
+      // Configurar listener para actualizar cuando lleguen datos de batería
+      _batteryLevelSubscription?.cancel(); // Cancelar listener previo si existe
+      _batteryLevelSubscription = depthDataStream.listen((depthData) {
+        if (depthData.valueType == DepthValueType.battery) {
+          final batteryLevel = depthData.value.toInt();
+          BatteryLevelManager.instance.updateBatteryLevel(batteryLevel);
+        }
+      });
+    } catch (e) {
+      print('Error inicializando BatteryLevelManager: $e');
     }
   }
 
@@ -128,8 +152,60 @@ class BluetoothService {
     await _adapter!.turnBluetoothOn();
   }
 
+  /// Envía un comando al dispositivo TLG1 conectado
+  Future<bool> sendCommand(String command) async {
+    if (_adapter == null) return false;
+    return await _adapter!.sendCommand(command);
+  }
+
+  /// Solicita el nivel de batería al dispositivo TLG1
+  Future<bool> requestBatteryLevel() async {
+    if (_adapter == null) return false;
+    return await _adapter!.requestBatteryLevel();
+  }
+
+  /// Solicita una lectura de profundidad al dispositivo TLG1
+  Future<bool> requestDepthReading() async {
+    if (_adapter == null) return false;
+    return await _adapter!.requestDepthReading();
+  }
+
+  /// Solicita una lectura de presión al dispositivo TLG1
+  Future<bool> requestPressureReading() async {
+    if (_adapter == null) return false;
+    return await _adapter!.requestPressureReading();
+  }
+
+  /// Solicita una actualización completa de todos los valores (profundidad, presión, batería)
+  Future<void> requestAllReadings() async {
+    if (_adapter == null) return;
+    
+    // Solicitar cada tipo de lectura con un pequeño delay entre ellas
+    await requestDepthReading();
+    await Future.delayed(const Duration(milliseconds: 500));
+    await requestPressureReading();
+    await Future.delayed(const Duration(milliseconds: 500));
+    await requestBatteryLevel();
+  }
+
+  /// Obtiene el último nivel de batería conocido del almacenamiento persistente
+  int? getLastKnownBatteryLevel() {
+    return BatteryLevelManager.instance.currentBatteryLevel;
+  }
+
+  /// Verifica si hay datos de batería disponibles
+  bool hasBatteryData() {
+    return BatteryLevelManager.instance.hasBatteryLevel;
+  }
+
+  /// Limpia los datos de batería almacenados (útil para testing o reset)
+  Future<void> clearBatteryData() async {
+    await BatteryLevelManager.instance.clearBatteryData();
+  }
+
   /// Libera recursos
   Future<void> dispose() async {
+    _batteryLevelSubscription?.cancel();
     await _adapter?.dispose();
     _adapter = null;
   }

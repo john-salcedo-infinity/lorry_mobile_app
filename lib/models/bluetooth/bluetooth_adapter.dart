@@ -48,6 +48,18 @@ abstract class BluetoothAdapter {
   /// Cada adaptador implementará este método según el protocolo de su dispositivo
   void processIncomingData(List<int> data);
 
+  /// Envía un comando al dispositivo conectado
+  Future<bool> sendCommand(String command);
+
+  /// Solicita el nivel de batería al dispositivo
+  Future<bool> requestBatteryLevel();
+
+  /// Solicita una lectura de profundidad al dispositivo
+  Future<bool> requestDepthReading();
+
+  /// Solicita una lectura de presión al dispositivo
+  Future<bool> requestPressureReading();
+
   /// Libera recursos
   Future<void> dispose();
 }

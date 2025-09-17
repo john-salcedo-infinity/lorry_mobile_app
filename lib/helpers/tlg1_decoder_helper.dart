@@ -9,6 +9,10 @@ class TLG1DecoderHelper implements DepthDataProcessor {
   // Buffer para acumular datos incompletos
   String _dataBuffer = '';
   final String _deviceId;
+  
+  // Buffer para suavizar lecturas de batería
+  final List<double> _batteryReadings = [];
+  static const int _maxBatteryReadings = 3; // Promedio de las últimas 3 lecturas
 
   TLG1DecoderHelper(this._deviceId);
 
@@ -67,15 +71,23 @@ class TLG1DecoderHelper implements DepthDataProcessor {
 
       debugPrint('TLG1 - Procesando línea: "$cleanLine"');
 
+      DepthValueType valueType = DepthValueType.action;
+      
       // Si la línea empieza con 'T', remover el prefijo (formato: T15.99)
       if (cleanLine.startsWith('T') && cleanLine.length > 1) {
         cleanLine = cleanLine.substring(1); // Remover la 'T'
+        valueType = DepthValueType.depth;
         debugPrint('TLG1 - Después de remover T: "$cleanLine"');
       }
       // También manejar otros posibles prefijos de comandos
       else if (cleanLine.startsWith('P') && cleanLine.length > 1) {
         cleanLine = cleanLine.substring(1); // Remover la 'P' (presión)
+        valueType = DepthValueType.pressure;
         debugPrint('TLG1 - Después de remover P: "$cleanLine"');
+      } else if (cleanLine.startsWith('B') && cleanLine.length > 1) {
+        cleanLine = cleanLine.substring(1); // Remover la 'B' (batería)
+        valueType = DepthValueType.battery;
+        debugPrint('TLG1 - Después de remover B: "$cleanLine" (DATOS DE BATERÍA RAW)');
       } else if (cleanLine.startsWith('N') && cleanLine.length > 1) {
         cleanLine = cleanLine.substring(1); // Remover la 'N' (no válido)
         debugPrint('TLG1 - Después de remover N: "$cleanLine"');
@@ -95,14 +107,9 @@ class TLG1DecoderHelper implements DepthDataProcessor {
       String? formattedValue = parsedValue?.toStringAsFixed(1);
       double? value =
           formattedValue != null ? double.parse(formattedValue) : null;
-      DepthValueType valueType = line.startsWith('T')
-          ? DepthValueType.depth
-          : line.startsWith('P')
-              ? DepthValueType.pressure
-              : DepthValueType.action;
 
       if (value != null) {
-        debugPrint('TLG1 - Profundidad procesada: $value $valueType');
+        debugPrint('TLG1 - Valor parseado: $value para tipo $valueType');
 
         if (valueType == DepthValueType.action) {
           return DepthGaugeData(
@@ -112,6 +119,57 @@ class TLG1DecoderHelper implements DepthDataProcessor {
             timestamp: DateTime.now(),
             rawData: line,
             deviceId: _deviceId
+          );
+        }
+
+        // Procesar datos de batería con fórmula de la documentación TLG1
+        if (valueType == DepthValueType.battery) {
+          debugPrint('TLG1 - Procesando batería: valor raw = $value');
+          
+          // Usar únicamente la fórmula de 10-bit (estándar según documentación)
+          // Vb = (3.3 x Vr / 1024) ÷ 0.6803
+          // Esta fórmula es consistente y evita fluctuaciones entre diferentes métodos
+          double batteryVoltage = (3.3 * value / 1024) / 0.6803;
+          
+          debugPrint('TLG1 - Voltaje calculado: ${batteryVoltage.toStringAsFixed(3)}V');
+          
+          // Convertir voltaje a porcentaje
+          // Según documentación: 3.5V mínimo operacional, 4.1-4.3V batería llena
+          const double minOperationalVoltage = 3.5;
+          const double maxBatteryVoltage = 4.3;
+          
+          double batteryPercentage;
+          if (batteryVoltage < minOperationalVoltage) {
+            batteryPercentage = 0.0; // Batería crítica
+          } else if (batteryVoltage >= maxBatteryVoltage) {
+            batteryPercentage = 100.0; // Batería llena
+          } else {
+            // Calcular porcentaje lineal entre 3.5V y 4.3V
+            batteryPercentage = ((batteryVoltage - minOperationalVoltage) / 
+                               (maxBatteryVoltage - minOperationalVoltage)) * 100;
+          }
+          
+          // Asegurar que esté en el rango 0-100
+          batteryPercentage = batteryPercentage.clamp(0.0, 100.0);
+          
+          // Suavizar la lectura usando promedio de las últimas lecturas
+          _batteryReadings.add(batteryPercentage);
+          if (_batteryReadings.length > _maxBatteryReadings) {
+            _batteryReadings.removeAt(0); // Remover la lectura más antigua
+          }
+          
+          // Calcular promedio
+          double smoothedBatteryPercentage = _batteryReadings.reduce((a, b) => a + b) / _batteryReadings.length;
+          
+          debugPrint('TLG1 - Batería raw: ${batteryPercentage.toStringAsFixed(1)}%, suavizada: ${smoothedBatteryPercentage.toStringAsFixed(1)}% (${batteryVoltage.toStringAsFixed(3)}V)');
+          
+          return DepthGaugeData(
+            value: smoothedBatteryPercentage,
+            valueType: valueType,
+            unit: '%',
+            timestamp: DateTime.now(),
+            rawData: line,
+            deviceId: _deviceId,
           );
         }
 
@@ -140,6 +198,7 @@ class TLG1DecoderHelper implements DepthDataProcessor {
   @override
   void clearBuffer() {
     _dataBuffer = '';
+    _batteryReadings.clear(); // También limpiar el buffer de batería
   }
 
   /// Implementación de la validación específica para TLG1
@@ -147,9 +206,13 @@ class TLG1DecoderHelper implements DepthDataProcessor {
   bool isValidData(String data) {
     final cleanData = data.trim();
 
-    // Si empieza con 'T', remover el prefijo
+    // Si empieza con 'T', 'P', o 'B', remover el prefijo
     String numberPart = cleanData;
     if (numberPart.startsWith('T') && numberPart.length > 1) {
+      numberPart = numberPart.substring(1);
+    } else if (numberPart.startsWith('P') && numberPart.length > 1) {
+      numberPart = numberPart.substring(1);
+    } else if (numberPart.startsWith('B') && numberPart.length > 1) {
       numberPart = numberPart.substring(1);
     }
 
@@ -160,9 +223,13 @@ class TLG1DecoderHelper implements DepthDataProcessor {
   static bool isValidDepthData(String data) {
     final cleanData = data.trim();
 
-    // Si empieza con 'T', remover el prefijo
+    // Si empieza con 'T', 'P', o 'B', remover el prefijo
     String numberPart = cleanData;
     if (numberPart.startsWith('T') && numberPart.length > 1) {
+      numberPart = numberPart.substring(1);
+    } else if (numberPart.startsWith('P') && numberPart.length > 1) {
+      numberPart = numberPart.substring(1);
+    } else if (numberPart.startsWith('B') && numberPart.length > 1) {
       numberPart = numberPart.substring(1);
     }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:app_lorry/models/models.dart';
 import 'package:app_lorry/helpers/tlg1_decoder_helper.dart';
@@ -36,6 +37,10 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
   bool _isScanning = false;
   BluetoothDeviceModel? _connectedDevice;
   fbc.BluetoothConnection? _connection;
+
+  // Timer para polling de batería
+  Timer? _batteryPollingTimer;
+  static const Duration _batteryPollingInterval = Duration(minutes: 2);
 
   @override
   bool get isScanning => _isScanning;
@@ -155,6 +160,9 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
         _connectedDevice = device;
         _connectedDeviceController.add(_connectedDevice);
 
+        // Iniciar polling automático de batería
+        _startBatteryPolling();
+
         return BluetoothConnectionResult.success(
           BluetoothConnectionState.connected,
         );
@@ -224,6 +232,7 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
   @override
   Future<void> disconnectDevice() async {
     if (_connection != null) {
+      _stopBatteryPolling(); // Detener polling de batería
       _connection!.dispose();
       _connection = null;
       _connectedDevice = null;
@@ -239,11 +248,13 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
           processIncomingData(data);
         },
         onDone: () {
+          _stopBatteryPolling(); // Detener polling al terminar conexión
           _connectedDevice = null;
           _connectedDeviceController.add(null);
           _connection = null;
         },
         onError: (error) {
+          _stopBatteryPolling(); // Detener polling en caso de error
           _connectedDevice = null;
           _connectedDeviceController.add(null);
           _connection = null;
@@ -272,6 +283,86 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
     }
   }
 
+  /// Envía un comando al dispositivo TLG1 conectado
+  Future<bool> sendCommand(String command) async {
+    try {
+      if (_connection == null || !_connection!.isConnected) {
+        debugPrint('TLG1 - No hay conexión activa para enviar comando: $command');
+        return false;
+      }
+
+      // Agregar terminador de línea si no lo tiene
+      String commandToSend = command.endsWith('\r\n') ? command : '$command\r\n';
+      
+      debugPrint('TLG1 - Enviando comando: $command');
+      
+      // Convertir el comando a bytes UTF-8
+      Uint8List commandBytes = Uint8List.fromList(commandToSend.codeUnits);
+      
+      // Enviar el comando al dispositivo
+      _connection!.output.add(commandBytes);
+      await _connection!.output.allSent;
+      
+      debugPrint('TLG1 - Comando enviado exitosamente: $command');
+      return true;
+    } catch (e) {
+      debugPrint('TLG1 - Error enviando comando $command: $e');
+      return false;
+    }
+  }
+
+  /// Solicita el nivel de batería al dispositivo TLG1
+  @override
+  Future<bool> requestBatteryLevel() async {
+    return await sendCommand('B');
+  }
+
+  /// Solicita una lectura de profundidad al dispositivo TLG1
+  @override
+  Future<bool> requestDepthReading() async {
+    return await sendCommand('T');
+  }
+
+  /// Solicita una lectura de presión al dispositivo TLG1
+  @override
+  Future<bool> requestPressureReading() async {
+    return await sendCommand('P');
+  }
+
+  /// Inicia el polling automático de batería cada 2 minutos
+  void _startBatteryPolling() {
+    _stopBatteryPolling(); // Detener cualquier polling previo
+    
+    debugPrint('TLG1 - Iniciando polling de batería cada ${_batteryPollingInterval.inMinutes} minutos');
+    
+    _batteryPollingTimer = Timer.periodic(_batteryPollingInterval, (timer) {
+      if (_connection != null && _connection!.isConnected) {
+        debugPrint('TLG1 - Solicitando nivel de batería automáticamente');
+        requestBatteryLevel();
+      } else {
+        debugPrint('TLG1 - Deteniendo polling de batería - sin conexión');
+        _stopBatteryPolling();
+      }
+    });
+
+    // Solicitar la batería inmediatamente al conectar
+    Future.delayed(const Duration(seconds: 2), () {
+      if (_connection != null && _connection!.isConnected) {
+        debugPrint('TLG1 - Solicitando nivel de batería inicial');
+        requestBatteryLevel();
+      }
+    });
+  }
+
+  /// Detiene el polling automático de batería
+  void _stopBatteryPolling() {
+    if (_batteryPollingTimer != null) {
+      debugPrint('TLG1 - Deteniendo polling de batería');
+      _batteryPollingTimer!.cancel();
+      _batteryPollingTimer = null;
+    }
+  }
+
   /// Implementación del método de la interfaz para actualizar el estado del dispositivo
 
   /// Método para verificar y restaurar el estado de conexión
@@ -279,6 +370,7 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
   Future<void> verifyConnectionState() async {
     if (_connectedDevice != null && _connection != null) {
       if (!_connection!.isConnected) {
+        _stopBatteryPolling(); // Detener polling si se perdió la conexión
         _connectedDevice = null;
         _connection = null;
         _connectedDeviceController.add(null);
@@ -288,6 +380,7 @@ class BluetoothClassicAdapter implements BluetoothAdapter {
 
   @override
   Future<void> dispose() async {
+    _stopBatteryPolling(); // Detener polling al limpiar recursos
     await stopScanning();
     // Solo cerrar la conexión si realmente se está cerrando el servicio
     // no solo el UI

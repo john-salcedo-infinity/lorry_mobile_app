@@ -9,3 +9,4 @@ export './shared/home_button.dart';
 export './shared/notification_button.dart';
 export './shared/delete_button.dart';
 export './shared/dotted_border_container.dart';
+export './bluetooth/battery_indicator.dart';

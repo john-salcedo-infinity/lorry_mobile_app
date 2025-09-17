@@ -4,6 +4,7 @@ import 'package:app_lorry/config/app_theme.dart';
 import 'package:app_lorry/widgets/shared/back.dart';
 import 'package:app_lorry/services/bluetooth/bluetooth_service.dart';
 import 'package:app_lorry/models/models.dart';
+import 'package:app_lorry/widgets/bluetooth/battery_indicator.dart';
 // import 'package:app_lorry/widgets/bluetooth/depth_input_fields.dart';
 
 class BluetoothCalibrationScreen extends StatefulWidget {
@@ -28,6 +29,7 @@ class _BluetoothCalibrationScreenState
   // Estado para mostrar datos de profundidad del dispositivo
   DepthGaugeData? _currentDepth;
   DepthGaugeData? _currentPressure;
+  DepthGaugeData? _currentBattery;
 
   DepthGaugeData? _previousDepth;
   DepthGaugeData? _previousPressure;
@@ -70,6 +72,8 @@ class _BluetoothCalibrationScreenState
                 _previousPressure!.value != depthData.value) {
               _previousPressure = depthData;
             }
+          } else if (depthData.valueType == DepthValueType.battery) {
+            _currentBattery = depthData;
           } else if (depthData.valueType == DepthValueType.action) {
             _handleActionData(depthData.rawData);
           }
@@ -116,6 +120,10 @@ class _BluetoothCalibrationScreenState
                     _buildDepthDisplay(),
                     const SizedBox(height: 20),
                     _buildPressureDisplay(),
+                    const SizedBox(height: 20),
+                    _buildBatteryDisplay(),
+                    const SizedBox(height: 20),
+                    _buildTestButtons(),
                   ],
                 ),
               ),
@@ -200,6 +208,11 @@ class _BluetoothCalibrationScreenState
                   style: Apptheme.h5Body(context, color: Apptheme.secondary),
                 ),
               ),
+              const SizedBox(width: 8),
+              BatteryIndicator(
+                size: BatteryIndicatorSize.small,
+                showPercentage: true,
+              ),
             ],
           ),
         ],
@@ -279,6 +292,18 @@ class _BluetoothCalibrationScreenState
     );
   }
 
+  Widget _buildBatteryDisplay() {
+    final value = _currentBattery != null
+        ? _currentBattery!.depthWithUnit
+        : '--- %';
+    return _buildMeasurementCard(
+      title: 'Batería del Dispositivo',
+      value: value,
+      valueColor: _getBatteryColor(),
+      timestamp: _currentBattery?.timestamp,
+    );
+  }
+
   Color _getDepthColor() {
     if (_currentDepth != null && _currentDepth!.value < 0) {
       return Colors.red;
@@ -295,6 +320,146 @@ class _BluetoothCalibrationScreenState
       return Apptheme.secondary; // Differentiate with a different theme color
     }
     return Apptheme.textColorSecondary;
+  }
+
+  Color _getBatteryColor() {
+    if (_currentBattery == null) {
+      return Apptheme.textColorSecondary;
+    }
+
+    final batteryLevel = _currentBattery!.value.toInt();
+    if (batteryLevel <= 20) {
+      return Colors.red;
+    } else if (batteryLevel <= 50) {
+      return Apptheme.alertOrange;
+    } else {
+      return Apptheme.secondary;
+    }
+  }
+
+  Widget _buildTestButtons() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(5),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            'Comandos de Prueba',
+            style: Apptheme.h2Title(context, color: Apptheme.textColorPrimary),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final result = await _bluetoothService.requestBatteryLevel();
+                    debugPrint('Solicitud de batería: $result');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Apptheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Solicitar Batería'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final result = await _bluetoothService.requestDepthReading();
+                    debugPrint('Solicitud de profundidad: $result');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Apptheme.secondary,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Solicitar Profundidad'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final result = await _bluetoothService.requestPressureReading();
+                    debugPrint('Solicitud de presión: $result');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Apptheme.alertOrange,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Solicitar Presión'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await _bluetoothService.requestAllReadings();
+                    debugPrint('Solicitando todas las lecturas');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Apptheme.textColorPrimary,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Solicitar Todo'),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () async {
+                    await _bluetoothService.clearBatteryData();
+                    debugPrint('Datos de batería limpiados');
+                    // Forzar rebuild para actualizar indicadores
+                    setState(() {});
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Limpiar Batería'),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    final lastLevel = _bluetoothService.getLastKnownBatteryLevel();
+                    final hasData = _bluetoothService.hasBatteryData();
+                    debugPrint('Último nivel conocido: $lastLevel%, Tiene datos: $hasData');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: Text('Ver Estado'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   String _formatTime(DateTime time) {

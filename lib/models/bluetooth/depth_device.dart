@@ -4,7 +4,8 @@
 enum DepthValueType {
   depth,
   pressure,
-  action
+  action,
+  battery
 }
 
 class DepthGaugeData {
