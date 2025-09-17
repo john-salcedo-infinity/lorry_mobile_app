@@ -61,7 +61,7 @@ class CustomInputField extends ConsumerWidget {
                   Apptheme.h4Body(context, color: Apptheme.grayInput).copyWith(
                 height: height != null ? 1.2 : null,
               ),
-              fillColor: Colors.white,
+              fillColor: Apptheme.white,
               filled: true,
               suffixIcon: suffixIcon,
               contentPadding:

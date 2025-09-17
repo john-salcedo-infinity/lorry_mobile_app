@@ -359,7 +359,7 @@ class SpareWidget extends StatelessWidget {
             'assets/icons/tire.png',
             width: height * 0.5,
             height: height * 0.75,
-            color: Colors.grey[400],
+            color: Apptheme.gray.withAlpha(150),
             fit: BoxFit.contain,
           ),
         );
@@ -462,7 +462,7 @@ class SpareWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(4),
         ),
         textStyle: const TextStyle(
-          color: Colors.black,
+          color: Apptheme.black,
           fontSize: 14,
         ),
         child: spareContainer,

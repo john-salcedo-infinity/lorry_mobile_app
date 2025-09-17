@@ -167,7 +167,7 @@ class _SelectProviderState extends ConsumerState<SelectProvider> {
                   color: Apptheme.lightGray,
                   width: 1,
                 ),
-                color: Colors.white,
+                color: Apptheme.white,
               ),
               offset: Offset(0, -5),
               scrollbarTheme: ScrollbarThemeData(

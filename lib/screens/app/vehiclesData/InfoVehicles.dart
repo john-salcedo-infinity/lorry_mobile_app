@@ -160,7 +160,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Container(
       padding: _Constants.containerPadding,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -230,7 +230,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
       // height: _Constants.alertContainerHeight,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(8),
           bottomRight: Radius.circular(8),
@@ -257,7 +257,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(8),
           bottomRight: Radius.circular(8),
@@ -390,7 +390,7 @@ class _InfoVehiclesState extends ConsumerState<InfoVehicles> {
             children: [
               TextSpan(
                 text: "Alerta ",
-                style: Apptheme.h4HighlightBody(context, color: Colors.black),
+                style: Apptheme.h4HighlightBody(context, color: Apptheme.black),
               ),
               TextSpan(
                 text: "kilometraje",

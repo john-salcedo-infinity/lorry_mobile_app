@@ -269,7 +269,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
     if (!isPressure && value > lastValue) {
       return {
         'text': Apptheme.alertOrange,
-        'background': isPressure ? Colors.white : Apptheme.highAlertBackground,
+        'background': isPressure ? Apptheme.white : Apptheme.highAlertBackground,
         'border': Apptheme.alertOrange,
       };
     }
@@ -279,7 +279,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
       return {
         'text': Apptheme.alarmYellow,
         'background':
-            isPressure ? Colors.white : Apptheme.mediumAlertBackground,
+            isPressure ? Apptheme.white : Apptheme.mediumAlertBackground,
         'border': Apptheme.alarmYellow,
       };
     }
@@ -288,7 +288,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
     if (!isPressure && value <= 3) {
       return {
         'text': Apptheme.alertOrange,
-        'background': isPressure ? Colors.white : Apptheme.highAlertBackground,
+        'background': isPressure ? Apptheme.white : Apptheme.highAlertBackground,
         'border': Apptheme.alertOrange,
       };
     }
@@ -298,7 +298,7 @@ class _TireDataTextFieldState extends State<TireDataTextField> {
 
     return {
       'text': Apptheme.textColorPrimary,
-      'background': Colors.white,
+      'background': Apptheme.white,
       'border': borderColor,
     };
   }

@@ -652,7 +652,7 @@ class _SpinAndRotationScreenState extends ConsumerState<SpinAndRotationScreen> {
               ),
               child: Text(
                 movementCount.toString(),
-                style: Apptheme.h5HighlightBody(context, color: Colors.white),
+                style: Apptheme.h5HighlightBody(context, color: Apptheme.white),
               ),
             )
           ],

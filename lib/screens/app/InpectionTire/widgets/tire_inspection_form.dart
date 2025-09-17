@@ -611,7 +611,7 @@ class _TireInspectionFormState extends ConsumerState<TireInspectionForm> {
                 child: Text(
                   '${widget.existingNovelties.length}',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Apptheme.white,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),

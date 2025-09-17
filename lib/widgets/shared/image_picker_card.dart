@@ -119,7 +119,7 @@ class _ImagePickerCardState extends ConsumerState<ImagePickerCard> {
         child: AlertDialog(
           insetPadding: const EdgeInsets.all(5),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          backgroundColor: Colors.white,
+          backgroundColor: Apptheme.white,
           title: Center(
             child: Column(
               children: [

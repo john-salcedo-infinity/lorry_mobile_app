@@ -84,7 +84,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
       height: 68,
       padding: const EdgeInsets.all(26),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(8),
           topRight: Radius.circular(8),
@@ -107,7 +107,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
       ),
       child: Container(
         padding: const EdgeInsets.all(22),
@@ -243,7 +243,7 @@ class _ManualPlateRegisterState extends ConsumerState<ManualPlateRegister> {
         context: context,
         barrierDismissible: false,
         builder: (context) => Container(
-          color: Colors.white.withAlpha(230),
+          color: Apptheme.white.withAlpha(230),
           child: Center(
             child: Apptheme.loadingIndicator(),
           ),

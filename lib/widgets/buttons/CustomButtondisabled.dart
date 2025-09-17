@@ -1,3 +1,4 @@
+import 'package:app_lorry/config/configs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,7 +18,7 @@ class CustomButtonDisabled extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-      return Column(
+    return Column(
       children: [
         Container(
           width: width,
@@ -35,7 +36,7 @@ class CustomButtonDisabled extends ConsumerWidget {
           child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white, // Fondo blanco
+              backgroundColor: Apptheme.white, // Fondo blanco
               elevation: 0, // Sin sombra adicional
               padding: const EdgeInsets.all(4),
               shape: RoundedRectangleBorder(
@@ -49,7 +50,7 @@ class CustomButtonDisabled extends ConsumerWidget {
             ),
             child: DefaultTextStyle(
               style: TextStyle(
-                color: Colors.grey, //  Color de la letra: #D8D8E6
+                color: Apptheme.gray, //  Color de la letra: #D8D8E6
                 fontWeight: FontWeight.w600,
               ),
               child: child,

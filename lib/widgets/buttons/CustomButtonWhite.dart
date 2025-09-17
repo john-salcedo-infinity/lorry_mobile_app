@@ -24,7 +24,7 @@ class CustomButtonWhite extends ConsumerWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
+          backgroundColor: Apptheme.white,
           elevation: 0, // Sin sombra
           padding: const EdgeInsets.all(4),
           shape: RoundedRectangleBorder(

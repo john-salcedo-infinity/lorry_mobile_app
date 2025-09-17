@@ -28,6 +28,8 @@ class Apptheme {
 
   // Other colors
   static const Color backgroundColor = Color.fromRGBO(249, 249, 252, 1);
+  static const Color white = Color.fromRGBO(255, 255, 255, 1);
+  static const Color black = Color.fromRGBO(0, 0, 0, 1);
   static const Color gray = Color.fromRGBO(112, 112, 112, 1);
   static const Color grayInput = Color.fromRGBO(73, 77, 76, 0.5);
   static const Color lightGray = Color.fromRGBO(148, 148, 148, .5);
@@ -194,7 +196,7 @@ class Apptheme {
 
   static CircularProgressIndicator loadingIndicatorButton() {
     return const CircularProgressIndicator(
-      color: Colors.white,
+      color: Apptheme.white,
       strokeWidth: 2,
     );
   }

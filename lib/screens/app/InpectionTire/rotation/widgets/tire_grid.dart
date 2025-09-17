@@ -34,7 +34,7 @@ class TireGrid extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         color: (activeService != null && sectionType == 2)
             ? Apptheme.lightOrange
-            : Colors.white,
+            : Apptheme.white,
       ),
       child: Column(
         children: [

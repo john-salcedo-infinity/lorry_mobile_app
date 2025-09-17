@@ -73,8 +73,8 @@ class ToastHelper {
     toastification.show(
       context: context,
       style: ToastificationStyle.flat,
-      primaryColor: Colors.white,
-      backgroundColor: Colors.white,
+      primaryColor: Apptheme.white,
+      backgroundColor: Apptheme.white,
       autoCloseDuration: const Duration(seconds: 5),
       borderRadius: BorderRadius.circular(4),
       alignment: Alignment.topRight,
@@ -108,7 +108,7 @@ class ToastHelper {
                   message.toString(),
                   style: Apptheme.h4Body(
                     context,
-                    color: Colors.black,
+                    color: Apptheme.black,
                   ),
                 ),
         ),

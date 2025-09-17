@@ -137,7 +137,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       width: double.infinity,
       padding: const EdgeInsets.all(26),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -218,9 +218,11 @@ class _DetailTireState extends ConsumerState<DetailTire> {
           color: isInspected ? Apptheme.primary : Colors.transparent,
           width: 1,
         ),
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black12)],
+        boxShadow: [
+          BoxShadow(color: Apptheme.black.withValues(alpha: 0.1), blurRadius: 6)
+        ],
       ),
       child: Row(
         children: [
@@ -478,7 +480,7 @@ class _DetailTireState extends ConsumerState<DetailTire> {
       width: 110,
       padding: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(width: 2, color: Apptheme.lightGreen),
       ),

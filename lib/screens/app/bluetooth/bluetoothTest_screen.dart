@@ -148,7 +148,7 @@ class _BluetoothCalibrationScreenState
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: _actionDetected ? Apptheme.lightOrange : Colors.white,
+        color: _actionDetected ? Apptheme.lightOrange : Apptheme.white,
         borderRadius: BorderRadius.circular(12),
         border: _actionDetected 
             ? Border.all(color: Apptheme.primary, width: 2)
@@ -157,7 +157,7 @@ class _BluetoothCalibrationScreenState
           BoxShadow(
             color: _actionDetected 
                 ? Apptheme.primary.withAlpha(20)
-                : Colors.black.withAlpha(5),
+                : Apptheme.black.withAlpha(5),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -231,11 +231,11 @@ class _BluetoothCalibrationScreenState
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(5),
+            color: Apptheme.black.withAlpha(5),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -342,11 +342,11 @@ class _BluetoothCalibrationScreenState
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(5),
+            color: Apptheme.black.withAlpha(5),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -369,7 +369,7 @@ class _BluetoothCalibrationScreenState
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Apptheme.primary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: Apptheme.white,
                   ),
                   child: Text('Solicitar Batería'),
                 ),
@@ -383,7 +383,7 @@ class _BluetoothCalibrationScreenState
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Apptheme.secondary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: Apptheme.white,
                   ),
                   child: Text('Solicitar Profundidad'),
                 ),
@@ -401,7 +401,7 @@ class _BluetoothCalibrationScreenState
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Apptheme.alertOrange,
-                    foregroundColor: Colors.white,
+                    foregroundColor: Apptheme.white,
                   ),
                   child: Text('Solicitar Presión'),
                 ),
@@ -415,7 +415,7 @@ class _BluetoothCalibrationScreenState
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Apptheme.textColorPrimary,
-                    foregroundColor: Colors.white,
+                    foregroundColor: Apptheme.white,
                   ),
                   child: Text('Solicitar Todo'),
                 ),
@@ -435,7 +435,7 @@ class _BluetoothCalibrationScreenState
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
+                    foregroundColor: Apptheme.white,
                   ),
                   child: Text('Limpiar Batería'),
                 ),
@@ -449,8 +449,8 @@ class _BluetoothCalibrationScreenState
                     debugPrint('Último nivel conocido: $lastLevel%, Tiene datos: $hasData');
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.grey,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Apptheme.gray,
+                    foregroundColor: Apptheme.white,
                   ),
                   child: Text('Ver Estado'),
                 ),

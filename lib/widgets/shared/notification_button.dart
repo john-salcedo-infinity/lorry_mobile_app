@@ -79,7 +79,7 @@ class NotificationButton extends ConsumerWidget {
                     color: Apptheme.secondary,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: Colors.white,
+                      color: Apptheme.white,
                       width: 2,
                     ),
                   ),

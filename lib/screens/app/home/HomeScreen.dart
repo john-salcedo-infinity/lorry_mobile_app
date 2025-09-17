@@ -332,7 +332,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 12),
                     Container(
                       decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: Apptheme.white,
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                       clipBehavior: Clip.hardEdge,
@@ -404,7 +404,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: RefreshIndicator(
                   key: _refreshIndicatorKey,
                   color: Apptheme.primary,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Apptheme.white,
                   strokeWidth: 2.0,
                   displacement: 50.0,
                   onRefresh: _onRefresh,
@@ -547,7 +547,7 @@ class _ProfileState extends State<_Profile> {
       margin: const EdgeInsets.symmetric(vertical: 10),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(10)),
-        color: Colors.white,
+        color: Apptheme.white,
       ),
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -558,7 +558,7 @@ class _ProfileState extends State<_Profile> {
             child: CircleAvatar(
               radius: 22,
               backgroundColor:
-                  authUser.image != null ? Colors.transparent : Colors.grey,
+                  authUser.image != null ? Colors.transparent : Apptheme.gray,
               backgroundImage:
                   authUser.image != null ? NetworkImage(authUser.image!) : null,
               child: authUser.image == null
@@ -636,9 +636,9 @@ class HomeMenu extends ConsumerWidget {
     }
 
     return PopupMenuButton<String>(
-      color: Colors.white,
+      color: Apptheme.white,
       elevation: 1,
-      shadowColor: Colors.black.withValues(alpha: 0.2),
+      shadowColor: Apptheme.black.withValues(alpha: 0.2),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
       ),
@@ -704,7 +704,7 @@ class HomeMenu extends ConsumerWidget {
           ),
         ),
       ],
-      icon: const Icon(Icons.more_vert, color: Colors.grey),
+      icon: const Icon(Icons.more_vert, color: Apptheme.gray),
     );
   }
 }

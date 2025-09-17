@@ -71,7 +71,7 @@ class CustomButton extends ConsumerWidget {
                 height: height,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
-                  color: Colors.white.withAlpha(150),
+                  color: Apptheme.white.withAlpha(150),
                 ),
               ),
           ],
@@ -88,24 +88,24 @@ class CustomButton extends ConsumerWidget {
       case 2:
         return Apptheme.primary; // Texto naranja en fondo blanco
       case 3:
-        return Colors.white; // Texto blanco en fondo verde
+        return Apptheme.white; // Texto blanco en fondo verde
       case 4:
         return Apptheme.secondary; // Texto verde en fondo blanco
       default:
-        return Colors.white; // Texto blanco en fondo naranja (type 1)
+        return Apptheme.white; // Texto blanco en fondo naranja (type 1)
     }
   }
 
   Color _getBackgroundColor(int? type) {
     switch (type) {
       case 0:
-        return Colors.white; // Fondo blanco
+        return Apptheme.white; // Fondo blanco
       case 2:
-        return Colors.white; // Fondo blanco
+        return Apptheme.white; // Fondo blanco
       case 3:
         return Apptheme.secondary; // Fondo verde
       case 4:
-        return Colors.white; // Fondo blanco
+        return Apptheme.white; // Fondo blanco
       default:
         return Apptheme.primary; // Fondo naranja (type 1)
     }

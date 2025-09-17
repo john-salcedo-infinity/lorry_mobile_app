@@ -30,7 +30,7 @@ class PositionLabel extends StatelessWidget {
       // Si hay movimiento, mostrar ícono según el tipo de servicio
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-        decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+        decoration: BoxDecoration(color: Apptheme.white, shape: BoxShape.circle),
         child: _buildMovementIcon(),
       );
     }

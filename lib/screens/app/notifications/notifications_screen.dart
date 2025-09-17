@@ -262,7 +262,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     SizedBox(height: 12),
                     Container(
                       decoration: const BoxDecoration(
-                        color: Colors.white,
+                        color: Apptheme.white,
                         borderRadius: BorderRadius.all(Radius.circular(8)),
                       ),
                       clipBehavior: Clip.hardEdge,
@@ -334,7 +334,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                 child: RefreshIndicator(
                   key: _refreshIndicatorKey,
                   color: Apptheme.primary,
-                  backgroundColor: Colors.white,
+                  backgroundColor: Apptheme.white,
                   strokeWidth: 2.0,
                   displacement: 50.0,
                   onRefresh: _onRefresh,
@@ -446,7 +446,7 @@ class _NotificationItemState extends State<_NotificationItem> {
     title = widget.notification.title!;
     message = widget.notification.message!;
     backgroundColor = widget.notification.viewed!
-        ? Colors.white
+        ? Apptheme.white
         : Apptheme.unReadNotificationBackground;
     borderColor = widget.notification.viewed!
         ? Apptheme.backgroundColor

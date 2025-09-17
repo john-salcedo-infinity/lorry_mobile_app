@@ -75,7 +75,7 @@ class _ItemHistorialState extends ConsumerState<ItemHistorial> {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 150),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Apptheme.white,
                 borderRadius: BorderRadius.circular(8),
                 border: widget.isSelected
                     ? Border.all(color: Apptheme.secondary, width: 1)

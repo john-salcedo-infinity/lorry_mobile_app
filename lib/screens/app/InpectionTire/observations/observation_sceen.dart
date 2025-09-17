@@ -261,7 +261,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
             onPressed: _addNoveltyItem,
             icon: const Icon(Icons.add, color: Apptheme.textColorPrimary),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
+              backgroundColor: Apptheme.white,
               shape: CircleBorder(),
               side: BorderSide(color: Apptheme.textColorPrimary, width: 2),
             ),
@@ -315,7 +315,7 @@ class _ObservationScreenState extends ConsumerState<ObservationScreen> {
           margin: const EdgeInsets.symmetric(vertical: 10),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Apptheme.white,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Column(

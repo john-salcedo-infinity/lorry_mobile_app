@@ -57,7 +57,7 @@ class _ForgotpassscreenState extends ConsumerState<Forgotpassscreen> {
   Widget build(BuildContext context) {
     final isLoading = ref.watch(loadingProviderProvider);
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Apptheme.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: ConstrainedBox(
@@ -108,7 +108,7 @@ class _ForgotpassscreenState extends ConsumerState<Forgotpassscreen> {
                           "Escribe tu correo ingresado en el sistema para poder restablecer tu acceso",
                           style: Apptheme.h4Body(
                             context,
-                            color: Colors.black,
+                            color: Apptheme.black,
                           ),
                           textAlign: TextAlign.center,
                         ),

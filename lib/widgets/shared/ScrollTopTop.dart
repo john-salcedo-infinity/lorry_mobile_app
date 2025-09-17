@@ -68,7 +68,7 @@ class _ScrollToTopFabState extends State<ScrollToTopFab> {
           shape: CircleBorder(
             side: BorderSide(color: Apptheme.textColorPrimary, width: 2),
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: Apptheme.white,
           onPressed: _showFab
               ? () {
                   widget.scrollController.animateTo(

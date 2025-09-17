@@ -51,7 +51,7 @@ class _MainContent extends ConsumerWidget {
               width: double.infinity,
               // decoration: Apptheme.card_radius_only_top,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Apptheme.white,
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(30.0),
                 ),

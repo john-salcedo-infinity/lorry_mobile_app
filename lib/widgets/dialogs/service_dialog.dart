@@ -55,12 +55,12 @@ class _ServiceDialogState extends State<ServiceDialog> {
       insetPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Apptheme.white,
           borderRadius: BorderRadius.circular(8),
           // Sombra estática en lugar de BackdropFilter
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Apptheme.black.withOpacity(0.3),
               blurRadius: 10,
               spreadRadius: 2,
             ),
@@ -89,7 +89,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
       width: double.infinity,
       padding: const EdgeInsets.only(left: 24, right: 24, top: 24, bottom: 0),
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(8),
           topRight: Radius.circular(8),
@@ -259,7 +259,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
               height: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                valueColor: AlwaysStoppedAnimation<Color>(Apptheme.white),
               ),
             )
           : const Text(
@@ -267,7 +267,7 @@ class _ServiceDialogState extends State<ServiceDialog> {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Apptheme.white,
               ),
             ),
       _isProcessing ? null : () => _onRealizeService(),

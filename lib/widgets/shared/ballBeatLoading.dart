@@ -1,3 +1,4 @@
+import 'package:app_lorry/config/configs.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 
@@ -12,7 +13,7 @@ class BallBeatLoading extends StatelessWidget {
       child: LoadingIndicator(
         indicatorType: Indicator.ballBeat,
         strokeWidth: 3.0,
-        colors: [Colors.white],
+        colors: [Apptheme.white],
       ),
     );
   }

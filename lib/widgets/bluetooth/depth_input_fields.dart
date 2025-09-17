@@ -142,11 +142,11 @@ class _DepthInputFieldsState extends ConsumerState<DepthInputFields> {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Apptheme.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(5),
+            color: Apptheme.black.withAlpha(5),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -188,7 +188,7 @@ class _DepthInputFieldsState extends ConsumerState<DepthInputFields> {
                   child: Text(
                     '1',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Apptheme.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -224,7 +224,7 @@ class _DepthInputFieldsState extends ConsumerState<DepthInputFields> {
                   child: Text(
                     '2',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Apptheme.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -260,7 +260,7 @@ class _DepthInputFieldsState extends ConsumerState<DepthInputFields> {
                   child: Text(
                     '3',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Apptheme.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),

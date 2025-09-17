@@ -96,7 +96,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
     final isLoading = ref.watch(changePasswordLoadingProviderProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Apptheme.white,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -133,7 +133,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                           // Título
                           Text(
                             'Actualiza tu contraseña de acceso',
-                            style: Apptheme.h4Body(context, color: Colors.black),
+                            style: Apptheme.h4Body(context, color: Apptheme.black),
                           ),
                     
                           const SizedBox(height: 20),
@@ -220,7 +220,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                                       child: LoadingIndicator(
                                         indicatorType: Indicator.ballBeat,
                                         strokeWidth: 3.0,
-                                        colors: [Colors.white],
+                                        colors: [Apptheme.white],
                                       ),
                                     )
                                   : const Text(
@@ -228,7 +228,7 @@ class _ChangePassState extends ConsumerState<ChangePass> {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        color: Apptheme.white,
                                       ),
                                     ),
                               isLoading ? null : _resetPassword,

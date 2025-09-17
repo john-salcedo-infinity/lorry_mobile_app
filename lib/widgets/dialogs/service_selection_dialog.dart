@@ -41,7 +41,7 @@ class ServiceSelectionDialog extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(4),
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: Apptheme.white,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 32,
               vertical: 32,
@@ -61,7 +61,7 @@ class ServiceSelectionDialog extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Apptheme.white,
               shape: BoxShape.circle,
               border: Border.all(
                 color: Apptheme.textColorPrimary,

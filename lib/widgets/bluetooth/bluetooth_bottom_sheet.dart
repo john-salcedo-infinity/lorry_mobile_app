@@ -286,7 +286,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: Apptheme.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
             ),
             child: Column(
@@ -297,7 +297,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: Apptheme.gray,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -376,7 +376,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
       child: Container(
         height: MediaQuery.of(context).size.height * 0.7,
         decoration: const BoxDecoration(
-          color: Colors.white,
+          color: Apptheme.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: Column(
@@ -387,7 +387,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
               height: 4,
               margin: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
-                color: Colors.grey[300],
+                color: Apptheme.gray,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -540,7 +540,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
                             "Escaneando...",
                             style: Apptheme.h4HighlightBody(
                               context,
-                              color: Colors.white,
+                              color: Apptheme.white,
                             ),
                           ),
                         ],
@@ -666,7 +666,7 @@ class _BluetoothBottomSheetState extends ConsumerState<BluetoothBottomSheet>
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
-        color: isConnected ? Apptheme.selectActiveBackground : Colors.white,
+        color: isConnected ? Apptheme.selectActiveBackground : Apptheme.white,
         border: Border.all(
           color: isConnected ? Apptheme.selectActiveBorder : Apptheme.lightGray,
           width: isConnected ? 2 : 1,

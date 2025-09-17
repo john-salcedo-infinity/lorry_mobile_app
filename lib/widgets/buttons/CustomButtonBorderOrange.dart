@@ -24,7 +24,7 @@ class CustomButtonBorderOrange extends ConsumerWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
+          backgroundColor: Apptheme.white,
           foregroundColor: Apptheme.primary,
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(

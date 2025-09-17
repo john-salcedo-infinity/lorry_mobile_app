@@ -88,7 +88,7 @@ class _InspectionDetailsState extends State<InspectionDetails> {
                       child: Container(
                         width: double.infinity,
                         padding: EdgeInsets.all(26),
-                        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
+                        decoration: BoxDecoration(color: Apptheme.white, borderRadius: BorderRadius.circular(8)),
                         child: SingleChildScrollView(
                           child: InspectionDetailsContent(
                             formattedDate: formattedDate,

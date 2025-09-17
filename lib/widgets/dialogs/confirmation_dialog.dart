@@ -24,7 +24,7 @@ class ConfirmationDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      backgroundColor: Colors.white,
+      backgroundColor: Apptheme.white,
       title: Center(
         child: Text(title,
             textAlign: TextAlign.center,
@@ -65,7 +65,7 @@ class ConfirmationDialog extends StatelessWidget {
         }
       },
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white,
+        backgroundColor: Apptheme.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(4),
         ),
@@ -100,7 +100,7 @@ class ConfirmationDialog extends StatelessWidget {
         textAlign: TextAlign.center,
         style: Apptheme.h4HighlightBody(
           context,
-          color: Colors.white,
+          color: Apptheme.white,
         ),
       ),
     );
